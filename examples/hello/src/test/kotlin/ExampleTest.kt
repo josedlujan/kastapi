@@ -12,12 +12,12 @@ import kotlin.test.fail
 class ExampleTest {
     private fun referenceExample(): String {
         val reference = File(System.getProperty("reference.path")).readText()
-        val section = reference.substringAfter("## 1. Hola mundo").substringBefore("\n## 2.")
+        val section = reference.substringAfter("## 1. Hello world").substringBefore("\n## 2.")
         return section.substringAfter("```kotlin\n").substringBefore("\n```")
     }
 
     @Test
-    fun `Main kt es exactamente el Hola mundo de la referencia`() {
+    fun `Main kt is exactly the Hello world of the reference`() {
         val main = File(System.getProperty("main.path")).readText()
         assertEquals(referenceExample().trim(), main.trim())
     }

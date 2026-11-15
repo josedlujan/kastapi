@@ -19,13 +19,13 @@ data class UserPath(val id: Long)
 data class ListQuery(@Min(1) @Max(100) val limit: Int = 20, val search: String? = null)
 
 fun main() = kastApi(port = 8080) {
-    info(title = "Users API", version = "1.0.0", description = "Ejemplo de KastAPI")
+    info(title = "Users API", version = "1.0.0", description = "KastAPI example")
 
-    post<CreateUser, UserResponse>("/users", summary = "Crea un usuario", status = 201) { body ->
+    post<CreateUser, UserResponse>("/users", summary = "Creates a user", status = 201) { body ->
         UserResponse(id = 1, email = body.email, nickname = body.nickname)
     }
 
-    get<UserPath, UserResponse>("/users/{id}", summary = "Obtiene un usuario") { path ->
+    get<UserPath, UserResponse>("/users/{id}", summary = "Gets a user") { path ->
         UserResponse(id = path.id, email = "demo@kastapi.dev")
     }
 
@@ -35,5 +35,5 @@ fun main() = kastApi(port = 8080) {
 
     delete<UserPath, Unit>("/users/{id}", status = 204) { _ -> }
 }
-// Swagger UI en http://localhost:8080/docs
-// Esquema en http://localhost:8080/openapi.json
+// Swagger UI at http://localhost:8080/docs
+// Schema at http://localhost:8080/openapi.json

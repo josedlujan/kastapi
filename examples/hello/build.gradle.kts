@@ -8,10 +8,10 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 }
 application {
-    // Main.kt es el "Hola mundo" de docs/reference.md tal cual (paquete por defecto).
+    // Main.kt is the "Hello world" from docs/reference.md, verbatim (default package).
     mainClass.set("MainKt")
 }
-// El ejemplo reproduce el "Hola mundo" de docs/reference.md literalmente (imports con comodín, clases en una línea): no se le aplica ktlint.
+// The example reproduces the "Hello world" from docs/reference.md verbatim (wildcard imports, one-line classes), so ktlint is not applied to it.
 ktlint {
     filter {
         exclude { true }

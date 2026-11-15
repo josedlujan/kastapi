@@ -1,10 +1,10 @@
-# Referencia de la API — v0.1
+# API reference — v0.1
 
-Describe el comportamiento público de KastAPI 0.1. Los cambios en la API pública se discuten en un issue antes de implementarse.
+Describes the public behavior of KastAPI 0.1. Changes to the public API are discussed in an issue before they are implemented.
 
-## 1. Hola mundo
+## 1. Hello world
 
-Este código compila y funciona tal cual (es `examples/hello`):
+This code compiles and works as is (it is `examples/hello`):
 
 ```kotlin
 import dev.kastapi.*
@@ -28,13 +28,13 @@ data class UserPath(val id: Long)
 data class ListQuery(@Min(1) @Max(100) val limit: Int = 20, val search: String? = null)
 
 fun main() = kastApi(port = 8080) {
-    info(title = "Users API", version = "1.0.0", description = "Ejemplo de KastAPI")
+    info(title = "Users API", version = "1.0.0", description = "KastAPI example")
 
-    post<CreateUser, UserResponse>("/users", summary = "Crea un usuario", status = 201) { body ->
+    post<CreateUser, UserResponse>("/users", summary = "Creates a user", status = 201) { body ->
         UserResponse(id = 1, email = body.email, nickname = body.nickname)
     }
 
-    get<UserPath, UserResponse>("/users/{id}", summary = "Obtiene un usuario") { path ->
+    get<UserPath, UserResponse>("/users/{id}", summary = "Gets a user") { path ->
         UserResponse(id = path.id, email = "demo@kastapi.dev")
     }
 
@@ -44,11 +44,11 @@ fun main() = kastApi(port = 8080) {
 
     delete<UserPath, Unit>("/users/{id}", status = 204) { _ -> }
 }
-// Swagger UI en http://localhost:8080/docs
-// Esquema en http://localhost:8080/openapi.json
+// Swagger UI at http://localhost:8080/docs
+// Schema at http://localhost:8080/openapi.json
 ```
 
-## 2. Punto de entrada
+## 2. Entry point
 
 ```kotlin
 public fun kastApi(
@@ -59,28 +59,28 @@ public fun kastApi(
 )
 ```
 
-- Arranca un servidor Ktor Netty y bloquea (`wait = true`).
-- Variante para integrarse en una app Ktor existente (siempre se puede bajar a Ktor):
+- Starts a Ktor Netty server and blocks (`wait = true`).
+- Variant to integrate into an existing Ktor app (you can always drop down to Ktor):
 
 ```kotlin
 public fun Application.installKastApi(config: KastApiConfig = KastApiConfig(), block: KastApi.() -> Unit)
 ```
 
-- `kastApi(...)` llama a `installKastApi`, así que ambas formas se comportan igual. En pruebas, usa `installKastApi` dentro de `testApplication` o `kastTest`.
+- `kastApi(...)` calls `installKastApi`, so both forms behave the same. In tests, use `installKastApi` inside `testApplication` or `kastTest`.
 
-`KastApiConfig` (data class pública, todo con defaults):
+`KastApiConfig` (public data class, everything has defaults):
 
-| Propiedad | Tipo | Default | Efecto |
+| Property | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `docsPath` | `String?` | `"/docs"` | Ruta de Swagger UI; `null` la desactiva |
-| `openApiPath` | `String?` | `"/openapi.json"` | Ruta del esquema; `null` lo desactiva (y también docs) |
-| `json` | `Json` | `Json { ignoreUnknownKeys = false; explicitNulls = false; encodeDefaults = true }` | Instancia de serialización |
-| `validateOnStartup` | `Boolean` | `true` | Valida las rutas al arrancar (§6) |
-| `maxBodyBytes` | `Long` | `1_048_576` | Tamaño máximo del cuerpo en bytes; positivo. Si se supera, responde 413 (§8) |
+| `docsPath` | `String?` | `"/docs"` | Swagger UI path; `null` disables it |
+| `openApiPath` | `String?` | `"/openapi.json"` | Schema path; `null` disables it (and the docs too) |
+| `json` | `Json` | `Json { ignoreUnknownKeys = false; explicitNulls = false; encodeDefaults = true }` | Serialization instance |
+| `validateOnStartup` | `Boolean` | `true` | Validates the routes at startup (§6) |
+| `maxBodyBytes` | `Long` | `1_048_576` | Maximum body size in bytes; must be positive. If exceeded, responds 413 (§8) |
 
-## 3. Declaración de rutas
+## 3. Declaring routes
 
-En `KastApi` existen `get`, `post`, `put`, `patch`, `delete`, todas con la misma forma:
+`KastApi` has `get`, `post`, `put`, `patch` and `delete`, all with the same shape:
 
 ```kotlin
 public inline fun <reified I : Any, reified O> KastApi.post(
@@ -88,76 +88,76 @@ public inline fun <reified I : Any, reified O> KastApi.post(
     summary: String? = null,
     description: String? = null,
     tags: List<String> = emptyList(),
-    status: Int = 200,        // en post el default es 201
+    status: Int = 200,        // the default is 201 for post
     noinline handler: suspend KastCall.(I) -> O,
 )
 ```
 
-- `I` = **modelo de entrada**, `O` = **modelo de salida**.
-- Para rutas sin entrada se usa `NoInput` (objeto `@Serializable` provisto por la librería): `get<NoInput, Health>("/health") { Health("ok") }`.
-- `O = Unit` → respuesta sin cuerpo (para usar con `204`).
-- `KastCall` es el receptor del handler: expone `call: ApplicationCall` (escape a Ktor) y `fun header(name: String): String?`.
-- Defaults de `status`: `post` → 201; el resto → 200.
-- Además existe `group(prefix: String, tags: List<String> = emptyList(), block: KastApi.() -> Unit)` para agrupar rutas bajo un prefijo.
+- `I` = **input model**, `O` = **output model**.
+- For routes without input, use `NoInput` (a `@Serializable` object provided by the library): `get<NoInput, Health>("/health") { Health("ok") }`.
+- `O = Unit` → response without a body (to use with `204`).
+- `KastCall` is the handler's receiver: it exposes `call: ApplicationCall` (the way out to Ktor) and `fun header(name: String): String?`.
+- `status` defaults: `post` → 201; the rest → 200.
+- There is also `group(prefix: String, tags: List<String> = emptyList(), block: KastApi.() -> Unit)` to group routes under a prefix.
 
-## 4. Binding de la entrada
+## 4. Input binding
 
-Dado `I` y el método:
+Given `I` and the method:
 
-1. **Path params**: cada propiedad de `I` cuyo nombre aparezca como `{nombre}` en la ruta se toma del path.
-2. **GET y DELETE**: el resto de propiedades se toman del **query string**.
-3. **POST, PUT, PATCH**: si `I` no tiene propiedades de path, todo `I` es el **cuerpo JSON**. Si tiene propiedades de path, se combinan: las de path desde la URL y las demás desde el JSON del cuerpo.
-4. Los valores de path y query (siempre texto) se convierten según el tipo de la propiedad: `String`, `Int`, `Long`, `Double`, `Boolean`, `enum` (por nombre serializado), y `List<T>` de esos tipos en query (`?tag=a&tag=b`).
-5. Opcionalidad: propiedad con valor por defecto o tipo nullable = opcional. Sin default y no nullable = requerida.
-6. Propiedades de query/path con tipos no soportados (objetos anidados) → error al arrancar (§6).
+1. **Path params**: each property of `I` whose name appears as `{name}` in the route is taken from the path.
+2. **GET and DELETE**: the remaining properties are taken from the **query string**.
+3. **POST, PUT, PATCH**: if `I` has no path properties, all of `I` is the **JSON body**. If it has path properties, they are combined: path properties from the URL and the others from the body's JSON.
+4. Path and query values (always text) are converted according to the property type: `String`, `Int`, `Long`, `Double`, `Boolean`, `enum` (by serialized name), and `List<T>` of those types in query (`?tag=a&tag=b`).
+5. Optionality: a property with a default value or a nullable type is optional. Without a default and not nullable, it is required.
+6. Query/path properties with unsupported types (nested objects) → startup error (§6).
 
-Con los valores convertidos se construye un `JsonObject` que se decodifica con `json.decodeFromJsonElement(serializer<I>(), ...)` (ver [ADR-0002](adr/0002-serialdescriptor-sin-reflexion.md)).
+With the converted values a `JsonObject` is built and decoded with `json.decodeFromJsonElement(serializer<I>(), ...)` (see [ADR-0002](adr/0002-serialdescriptor-sin-reflexion.md)).
 
-## 5. Validación
+## 5. Validation
 
-Anotaciones en `dev.kastapi.validation`, todas `@SerialInfo` y aplicables a propiedades:
+Annotations in `dev.kastapi.validation`, all `@SerialInfo` and applicable to properties:
 
-| Anotación | Tipos | Regla |
+| Annotation | Types | Rule |
 | --- | --- | --- |
-| `@Min(value: Long)` | numéricos | `>= value` |
-| `@Max(value: Long)` | numéricos | `<= value` |
-| `@Length(min: Int = 0, max: Int = Int.MAX_VALUE)` | `String`, `List` | longitud/tamaño en rango |
-| `@NotBlank` | `String` | no vacío ni solo espacios |
-| `@Email` | `String` | regex simple `^[^@\s]+@[^@\s]+\.[^@\s]+$` |
-| `@Pattern(regex: String)` | `String` | coincide completo |
+| `@Min(value: Long)` | numeric | `>= value` |
+| `@Max(value: Long)` | numeric | `<= value` |
+| `@Length(min: Int = 0, max: Int = Int.MAX_VALUE)` | `String`, `List` | length/size in range |
+| `@NotBlank` | `String` | not empty and not only whitespace |
+| `@Email` | `String` | simple regex `^[^@\s]+@[^@\s]+\.[^@\s]+$` |
+| `@Pattern(regex: String)` | `String` | matches the whole text |
 
-- Se validan propiedades anidadas (`data class` dentro de `data class`) y elementos de listas de objetos.
-- Valores `null` en propiedades opcionales no se validan.
-- Se recolectan **todos** los errores, no solo el primero.
-- Validación basada en `SerialDescriptor.getElementAnnotations(i)` + el `JsonElement` ya decodificado; los regex se compilan una vez por ruta al arrancar.
+- Nested properties (a `data class` inside a `data class`) and elements of lists of objects are validated.
+- `null` values in optional properties are not validated.
+- **All** errors are collected, not just the first one.
+- Validation is based on `SerialDescriptor.getElementAnnotations(i)` plus the already decoded `JsonElement`; regexes are compiled once per route at startup.
 
-## 6. Validación al arrancar
+## 6. Startup validation
 
-Con `validateOnStartup = true`, al instalar se lanza `KastApiConfigurationException` con un mensaje que lista todos los problemas si:
+With `validateOnStartup = true`, installing throws `KastApiConfigurationException` with a message that lists all the problems if:
 
-- Un `{param}` de la ruta no existe como propiedad en `I`.
-- Una propiedad de path es nullable o tiene default.
-- Una propiedad de query/path tiene tipo no soportado.
-- Dos rutas con mismo método y misma ruta.
-- Una anotación de validación está en un tipo incompatible (p. ej. `@Email` en `Int`).
+- A `{param}` of the route does not exist as a property of `I`.
+- A path property is nullable or has a default.
+- A query/path property has an unsupported type.
+- Two routes have the same method and the same route.
+- A validation annotation is on an incompatible type (e.g. `@Email` on `Int`).
 
-## 7. OpenAPI y Swagger UI
+## 7. OpenAPI and Swagger UI
 
-- KastAPI genera un documento **OpenAPI 3.1** y lo sirve como JSON en `GET {openApiPath}`.
-- `info` desde `info(...)`; si no se llama: `title = "KastAPI"`, `version = "0.0.0"`.
-- Cada ruta genera su operación con `summary`, `description`, `tags`, `operationId` (`{método}_{ruta normalizada}`, p. ej. `get_users_id`).
-- Parámetros de path y query como `parameters` con `required` según §4.5.
-- Cuerpo como `requestBody` `application/json` con `$ref` a `components/schemas`.
-- Respuesta exitosa con el `status` declarado y su esquema; `Unit` = sin contenido.
-- Toda operación con entrada documenta también la respuesta `422` con el esquema de error (§8).
-- Esquemas desde `SerialDescriptor`: tipos primitivos, nullable (`type: [X, "null"]`), listas (`array`), mapas `Map<String, T>` (`additionalProperties`), enums (`enum`), clases (`object` con `properties` y `required`). Nombre del componente = `serialName` simple (sin paquete); colisión de nombres → usar nombre completo.
-- Las anotaciones de validación se reflejan: `@Min`→`minimum`, `@Max`→`maximum`, `@Length`→`minLength/maxLength` o `minItems/maxItems`, `@Pattern`→`pattern`, `@Email`→`format: email`, `@NotBlank`→`minLength: 1`.
-- El documento se genera **una vez** al arrancar y se cachea.
-- Swagger UI en `GET {docsPath}`: un HTML que carga `swagger-ui-dist` desde CDN con versión fija y apunta a `openApiPath`.
+- KastAPI generates an **OpenAPI 3.1** document and serves it as JSON at `GET {openApiPath}`.
+- `info` comes from `info(...)`; if it is not called: `title = "KastAPI"`, `version = "0.0.0"`.
+- Each route generates its operation with `summary`, `description`, `tags`, `operationId` (`{method}_{normalized route}`, e.g. `get_users_id`).
+- Path and query parameters as `parameters`, with `required` according to §4.5.
+- Body as a `requestBody` `application/json` with a `$ref` to `components/schemas`.
+- Success response with the declared `status` and its schema; `Unit` = no content.
+- Every operation with input also documents the `422` response with the error schema (§8).
+- Schemas from `SerialDescriptor`: primitive types, nullable (`type: [X, "null"]`), lists (`array`), maps `Map<String, T>` (`additionalProperties`), enums (`enum`), classes (`object` with `properties` and `required`). Component name = simple `serialName` (no package); on a name collision the full name is used.
+- Validation annotations are reflected: `@Min`→`minimum`, `@Max`→`maximum`, `@Length`→`minLength/maxLength` or `minItems/maxItems`, `@Pattern`→`pattern`, `@Email`→`format: email`, `@NotBlank`→`minLength: 1`.
+- The document is generated **once** at startup and cached.
+- Swagger UI at `GET {docsPath}`: an HTML page that loads `swagger-ui-dist` from a CDN with a pinned version and points to `openApiPath`.
 
-## 8. Errores
+## 8. Errors
 
-Formato único para errores (`application/json`):
+Single format for errors (`application/json`):
 
 ```json
 {
@@ -171,32 +171,32 @@ Formato único para errores (`application/json`):
 }
 ```
 
-| Caso | Status | `error` | `code` en details |
+| Case | Status | `error` | `code` in details |
 | --- | --- | --- | --- |
-| JSON mal formado | 400 | `malformed_json` | — |
-| Cuerpo mayor que `maxBodyBytes` | 413 | `payload_too_large` | — |
-| Falta campo requerido | 422 | `validation_error` | `required` |
-| Tipo incorrecto (p. ej. texto en `Int`) | 422 | `validation_error` | `type` |
-| Campo desconocido en el body | 422 | `validation_error` | `unknown_field` |
-| Falla una anotación | 422 | `validation_error` | `min`, `max`, `length`, `not_blank`, `email`, `pattern` |
-| Ruta no existe | 404 | `not_found` | — |
-| Método no permitido en una ruta que sí existe | 405 | `method_not_allowed` | — |
-| Excepción no controlada | 500 | `internal_error` | — (sin stack trace en la respuesta) |
-| `throw HttpError(status, message)` desde un handler | el indicado | `http_error` | — |
+| Malformed JSON | 400 | `malformed_json` | — |
+| Body larger than `maxBodyBytes` | 413 | `payload_too_large` | — |
+| Required field missing | 422 | `validation_error` | `required` |
+| Wrong type (e.g. text in an `Int`) | 422 | `validation_error` | `type` |
+| Unknown field in the body | 422 | `validation_error` | `unknown_field` |
+| An annotation fails | 422 | `validation_error` | `min`, `max`, `length`, `not_blank`, `email`, `pattern` |
+| Route does not exist | 404 | `not_found` | — |
+| Method not allowed on an existing route | 405 | `method_not_allowed` | — |
+| Unhandled exception | 500 | `internal_error` | — (no stack trace in the response) |
+| `throw HttpError(status, message)` from a handler | the given one | `http_error` | — |
 
-- `location`: `path`, `query` o `body`. `field` usa notación de puntos e índices: `items[2].name`.
-- Mensajes en inglés por defecto en v0.1 (internacionalización queda para después; centraliza los textos en un solo archivo).
-- `HttpError` es una excepción pública: `public class HttpError(public val status: Int, message: String) : RuntimeException(message)`.
+- `location`: `path`, `query` or `body`. `field` uses dot and index notation: `items[2].name`.
+- Messages are in English by default in v0.1 (internationalization is left for later; all texts live in a single file).
+- `HttpError` is a public exception: `public class HttpError(public val status: Int, message: String) : RuntimeException(message)`.
 
-## 9. Pruebas utilitarias (`kastapi-test`)
+## 9. Test utilities (`kastapi-test`)
 
 ```kotlin
 public fun kastTest(block: KastApi.() -> Unit, test: suspend KastTestClient.() -> Unit)
 ```
 
-- Envuelve `testApplication` + `installKastApi`.
-- `KastTestClient` expone el `HttpClient` de Ktor ya configurado con JSON, y helpers `suspend fun <reified T> HttpResponse.bodyAs(): T`.
+- Wraps `testApplication` + `installKastApi`.
+- `KastTestClient` exposes Ktor's `HttpClient` already configured for JSON, and helpers like `suspend fun <reified T> HttpResponse.bodyAs(): T`.
 
-## 10. Fuera de alcance de v0.1
+## 10. Out of scope for v0.1
 
-Inyección de dependencias, autenticación, headers/cookies tipados, form-data y archivos, WebSockets, KSP, cliente generado, versionado de API, CORS (se usa el plugin de Ktor directamente vía `installKastApi`).
+Dependency injection, authentication, typed headers/cookies, form-data and files, WebSockets, KSP, generated client, API versioning, CORS (use the Ktor plugin directly via `installKastApi`).
