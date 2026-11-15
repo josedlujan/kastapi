@@ -61,7 +61,7 @@ class ErrorHandlingTest {
             assertEquals("404", body.text("status"))
             assertEquals("not_found", body.text("error"))
             assertEquals("Route GET /nope does not exist", body.text("message"))
-            assertEquals(0, body.getValue("details").jsonArray.size)
+            assertFalse(body.containsKey("details"))
         }
 
     @Test
@@ -77,7 +77,7 @@ class ErrorHandlingTest {
 
             assertEquals(HttpStatusCode.Conflict, response.status)
             assertEquals(
-                """{"status":409,"error":"http_error","message":"already exists","details":[]}""",
+                """{"status":409,"error":"http_error","message":"already exists"}""",
                 response.bodyAsText(),
             )
         }
@@ -190,7 +190,7 @@ class ErrorHandlingTest {
             assertEquals("405", body.text("status"))
             assertEquals("method_not_allowed", body.text("error"))
             assertEquals("Method POST is not allowed on /health", body.text("message"))
-            assertEquals(0, body.getValue("details").jsonArray.size)
+            assertFalse(body.containsKey("details"))
         }
 
     @Test

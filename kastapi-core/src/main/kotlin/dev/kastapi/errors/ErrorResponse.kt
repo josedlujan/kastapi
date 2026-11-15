@@ -1,5 +1,7 @@
 package dev.kastapi.errors
 
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
@@ -13,12 +15,19 @@ internal data class ErrorDetail(
     val value: JsonElement? = null,
 )
 
-/** The API's single error format (reference §8). */
+/**
+ * The API's single error format (reference §8).
+ *
+ * [details] is only serialized when it is not empty, whatever the application's `Json` settings are
+ * (`encodeDefaults` would otherwise write an empty list in every error).
+ */
 @Serializable
 internal data class ErrorResponse(
     val status: Int,
     val error: String,
     val message: String,
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val details: List<ErrorDetail> = emptyList(),
 )
 
