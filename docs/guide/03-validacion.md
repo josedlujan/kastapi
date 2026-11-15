@@ -33,10 +33,10 @@ Un cuerpo `{"email": "x", "age": 15}` responde `422`:
 {
   "status": 422,
   "error": "validation_error",
-  "message": "La petición tiene 2 errores de validación",
+  "message": "The request has 2 validation errors",
   "details": [
-    { "location": "body", "field": "email", "code": "email", "message": "debe ser un correo electrónico válido", "value": "x" },
-    { "location": "body", "field": "age", "code": "min", "message": "debe ser mayor o igual a 18", "value": 15 }
+    { "location": "body", "field": "email", "code": "email", "message": "must be a valid email address", "value": "x" },
+    { "location": "body", "field": "age", "code": "min", "message": "must be greater than or equal to 18", "value": 15 }
   ]
 }
 ```
