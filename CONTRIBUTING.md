@@ -1,37 +1,44 @@
-# Contribuir a KastAPI
+# Contributing to KastAPI
 
-¡Gracias por tu interés!
+Thanks for your interest!
 
-## Antes de empezar
+## Before you start
 
-- Para cambios grandes o en la API pública, abre primero un issue o un ADR (`docs/adr/TEMPLATE.md`).
-- Busca issues con `good first issue` si es tu primera contribución.
+- For big changes or changes to the public API, open an issue first, or write an ADR (`docs/adr/TEMPLATE.md`).
+- Look for issues labeled `good first issue` if this is your first contribution.
 
-## Entorno
+## Translations
+
+KastAPI was designed and first written in Spanish, and then translated to English. Some documentation, KDoc comments, code comments or test names may still be in Spanish. Translating them, or fixing an awkward sentence, is a welcome contribution: open an issue or send a pull request. Keep these in mind:
+
+- The Spanish front page is `README.es.md`. Everything else should end up in English.
+- Do not translate identifiers, error `code` values or anything that changes behavior without opening an issue first.
+
+## Environment
 
 - JDK 21
-- `./gradlew build` debe pasar antes de abrir un PR.
+- `./gradlew build` must pass before you open a PR.
 
-## Estilo
+## Style
 
-- Kotlin oficial + ktlint (`./gradlew ktlintFormat`).
-- `explicitApi()`: declara visibilidad explícita.
-- KDoc en todo lo público.
+- Official Kotlin style + ktlint (`./gradlew ktlintFormat`).
+- `explicitApi()`: declare visibility explicitly.
+- KDoc on everything public.
 - Conventional Commits.
 
 ## Pull requests
 
-- Una cosa por PR.
-- Incluye pruebas.
-- Actualiza `CHANGELOG.md` en `Unreleased`.
-- Si cambias API pública, ejecuta `./gradlew apiDump` y explica el cambio.
+- One thing per PR.
+- Include tests.
+- Update `CHANGELOG.md` under `Unreleased`.
+- If you change the public API, run `./gradlew apiDump` and explain the change.
 
-## Comandos útiles
+## Useful commands
 
 ```bash
-./gradlew build                  # compila, pruebas y checks
-./gradlew ktlintFormat           # corrige el estilo
-./gradlew apiCheck               # compatibilidad de la API pública
-./gradlew publishToMavenLocal    # instala los módulos para probarlos en otro proyecto
-./gradlew :examples:hello:run    # ejemplo en http://localhost:8080
+./gradlew build                  # compile, tests and checks
+./gradlew ktlintFormat           # fix the style
+./gradlew apiCheck               # public API compatibility
+./gradlew publishToMavenLocal    # install the modules to try them in another project
+./gradlew :examples:hello:run    # example at http://localhost:8080
 ```

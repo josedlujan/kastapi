@@ -1,10 +1,12 @@
 # KastAPI
 
-**La firma de tu handler es tu contrato.** Validación, errores claros y documentación OpenAPI para APIs en Kotlin, sin escribir nada extra. Construido sobre [Ktor](https://ktor.io).
+**Your handler's signature is your contract.** Validation, clear errors and OpenAPI documentation for Kotlin APIs, without writing anything extra. Built on [Ktor](https://ktor.io).
 
-> Estado: v0.1.0, experimental. La API puede cambiar antes de 1.0.
+> Status: v0.1.0, experimental. The API may change before 1.0.
 
-## Hola mundo
+> **A note on language.** KastAPI was designed and first written in Spanish, and then translated to English. Most of it has been translated, but some parts may still be in Spanish or read awkwardly. If you find something, please [open an issue](https://github.com/josedlujan/kastapi/issues) or send a pull request. Translation fixes are very welcome and a good way to make a first contribution. [Versión en español](README.es.md).
+
+## Hello world
 
 ```kotlin
 import dev.kastapi.*
@@ -22,11 +24,11 @@ fun main() = kastApi(port = 8080) {
 }
 ```
 
-Abre http://localhost:8080/docs y ya tienes Swagger UI con el endpoint documentado y validado.
+Open http://localhost:8080/docs and you get Swagger UI with the endpoint documented and validated.
 
-## Instalación
+## Installation
 
-KastAPI 0.1.0 todavía no está en Maven Central. Se instala en tu repositorio Maven local (requiere JDK 21):
+KastAPI 0.1.0 is not on Maven Central yet. Install it into your local Maven repository (requires JDK 21):
 
 ```bash
 git clone https://github.com/josedlujan/kastapi.git
@@ -34,7 +36,7 @@ cd kastapi
 ./gradlew publishToMavenLocal
 ```
 
-En tu proyecto (Gradle Kotlin DSL):
+In your project (Gradle Kotlin DSL):
 
 ```kotlin
 plugins {
@@ -50,7 +52,7 @@ repositories {
 
 dependencies {
     implementation("dev.kastapi:kastapi-core:0.1.0")
-    // Opcional: ver los logs del servidor (KastAPI no incluye una implementación de SLF4J).
+    // Optional: see the server logs (KastAPI does not ship an SLF4J implementation).
     runtimeOnly("ch.qos.logback:logback-classic:1.6.6")
     testImplementation("dev.kastapi:kastapi-test:0.1.0")
     testImplementation(kotlin("test"))
@@ -65,14 +67,14 @@ application {
 }
 ```
 
-## Pruébalo en 5 minutos
+## Try it in 5 minutes
 
-1. Crea un proyecto con el `build.gradle.kts` anterior y `settings.gradle.kts` con `rootProject.name = "demo"`.
-2. Guarda el código de "Hola mundo" en `src/main/kotlin/Main.kt`.
-3. Ejecuta `./gradlew run` (necesitas el wrapper de Gradle 9 o un Gradle 9 instalado).
-4. Abre http://localhost:8080/docs, despliega `POST /users`, pulsa **Try it out** y envía un cuerpo inválido, por ejemplo `{"email": "x", "age": 15}`. Recibirás un `422` con los dos errores a la vez.
+1. Create a project with the `build.gradle.kts` above and a `settings.gradle.kts` with `rootProject.name = "demo"`.
+2. Save the "Hello world" code in `src/main/kotlin/Main.kt`.
+3. Run `./gradlew run` (you need the Gradle 9 wrapper or an installed Gradle 9).
+4. Open http://localhost:8080/docs, expand `POST /users`, click **Try it out** and send an invalid body, for example `{"email": "x", "age": 15}`. You get a `422` with both errors at once.
 
-O desde la terminal:
+Or from the terminal:
 
 ```bash
 curl -s -X POST localhost:8080/users -H 'Content-Type: application/json' \
@@ -91,35 +93,35 @@ curl -s -X POST localhost:8080/users -H 'Content-Type: application/json' \
 }
 ```
 
-Swagger UI se carga desde un CDN, así que necesita conexión a internet. El esquema `http://localhost:8080/openapi.json` se sirve siempre.
+Swagger UI is loaded from a CDN, so it needs an internet connection. The schema at `http://localhost:8080/openapi.json` is always served.
 
-## Qué obtienes
+## What you get
 
-- Path, query y body desde una `data class`.
-- Validación declarativa: `@Min`, `@Max`, `@Length`, `@NotBlank`, `@Email`, `@Pattern`.
-- Errores `422` con todos los problemas, en un formato estable.
-- OpenAPI 3.1 en `/openapi.json` y Swagger UI en `/docs`.
-- Errores de configuración detectados al arrancar, no en producción.
-- Integración con apps Ktor existentes: `installKastApi { }`.
-- Pruebas con `kastTest` (módulo `kastapi-test`).
+- Path, query and body parameters from a `data class`.
+- Declarative validation: `@Min`, `@Max`, `@Length`, `@NotBlank`, `@Email`, `@Pattern`.
+- `422` errors that report every problem at once, in a stable format.
+- OpenAPI 3.1 at `/openapi.json` and Swagger UI at `/docs`.
+- Configuration errors detected at startup, not in production.
+- Integration with existing Ktor apps: `installKastApi { }`.
+- Testing with `kastTest` (the `kastapi-test` module).
 
-## Documentación
+## Documentation
 
-Guía completa en [`docs/guide`](docs/guide):
+The full guide is in [`docs/guide`](docs/guide):
 
-1. [Primeros pasos](docs/guide/01-primeros-pasos.md)
-2. [Parámetros: path, query y body](docs/guide/02-parametros.md)
-3. [Validación](docs/guide/03-validacion.md)
-4. [Errores](docs/guide/04-errores.md)
-5. [OpenAPI y Swagger UI](docs/guide/05-openapi.md)
-6. [Integrar con Ktor y probar](docs/guide/06-integrar-con-ktor.md)
+1. [Getting started](docs/guide/01-primeros-pasos.md)
+2. [Parameters: path, query and body](docs/guide/02-parametros.md)
+3. [Validation](docs/guide/03-validacion.md)
+4. [Errors](docs/guide/04-errores.md)
+5. [OpenAPI and Swagger UI](docs/guide/05-openapi.md)
+6. [Integrating with Ktor and testing](docs/guide/06-integrar-con-ktor.md)
 
-El estado del proyecto, las limitaciones conocidas y lo que falta para 1.0 están en [`docs/STATUS.md`](docs/STATUS.md). La referencia de la API está en [`docs/reference.md`](docs/reference.md) y la arquitectura en [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+The project status, known limitations and what is missing for 1.0 are in [`docs/STATUS.md`](docs/STATUS.md). The API reference is in [`docs/reference.md`](docs/reference.md) and the architecture in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Contribuir
+## Contributing
 
-Lee [CONTRIBUTING.md](CONTRIBUTING.md). Busca issues con la etiqueta `good first issue`.
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Look for issues labeled `good first issue`.
 
-## Licencia
+## License
 
 Apache 2.0

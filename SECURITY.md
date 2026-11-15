@@ -1,23 +1,23 @@
-# Política de seguridad
+# Security policy
 
-## Versiones con soporte
+## Supported versions
 
-KastAPI está en la versión 0.1.0, experimental. Solo se corrigen vulnerabilidades en la última versión publicada.
+KastAPI is at version 0.1.0 and is experimental. Only the latest published version receives security fixes.
 
-## Cómo reportar una vulnerabilidad
+## How to report a vulnerability
 
-No abras un issue público. Usa el reporte privado de GitHub: pestaña **Security** del repositorio, **Report a vulnerability**. Si no está disponible, escribe a josedlujan@hotmail.com con el asunto "KastAPI: seguridad".
+Do not open a public issue. Use GitHub's private reporting: the **Security** tab of the repository, then **Report a vulnerability**. If it is not available, write to josedlujan@hotmail.com with the subject "KastAPI: security".
 
-Incluye, si puedes:
+Include, if you can:
 
-- Versión de KastAPI, de Kotlin y de Ktor.
-- Código mínimo para reproducirlo.
-- Qué esperabas y qué ocurrió.
+- The KastAPI, Kotlin and Ktor versions.
+- Minimal code to reproduce it.
+- What you expected and what happened.
 
-Responderé en un plazo razonable y te avisaré cuando haya una corrección publicada.
+I will reply within a reasonable time and let you know when a fix is published.
 
-## Qué cuenta como vulnerabilidad
+## What counts as a vulnerability
 
-Por ejemplo: respuestas de error que filtren información interna, entradas que consuman recursos de forma desproporcionada (como expresiones regulares o cuerpos sin límite) o formas de saltarse la validación declarada.
+For example: error responses that leak internal information, inputs that consume disproportionate resources (such as regular expressions or unbounded bodies), or ways to bypass the declared validation.
 
-Las limitaciones conocidas están en [docs/STATUS.md](docs/STATUS.md). En particular, `@Pattern` usa la expresión regular que escribe quien desarrolla: un patrón con backtracking catastrófico es responsabilidad de esa persona.
+The known limitations are listed in [docs/STATUS.md](docs/STATUS.md). In particular, `@Pattern` uses the regular expression written by the developer: a pattern with catastrophic backtracking is that developer's responsibility.

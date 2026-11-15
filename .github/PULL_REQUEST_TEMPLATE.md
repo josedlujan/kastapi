@@ -1,14 +1,11 @@
-## Qué cambia
+## What changes
+<!-- Short description. Related issue: #N -->
 
-<!-- Descripción breve. Issue relacionado: #N -->
-
-## Cómo se probó
-
-- [ ] `./gradlew build` pasa
-- [ ] Pruebas nuevas para cada criterio de aceptación
+## How it was tested
+- [ ] `./gradlew build` passes
+- [ ] New tests for each acceptance criterion
 
 ## Checklist
-
-- [ ] KDoc en API pública nueva
-- [ ] `CHANGELOG.md` actualizado
-- [ ] `apiDump` ejecutado si cambió la API pública
+- [ ] KDoc on new public API
+- [ ] `CHANGELOG.md` updated
+- [ ] `apiDump` run if the public API changed
