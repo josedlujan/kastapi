@@ -60,7 +60,7 @@ class ErrorHandlingTest {
             assertEquals(ContentType.Application.Json, response.contentType()?.withoutParameters())
             assertEquals("404", body.text("status"))
             assertEquals("not_found", body.text("error"))
-            assertEquals("La ruta GET /nope no existe", body.text("message"))
+            assertEquals("Route GET /nope does not exist", body.text("message"))
             assertEquals(0, body.getValue("details").jsonArray.size)
         }
 
@@ -114,7 +114,7 @@ class ErrorHandlingTest {
 
             assertEquals(HttpStatusCode.InternalServerError, response.status)
             assertEquals("internal_error", body.text("error"))
-            assertEquals("Error interno del servidor", body.text("message"))
+            assertEquals("Internal server error", body.text("message"))
             assertFalse(raw.contains("secreto-interno"), "el cuerpo no debe revelar el mensaje de la excepción")
             assertFalse(raw.contains("IllegalStateException"), "el cuerpo no debe revelar el tipo de la excepción")
             assertFalse(raw.contains("kastapi"), "el cuerpo no debe revelar paquetes ni stack trace")
@@ -189,7 +189,7 @@ class ErrorHandlingTest {
             assertEquals(ContentType.Application.Json, response.contentType()?.withoutParameters())
             assertEquals("405", body.text("status"))
             assertEquals("method_not_allowed", body.text("error"))
-            assertEquals("El método POST no está permitido en /health", body.text("message"))
+            assertEquals("Method POST is not allowed on /health", body.text("message"))
             assertEquals(0, body.getValue("details").jsonArray.size)
         }
 

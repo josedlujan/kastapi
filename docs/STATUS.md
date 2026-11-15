@@ -32,7 +32,7 @@ Ordenadas de más a menos importante.
 | Un `StatusPages` propio debe instalarse antes de `installKastApi` | Instalarlo después lanza `DuplicatePluginException` | Está documentado |
 | Los tipos `sealed`, polimórficos y contextuales se documentan como `{}` | Esquema abierto en OpenAPI | Soporte de `oneOf` y discriminadores |
 | Los valores por defecto, `Set` y claves de `Map` no tienen soporte completo en el esquema | Detalles menores del documento | Ampliar el generador de esquemas |
-| Los mensajes están solo en español | Sin internacionalización | Prevista para 0.2 |
+| Los mensajes de error están solo en inglés | Sin internacionalización | Prevista para 0.2 |
 | La profundidad máxima del JSON del cuerpo no se ha verificado | Posible consumo de pila con anidamiento extremo | Prueba con entradas muy anidadas y, si hace falta, un límite |
 | Las clases compartidas entre módulos son públicas con `@InternalKastApi` | Son públicas en el bytecode, aunque no forman parte de la API estable (`apiCheck` las excluye) | Revisarlo antes de 1.0 |
 

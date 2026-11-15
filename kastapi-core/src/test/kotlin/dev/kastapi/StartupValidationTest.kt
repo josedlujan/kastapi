@@ -133,7 +133,7 @@ class StartupValidationTest {
     fun `una propiedad de path con valor por defecto falla`() {
         val error = assertStartupFails { get<DefaultPath, Health>("/d/{id}") { Health("x") } }
 
-        error.assertMentions("GET /d/{id}", "id", "valor por defecto")
+        error.assertMentions("GET /d/{id}", "id", "default value")
     }
 
     @Test
@@ -158,7 +158,7 @@ class StartupValidationTest {
                 get<NoInput, Health>("/a") { Health("dos") }
             }
 
-        error.assertMentions("GET /a", "duplicada")
+        error.assertMentions("GET /a", "duplicate")
     }
 
     @Test
@@ -169,7 +169,7 @@ class StartupValidationTest {
                 get<UserKey, Health>("/u/{key}") { Health("dos") }
             }
 
-        error.assertMentions("GET /u/{key}", "duplicada")
+        error.assertMentions("GET /u/{key}", "duplicate")
     }
 
     @Test
@@ -180,7 +180,7 @@ class StartupValidationTest {
                 get<NoInput, Health>("/v1/a") { Health("dos") }
             }
 
-        error.assertMentions("GET /v1/a", "duplicada")
+        error.assertMentions("GET /v1/a", "duplicate")
     }
 
     @Test
@@ -208,7 +208,7 @@ class StartupValidationTest {
                 post<BadPattern, BadPattern>("/pt") { it }
             }
 
-        error.assertMentions("@Min", "@NotBlank", "@Length", "@Pattern", "4 problemas")
+        error.assertMentions("@Min", "@NotBlank", "@Length", "@Pattern", "4 configuration problems")
     }
 
     @Test
@@ -242,7 +242,7 @@ class StartupValidationTest {
             }
 
         error.assertMentions(
-            "3 problemas",
+            "3 configuration problems",
             "GET /users/{userId}",
             "GET /x",
             "POST /inc",

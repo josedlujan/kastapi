@@ -258,7 +258,7 @@ class BodyBindingTest {
             val body = client.postJson("/users", """{"age":"x","extra":1}""").errorBody()
 
             assertEquals(3, body.detailCount())
-            assertEquals("La petición tiene 3 errores de validación", body.text("message"))
+            assertEquals("The request has 3 validation errors", body.text("message"))
         }
 
     @Test
@@ -285,7 +285,7 @@ class BodyBindingTest {
 
             assertEquals("email", body.detailText("field"))
             assertEquals("type", body.detailText("code"))
-            assertEquals("no puede ser nulo", body.detailText("message"))
+            assertEquals("must not be null", body.detailText("message"))
         }
 
     @Test

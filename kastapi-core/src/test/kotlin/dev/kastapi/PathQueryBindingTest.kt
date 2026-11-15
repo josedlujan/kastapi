@@ -252,7 +252,7 @@ class PathQueryBindingTest {
             assertEquals(2, body.getValue("details").jsonArray.size)
             assertEquals("a", body.detailText("field", index = 0))
             assertEquals("b", body.detailText("field", index = 1))
-            assertEquals("La petición tiene 2 errores de validación", body.text("message"))
+            assertEquals("The request has 2 validation errors", body.text("message"))
         }
 
     @Test

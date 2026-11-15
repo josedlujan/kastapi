@@ -163,10 +163,10 @@ Formato único para errores (`application/json`):
 {
   "status": 422,
   "error": "validation_error",
-  "message": "La petición tiene 2 errores de validación",
+  "message": "The request has 2 validation errors",
   "details": [
-    { "location": "body", "field": "age", "code": "min", "message": "debe ser mayor o igual a 18", "value": 15 },
-    { "location": "body", "field": "address.zip", "code": "required", "message": "es requerido" }
+    { "location": "body", "field": "age", "code": "min", "message": "must be greater than or equal to 18", "value": 15 },
+    { "location": "body", "field": "address.zip", "code": "required", "message": "is required" }
   ]
 }
 ```
@@ -185,7 +185,7 @@ Formato único para errores (`application/json`):
 | `throw HttpError(status, message)` desde un handler | el indicado | `http_error` | — |
 
 - `location`: `path`, `query` o `body`. `field` usa notación de puntos e índices: `items[2].name`.
-- Mensajes en español por defecto en v0.1 (internacionalización queda para después; centraliza los textos en un solo archivo).
+- Mensajes en inglés por defecto en v0.1 (internacionalización queda para después; centraliza los textos en un solo archivo).
 - `HttpError` es una excepción pública: `public class HttpError(public val status: Int, message: String) : RuntimeException(message)`.
 
 ## 9. Pruebas utilitarias (`kastapi-test`)

@@ -6,9 +6,9 @@ Todos los errores tienen el mismo formato (`application/json`):
 {
   "status": 422,
   "error": "validation_error",
-  "message": "La petición tiene 2 errores de validación",
+  "message": "The request has 2 validation errors",
   "details": [
-    { "location": "body", "field": "age", "code": "min", "message": "debe ser mayor o igual a 18", "value": 15 }
+    { "location": "body", "field": "age", "code": "min", "message": "must be greater than or equal to 18", "value": 15 }
   ]
 }
 ```
@@ -63,7 +63,7 @@ La respuesta `405` no incluye el header `Allow`.
 
 ## Mensajes
 
-Los mensajes están en español en v0.1. Están centralizados en un solo archivo para facilitar la internacionalización más adelante.
+Los mensajes están en inglés en v0.1. Están centralizados en un solo archivo para facilitar la internacionalización más adelante.
 
 ## Siguiente paso
 

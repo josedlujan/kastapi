@@ -119,7 +119,7 @@ Los problemas son de dos tipos. Los **fatales** impiden construir la ruta: un ti
 
 - Dos rutas son duplicadas si tienen el mismo método y la misma plantilla sin contar los nombres de los parámetros (`/u/{id}` y `/u/{key}` casan las mismas URLs).
 - `@Min` y `@Max` aplican a tipos numéricos; `@Length`, a `String` y `List`; `@NotBlank`, `@Email` y `@Pattern`, a `String`. Una `value class` se evalúa por el tipo que envuelve.
-- El mensaje empieza con `KastAPI encontró N problemas de configuración:` y lista un problema por línea, cada uno con `METHOD /ruta`. `KastApiConfigurationException` no expone la lista de problemas, solo el mensaje.
+- El mensaje empieza con `KastAPI found N configuration problems:` y lista un problema por línea, cada uno con `METHOD /ruta`. `KastApiConfigurationException` no expone la lista de problemas, solo el mensaje.
 - Los regex de `@Pattern` se compilan una sola vez, en esta fase.
 
 ---
@@ -187,9 +187,9 @@ Formato único (`application/json`):
 {
   "status": 422,
   "error": "validation_error",
-  "message": "La petición tiene 2 errores de validación",
+  "message": "The request has 2 validation errors",
   "details": [
-    { "location": "body", "field": "age", "code": "min", "message": "debe ser mayor o igual a 18", "value": 15 }
+    { "location": "body", "field": "age", "code": "min", "message": "must be greater than or equal to 18", "value": 15 }
   ]
 }
 ```
@@ -209,7 +209,7 @@ Formato único (`application/json`):
 - El 404, el 405, `HttpError` y el 500 los resuelve `StatusPages`, que instala `installKastApi` (`errors/ErrorPages.kt`). Los 400, 413 y 422 de binding y validación se responden dentro de la propia ruta.
 - Si la aplicación ya instaló su `StatusPages`, KastAPI no instala el suyo y respeta sus manejadores. El `StatusPages` propio debe instalarse **antes** de `installKastApi`.
 - `kastapi-core` no trae una implementación de logging (SLF4J): la aplicación debe aportar una, por ejemplo Logback, para ver el registro del 500.
-- Todos los textos (español en 0.1) viven en un solo archivo: `errors/Messages.kt`.
+- Todos los textos (en inglés en 0.1) viven en un solo archivo: `errors/Messages.kt`.
 
 ---
 
