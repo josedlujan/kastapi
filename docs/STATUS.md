@@ -1,59 +1,60 @@
-# Estado del proyecto
+# Project status
 
-Última actualización: versión 0.1.0.
+Last updated: version 0.1.0.
 
-## Por qué es 0.1.0 y no 1.0
+## Why 0.1.0 and not 1.0
 
-El número sigue el [Versionado Semántico](https://semver.org/lang/es/): una versión `0.x` indica desarrollo inicial, y la API pública puede cambiar entre versiones menores. `1.0.0` será el compromiso de mantener la API estable, y todavía no se dan las condiciones:
+The number follows [Semantic Versioning](https://semver.org/): a `0.x` version means initial development, and the public API may change between minor versions. `1.0.0` will be the commitment to keep the API stable, and the conditions are not met yet:
 
-- Todavía no hay feedback de uso externo.
-- No está publicada en Maven Central (hoy se instala con `./gradlew publishToMavenLocal`).
-- Quedan limitaciones conocidas (ver más abajo).
-- Faltan funciones previstas en el [roadmap](ROADMAP.md): inyección de dependencias, autenticación, generación con KSP y cliente multiplataforma.
+- There is no external usage feedback yet.
+- It is not published on Maven Central (today it is installed with `./gradlew publishToMavenLocal`).
+- There are known limitations (see below).
+- Features planned in the [roadmap](ROADMAP.md) are missing: dependency injection, authentication, generation with KSP and a multiplatform client.
 
-## Qué incluye 0.1.0
+## What 0.1.0 includes
 
-Descrito en la [referencia](reference.md): DSL tipado sobre Ktor, lectura de path, query y body desde una `data class`, validación con anotaciones, errores con formato único, comprobación de las rutas al arrancar, OpenAPI 3.1, Swagger UI y el módulo `kastapi-test`. El detalle de cada cambio está en el [CHANGELOG](../CHANGELOG.md).
+Described in the [reference](reference.md): a typed DSL on top of Ktor, reading path, query and body from a `data class`, validation with annotations, errors in a single format, route checks at startup, OpenAPI 3.1, Swagger UI and the `kastapi-test` module. The detail of each change is in the [CHANGELOG](../CHANGELOG.md).
 
-## Limitaciones conocidas
+## Known limitations
 
-Ordenadas de más a menos importante.
+Ordered from most to least important.
 
-| Limitación | Efecto | Qué haría falta |
+| Limitation | Effect | What would be needed |
 | --- | --- | --- |
-| Swagger UI está atado a la versión 5.34.1 del CDN | Se verificó en Chrome (la interfaz carga y muestra las operaciones del ejemplo), pero si se actualiza `swagger-ui-dist` hay que recalcular los hashes SRI | Una prueba automática en navegador no está prevista |
-| `@Pattern` no protege contra backtracking catastrófico | Un regex mal escrito puede bloquear un hilo ante una entrada hostil | Documentarlo (hecho en la guía) o añadir un límite de tiempo |
-| No se exige `Content-Type: application/json` | Un cuerpo con otro tipo de contenido se interpreta igualmente como JSON | Decidir si responder `415` o seguir permisivo |
-| La interfaz de `/docs` depende de un CDN | Sin conexión a internet no se muestra; `/openapi.json` sí se sirve | Servir los recursos desde la propia aplicación (cambia la política de dependencias) |
-| `kastapi-core` no incluye logging (SLF4J) | Sin una implementación en el classpath, el log del error `500` no se escribe | Está documentado; el ejemplo usa logback |
-| Solo se documenta la respuesta `422` en OpenAPI | No aparecen `400`, `404`, `405`, `413` ni `500` | Respuestas múltiples documentadas (prevista para 0.2) |
-| `apiCheck` no cubre las funciones `inline reified` del DSL | Un cambio en `get`, `post`... no lo detecta la herramienta | La compilación del ejemplo y de las pruebas lo cubre en parte |
-| El `405` no incluye el header `Allow` | Menos informativo para el cliente | Calcular los métodos permitidos por ruta |
-| Un `StatusPages` propio debe instalarse antes de `installKastApi` | Instalarlo después lanza `DuplicatePluginException` | Está documentado |
-| Los tipos `sealed`, polimórficos y contextuales se documentan como `{}` | Esquema abierto en OpenAPI | Soporte de `oneOf` y discriminadores |
-| Los valores por defecto, `Set` y claves de `Map` no tienen soporte completo en el esquema | Detalles menores del documento | Ampliar el generador de esquemas |
-| Los mensajes de error están solo en inglés | Sin internacionalización | Prevista para 0.2 |
-| La profundidad máxima del JSON del cuerpo no se ha verificado | Posible consumo de pila con anidamiento extremo | Prueba con entradas muy anidadas y, si hace falta, un límite |
-| Las clases compartidas entre módulos son públicas con `@InternalKastApi` | Son públicas en el bytecode, aunque no forman parte de la API estable (`apiCheck` las excluye) | Revisarlo antes de 1.0 |
+| Swagger UI is tied to version 5.34.1 from the CDN | It was verified in Chrome (the interface loads and shows the example's operations), but if `swagger-ui-dist` is updated the SRI hashes must be recomputed | An automated browser test is not planned |
+| `@Pattern` does not protect against catastrophic backtracking | A badly written regex can block a thread on a hostile input | Document it (done in the guide) or add a time limit |
+| `Content-Type: application/json` is not required | A body with another content type is still interpreted as JSON | Decide whether to respond `415` or stay permissive |
+| The `/docs` interface depends on a CDN | Without an internet connection it is not shown; `/openapi.json` is still served | Serve the resources from the application itself (changes the dependency policy) |
+| `kastapi-core` does not include logging (SLF4J) | Without an implementation on the classpath, the `500` error log entry is not written | It is documented; the example uses logback |
+| Only the `422` response is documented in OpenAPI | `400`, `404`, `405`, `413` and `500` do not appear | Documented multiple responses (planned for 0.2) |
+| `apiCheck` does not cover the DSL's `inline reified` functions | A change in `get`, `post`... is not detected by the tool | Compiling the example and the tests covers it in part |
+| The `405` does not include the `Allow` header | Less informative for the client | Compute the allowed methods per route |
+| An own `StatusPages` must be installed before `installKastApi` | Installing it afterwards throws `DuplicatePluginException` | It is documented |
+| `sealed`, polymorphic and contextual types are documented as `{}` | Open schema in OpenAPI | Support for `oneOf` and discriminators |
+| Default values, `Set` and `Map` keys do not have full support in the schema | Minor details of the document | Extend the schema generator |
+| Error messages are in English only | No internationalization | Planned for 0.2 |
+| The maximum depth of the body's JSON has not been verified | Possible stack consumption with extreme nesting | Test with deeply nested inputs and, if needed, a limit |
+| Classes shared between modules are public with `@InternalKastApi` | They are public in the bytecode, although they are not part of the stable API (`apiCheck` excludes them) | Review before 1.0 |
+| Part of the documentation, code comments and test names may still be in Spanish | Mixed languages while the translation is completed | Translation contributions are welcome |
 
-## Qué falta
+## What is missing
 
-### Para cerrar la release 0.1.0
+### To close the 0.1.0 release
 
-- [x] Código, pruebas, documentación pública y guía.
-- [x] Prueba manual de Swagger UI en un navegador (Chrome).
+- [x] Code, tests, public documentation and guide.
+- [x] Manual Swagger UI test in a browser (Chrome).
 - [x] Tag `v0.1.0`.
 
-### Para 0.2
+### For 0.2
 
-Condición de entrada del roadmap: 0.1 publicada y primeros usuarios. Contenido previsto: dependencias inyectables, headers y cookies tipados, respuestas múltiples documentadas e internacionalización de los mensajes.
+Entry condition in the roadmap: 0.1 published and first users. Planned content: injectable dependencies, typed headers and cookies, documented multiple responses and internationalization of the messages.
 
-### Para 1.0
+### For 1.0
 
-Autenticación integrada con OpenAPI, congelar la API, publicar en Maven Central con firma y javadoc, y un sitio de documentación. Condición: feedback de adopción. Antes de congelar la API conviene resolver la visibilidad de `InternalKastApi` y las decisiones abiertas de la tabla anterior.
+Authentication integrated with OpenAPI, freezing the API, publishing on Maven Central with signing and javadoc, and a documentation site. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
 
-## Cómo se decide
+## How decisions are made
 
-- Los cambios en la API pública se discuten en un issue y se reflejan en la [referencia](reference.md).
-- Las decisiones de diseño con alternativas se registran como ADR en [`docs/adr`](adr).
-- Para sugerir un cambio, abre un issue con la plantilla de propuesta (ver [CONTRIBUTING](../CONTRIBUTING.md)).
+- Changes to the public API are discussed in an issue and reflected in the [reference](reference.md).
+- Design decisions with alternatives are recorded as ADRs in [`docs/adr`](adr).
+- To suggest a change, open an issue with the proposal template (see [CONTRIBUTING](../CONTRIBUTING.md)).

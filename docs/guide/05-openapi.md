@@ -1,67 +1,67 @@
-# 5. OpenAPI y Swagger UI
+# 5. OpenAPI and Swagger UI
 
-KastAPI genera un documento **OpenAPI 3.1** a partir de los tipos de tus rutas y lo sirve en dos URL:
+KastAPI generates an **OpenAPI 3.1** document from the types of your routes and serves it at two URLs:
 
-| URL por defecto | Contenido |
+| Default URL | Content |
 | --- | --- |
-| `/openapi.json` | documento OpenAPI |
+| `/openapi.json` | OpenAPI document |
 | `/docs` | Swagger UI |
 
-El documento se genera una sola vez al arrancar y se sirve desde caché.
+The document is generated once at startup and served from cache.
 
-## Información de la API
+## API information
 
 ```kotlin
 kastApi {
-    info(title = "Users API", version = "1.0.0", description = "Ejemplo de KastAPI")
+    info(title = "Users API", version = "1.0.0", description = "KastAPI example")
     // ...
 }
 ```
 
-Sin `info`, el título es `KastAPI` y la versión `0.0.0`.
+Without `info`, the title is `KastAPI` and the version is `0.0.0`.
 
-## Documentar cada ruta
+## Documenting each route
 
 ```kotlin
 get<UserPath, User>(
     "/users/{id}",
-    summary = "Obtiene un usuario",
-    description = "Busca por identificador.",
+    summary = "Gets a user",
+    description = "Looks it up by identifier.",
     tags = listOf("users"),
 ) { path -> /* ... */ }
 ```
 
-Cada ruta genera una operación con `summary`, `description`, `tags` y un `operationId` como `get_users_id`.
+Each route generates an operation with `summary`, `description`, `tags` and an `operationId` such as `get_users_id`.
 
-## Qué se documenta
+## What is documented
 
-- Parámetros de path y query, con `required` según el tipo.
-- `requestBody` JSON con un `$ref` a `components/schemas`.
-- La respuesta exitosa con el `status` declarado. Con `Unit` no hay contenido.
-- La respuesta `422` en toda operación con entrada, con el esquema del error estándar.
-- Las anotaciones de validación: `@Min` → `minimum`, `@Max` → `maximum`, `@Length` → `minLength`/`maxLength` (o `minItems`/`maxItems`), `@Pattern` → `pattern`, `@Email` → `format: email`, `@NotBlank` → `minLength: 1`.
-- Tipos nullable, listas, mapas, enums y clases anidadas.
+- Path and query parameters, with `required` according to the type.
+- A JSON `requestBody` with a `$ref` to `components/schemas`.
+- The success response with the declared `status`. With `Unit` there is no content.
+- The `422` response on every operation with input, with the standard error schema.
+- Validation annotations: `@Min` → `minimum`, `@Max` → `maximum`, `@Length` → `minLength`/`maxLength` (or `minItems`/`maxItems`), `@Pattern` → `pattern`, `@Email` → `format: email`, `@NotBlank` → `minLength: 1`.
+- Nullable types, lists, maps, enums and nested classes.
 
-## Limitaciones de 0.1.0
+## Limitations in 0.1.0
 
-- Solo se documenta el `422`. No se documentan el `400`, `404`, `405`, `413` ni `500`.
-- Los tipos `sealed`, polimórficos y contextuales se documentan como un esquema abierto (`{}`).
-- Los valores por defecto no aparecen en el esquema.
+- Only the `422` is documented. The `400`, `404`, `405`, `413` and `500` are not.
+- `sealed`, polymorphic and contextual types are documented as an open schema (`{}`).
+- Default values do not appear in the schema.
 
-## Cambiar o desactivar las rutas
+## Changing or disabling the routes
 
 ```kotlin
-KastApiConfig(docsPath = "/ayuda", openApiPath = "/schema.json")
-KastApiConfig(docsPath = null)      // sin Swagger UI, el documento se sirve igual
-KastApiConfig(openApiPath = null)   // sin documento y, por tanto, sin Swagger UI
+KastApiConfig(docsPath = "/help", openApiPath = "/schema.json")
+KastApiConfig(docsPath = null)      // no Swagger UI, the document is still served
+KastApiConfig(openApiPath = null)   // no document and therefore no Swagger UI
 ```
 
-Una ruta `GET` de tu aplicación que coincida con `docsPath` u `openApiPath` es un error de configuración al arrancar.
+A `GET` route of your application that matches `docsPath` or `openApiPath` is a configuration error at startup.
 
-## Swagger UI y el CDN
+## Swagger UI and the CDN
 
-La página `/docs` carga `swagger-ui-dist` 5.34.1 desde un CDN, con la versión fija y comprobación de integridad (SRI). **Sin conexión a internet, la interfaz no se muestra**; `/openapi.json` sí se sirve y puedes abrirlo en cualquier otra herramienta.
+The `/docs` page loads `swagger-ui-dist` 5.34.1 from a CDN, with a pinned version and an integrity check (SRI). **Without an internet connection the interface is not shown**; `/openapi.json` is still served and you can open it in any other tool.
 
-## Siguiente paso
+## Next step
 
-[Integrar con Ktor y probar](06-integrar-con-ktor.md).
+[Integrating with Ktor and testing](06-ktor-integration.md).

@@ -3,12 +3,12 @@
   "info": {
     "title": "Users API",
     "version": "1.0.0",
-    "description": "Ejemplo de KastAPI"
+    "description": "KastAPI example"
   },
   "paths": {
     "/users": {
       "post": {
-        "summary": "Crea un usuario",
+        "summary": "Creates a user",
         "operationId": "post_users",
         "requestBody": {
           "required": true,
@@ -79,7 +79,7 @@
     },
     "/users/{id}": {
       "get": {
-        "summary": "Obtiene un usuario",
+        "summary": "Gets a user",
         "operationId": "get_users_id",
         "parameters": [
           {

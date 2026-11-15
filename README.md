@@ -109,12 +109,12 @@ Swagger UI is loaded from a CDN, so it needs an internet connection. The schema 
 
 The full guide is in [`docs/guide`](docs/guide):
 
-1. [Getting started](docs/guide/01-primeros-pasos.md)
-2. [Parameters: path, query and body](docs/guide/02-parametros.md)
-3. [Validation](docs/guide/03-validacion.md)
-4. [Errors](docs/guide/04-errores.md)
+1. [Getting started](docs/guide/01-getting-started.md)
+2. [Parameters: path, query and body](docs/guide/02-parameters.md)
+3. [Validation](docs/guide/03-validation.md)
+4. [Errors](docs/guide/04-errors.md)
 5. [OpenAPI and Swagger UI](docs/guide/05-openapi.md)
-6. [Integrating with Ktor and testing](docs/guide/06-integrar-con-ktor.md)
+6. [Integrating with Ktor and testing](docs/guide/06-ktor-integration.md)
 
 The project status, known limitations and what is missing for 1.0 are in [`docs/STATUS.md`](docs/STATUS.md). The API reference is in [`docs/reference.md`](docs/reference.md) and the architecture in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 

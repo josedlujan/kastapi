@@ -39,13 +39,13 @@ data class ListQuery(
 
 /** Las rutas del ejemplo de la referencia §1, tal cual. */
 fun KastApi.exampleApi() {
-    info(title = "Users API", version = "1.0.0", description = "Ejemplo de KastAPI")
+    info(title = "Users API", version = "1.0.0", description = "KastAPI example")
 
-    post<CreateUser, UserResponse>("/users", summary = "Crea un usuario", status = 201) { body ->
+    post<CreateUser, UserResponse>("/users", summary = "Creates a user", status = 201) { body ->
         UserResponse(id = 1, email = body.email, nickname = body.nickname)
     }
 
-    get<UserPath, UserResponse>("/users/{id}", summary = "Obtiene un usuario") { path ->
+    get<UserPath, UserResponse>("/users/{id}", summary = "Gets a user") { path ->
         UserResponse(id = path.id, email = "demo@kastapi.dev")
     }
 
