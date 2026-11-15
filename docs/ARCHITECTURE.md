@@ -1,34 +1,34 @@
-# Arquitectura de KastAPI
+# KastAPI architecture
 
-Este documento explica cómo está construido KastAPI 0.1 y por qué. Para el comportamiento público, consulta la [referencia](reference.md); para las decisiones de diseño, los [ADR](adr/).
+This document explains how KastAPI 0.1 is built and why. For the public behavior, see the [reference](reference.md); for design decisions, see the [ADRs](adr/).
 
 ---
 
-## 1. Idea central
+## 1. Core idea
 
-Los tipos del handler son el contrato. Una `data class` `@Serializable` de entrada y otra de salida definen, sin código extra:
+The handler's types are the contract. An input `@Serializable` `data class` and an output one define, with no extra code:
 
-- el binding (de dónde sale cada dato: path, query o body),
-- la validación (anotaciones),
-- la serialización,
-- la documentación OpenAPI 3.1.
+- the binding (where each piece of data comes from: path, query or body),
+- the validation (annotations),
+- the serialization,
+- the OpenAPI 3.1 documentation.
 
 ```kotlin
 post<CreateUser, UserResponse>("/users", status = 201) { body -> ... }
 ```
 
-Principios que guían el diseño:
+Principles that guide the design:
 
-1. **La firma es el contrato.** Los tipos de entrada y salida definen validación y documentación.
-2. **Errores tempranos.** Se prefieren los errores al arrancar sobre los errores por petición.
-3. **Hola mundo en pocas líneas**, con Swagger funcionando.
-4. **Kotlin idiomático.** Null-safety y valores por defecto expresan lo opcional; `data class` para los modelos; `suspend` para la asincronía.
-5. **Sin encierro.** Siempre se puede bajar a Ktor puro.
-6. **Errores claros**, legibles para personas y estructurados para máquinas.
+1. **The signature is the contract.** Input and output types define validation and documentation.
+2. **Early errors.** Startup errors are preferred over per-request errors.
+3. **Hello world in a few lines**, with Swagger working.
+4. **Idiomatic Kotlin.** Null-safety and default values express what is optional; `data class` for models; `suspend` for asynchrony.
+5. **No lock-in.** You can always drop down to plain Ktor.
+6. **Clear errors**, readable for people and structured for machines.
 
 ---
 
-## 2. Módulos
+## 2. Modules
 
 ```mermaid
 graph LR
@@ -39,149 +39,149 @@ graph LR
     openapi --> ann
 ```
 
-| Módulo | Responsabilidad | Paquete raíz | Visibilidad |
+| Module | Responsibility | Root package | Visibility |
 | --- | --- | --- | --- |
-| `kastapi-annotations` | Anotaciones de validación (`@Min`, `@Max`, `@Length`, `@NotBlank`, `@Email`, `@Pattern`) | `dev.kastapi.validation` | Pública |
-| `kastapi-core` | DSL, binding, validación, errores, montaje en Ktor y validación de arranque | `dev.kastapi` | Pública (DSL) e `internal` (el resto) |
-| `kastapi-openapi` | Esquemas, documento OpenAPI y HTML de Swagger UI | `dev.kastapi.openapi` | Pública solo por una limitación de Kotlin entre módulos (ver sección 9) |
-| `kastapi-test` | `kastTest` y `KastTestClient` | `dev.kastapi.test` | Pública |
-| `examples/hello` | Aplicación ejecutable del "Hola mundo" | | No publicada y excluida de `apiCheck` |
+| `kastapi-annotations` | Validation annotations (`@Min`, `@Max`, `@Length`, `@NotBlank`, `@Email`, `@Pattern`) | `dev.kastapi.validation` | Public |
+| `kastapi-core` | DSL, binding, validation, errors, mounting in Ktor and startup validation | `dev.kastapi` | Public (DSL) and `internal` (the rest) |
+| `kastapi-openapi` | Schemas, OpenAPI document and Swagger UI HTML | `dev.kastapi.openapi` | Public only because of a Kotlin limitation across modules (see section 9) |
+| `kastapi-test` | `kastTest` and `KastTestClient` | `dev.kastapi.test` | Public |
+| `examples/hello` | Runnable application of the "Hello world" | | Not published and excluded from `apiCheck` |
 
-**Por qué existe `kastapi-annotations`.** `core` necesita las anotaciones para validar y `openapi` para documentarlas, pero `openapi` no debe depender de `core`. Un módulo pequeño aparte evita el ciclo. `core` lo expone con `api(...)`, para que quien usa la librería no tenga que declararlo. A futuro podría ser multiplataforma.
+**Why `kastapi-annotations` exists.** `core` needs the annotations to validate and `openapi` to document them, but `openapi` must not depend on `core`. A small separate module avoids the cycle. `core` exposes it with `api(...)`, so whoever uses the library does not have to declare it. In the future it could be multiplatform.
 
-**Regla de dependencia.** `openapi` no conoce `core`: recibe un modelo neutral de rutas (`ApiRoute`) y devuelve el documento.
+**Dependency rule.** `openapi` does not know `core`: it receives a neutral route model (`ApiRoute`) and returns the document.
 
 ---
 
-## 3. Estructura de paquetes
+## 3. Package structure
 
 ```
 dev.kastapi
-├── KastApi.kt          DSL público: kastApi(), installKastApi(), get/post/put/patch/delete, group, info
-├── KastApiConfig.kt    configuración pública
-├── KastCall.kt         receptor del handler (call, header)
-├── HttpError.kt        excepción pública
-├── NoInput.kt          objeto @Serializable para rutas sin entrada
-├── routing/            definición de rutas y montaje en Ktor      (internal)
-├── binding/            path, query y body → JsonObject → I        (internal)
-├── validation/         motor de validación                        (internal)
-├── errors/             formato de error, StatusPages y mensajes   (internal)
-├── startup/            validaciones al arrancar                   (internal)
-└── docs/               montaje de /openapi.json y /docs           (internal)
+├── KastApi.kt          Public DSL: kastApi(), installKastApi(), get/post/put/patch/delete, group, info
+├── KastApiConfig.kt    Public configuration
+├── KastCall.kt         Handler receiver (call, header)
+├── HttpError.kt        Public exception
+├── NoInput.kt          @Serializable object for routes without input
+├── routing/            Route definition and mounting in Ktor      (internal)
+├── binding/            path, query, body → JsonObject → I         (internal)
+├── validation/         Validation engine                          (internal)
+├── errors/             Error format, StatusPages and messages     (internal)
+├── startup/            Startup validations                        (internal)
+└── docs/               Mounting of /openapi.json and /docs        (internal)
 
-dev.kastapi.validation  (kastapi-annotations) anotaciones públicas
+dev.kastapi.validation  (kastapi-annotations) public annotations
 dev.kastapi.openapi     SchemaGenerator, OpenApiGenerator, SwaggerUi
 dev.kastapi.test        kastTest, KastTestClient
 ```
 
-Todo lo público se declara `public` de forma explícita (`explicitApi()`); lo demás es `internal`.
+Everything public is declared explicitly `public` (`explicitApi()`); the rest is `internal`.
 
 ---
 
-## 4. Ciclo de vida de la aplicación
+## 4. Application lifecycle
 
 ```mermaid
 sequenceDiagram
-    participant U as Usuario
+    participant U as User
     participant K as KastApi (DSL)
     participant S as startup
     participant R as routing
     participant O as openapi
     U->>K: installKastApi { post/get/... }
-    K->>K: acumula las rutas
-    K->>S: validar rutas (si validateOnStartup)
-    S-->>K: OK o KastApiConfigurationException
-    K->>R: montar rutas en routing { }
-    K->>O: generar documento OpenAPI
-    O-->>K: documento cacheado
-    K->>R: registrar /openapi.json y /docs
+    K->>K: accumulates the routes
+    K->>S: validate routes (if validateOnStartup)
+    S-->>K: OK or KastApiConfigurationException
+    K->>R: mount routes in routing { }
+    K->>O: generate OpenAPI document
+    O-->>K: cached document
+    K->>R: register /openapi.json and /docs
 ```
 
-1. Cada llamada a `get`, `post`... guarda un borrador de ruta con el método, el path, los serializadores de entrada y salida, los metadatos, el status y el handler.
-2. Al terminar el bloque, `startup/StartupValidator` calcula el plan de cada ruta (`RoutePlan`) y reúne los problemas de configuración.
-3. Se montan las rutas en el `routing { }` de Ktor.
-4. Se genera una sola vez el documento OpenAPI y se registran `openApiPath` y `docsPath`.
+1. Each call to `get`, `post`... stores a route draft with the method, the path, the input and output serializers, the metadata, the status and the handler.
+2. When the block ends, `startup/StartupValidator` computes each route's plan (`RoutePlan`) and gathers the configuration problems.
+3. The routes are mounted in Ktor's `routing { }`.
+4. The OpenAPI document is generated once and `openApiPath` and `docsPath` are registered.
 
-`kastApi(...)` arranca Netty con `wait = true` y llama a `installKastApi`; las pruebas usan `installKastApi` dentro de `testApplication`.
+`kastApi(...)` starts Netty with `wait = true` and calls `installKastApi`; tests use `installKastApi` inside `testApplication`.
 
-### Errores de arranque
+### Startup errors
 
-Con `validateOnStartup = true` se lanza `KastApiConfigurationException` con **todos** los problemas en el mensaje:
+With `validateOnStartup = true`, `KastApiConfigurationException` is thrown with **all** the problems in the message:
 
-- `{param}` de la ruta sin propiedad en la entrada.
-- Propiedad de path nullable o con valor por defecto.
-- Tipo no soportado en path o query.
-- Método y ruta duplicados.
-- Anotación en un tipo incompatible (por ejemplo, `@Email` en un `Int`).
-- Ruta `GET` que coincide con `docsPath` u `openApiPath`.
+- A route `{param}` without a property in the input.
+- A nullable path property or one with a default value.
+- An unsupported type in path or query.
+- A duplicate method and route.
+- An annotation on an incompatible type (for example, `@Email` on an `Int`).
+- A `GET` route that matches `docsPath` or `openApiPath`.
 
-Los problemas son de dos tipos. Los **fatales** impiden construir la ruta: un tipo que no se puede enlazar desde path o query, una entrada que no es una `data class` y un regex de `@Pattern` inválido. Los de **consistencia** son el resto. Con `validateOnStartup = false` solo se reportan los fatales, porque sin ellos la ruta no podría funcionar.
+Problems are of two kinds. **Fatal** ones prevent building the route: a type that cannot be bound from path or query, an input that is not a `data class`, and an invalid `@Pattern` regex. **Consistency** problems are the rest. With `validateOnStartup = false` only the fatal ones are reported, because without them the route could not work.
 
-- Dos rutas son duplicadas si tienen el mismo método y la misma plantilla sin contar los nombres de los parámetros (`/u/{id}` y `/u/{key}` casan las mismas URLs).
-- `@Min` y `@Max` aplican a tipos numéricos; `@Length`, a `String` y `List`; `@NotBlank`, `@Email` y `@Pattern`, a `String`. Una `value class` se evalúa por el tipo que envuelve.
-- El mensaje empieza con `KastAPI found N configuration problems:` y lista un problema por línea, cada uno con `METHOD /ruta`. `KastApiConfigurationException` no expone la lista de problemas, solo el mensaje.
-- Los regex de `@Pattern` se compilan una sola vez, en esta fase.
+- Two routes are duplicates if they have the same method and the same template, ignoring parameter names (`/u/{id}` and `/u/{key}` match the same URLs).
+- `@Min` and `@Max` apply to numeric types; `@Length`, to `String` and `List`; `@NotBlank`, `@Email` and `@Pattern`, to `String`. A `value class` is evaluated by the type it wraps.
+- The message starts with `KastAPI found N configuration problems:` and lists one problem per line, each with `METHOD /path`. `KastApiConfigurationException` does not expose the list of problems, only the message.
+- `@Pattern` regexes are compiled once, in this phase.
 
 ---
 
-## 5. Flujo de una petición
+## 5. Request flow
 
 ```mermaid
 flowchart TD
-    A[Ktor recibe la petición] --> B[Ruta montada]
-    B --> C[Binding: path + query + body a JsonObject]
+    A[Ktor receives the request] --> B[Mounted route]
+    B --> C[Binding: path + query + body to JsonObject]
     C --> D{decodeFromJsonElement serializer I}
-    D -- falla --> E1[400 malformed_json / 413 / 422 required, type, unknown_field]
-    D -- ok --> F[Validación por anotaciones sobre el JsonElement]
-    F -- falla --> E2[422 validation_error con todos los errores]
+    D -- fails --> E1[400 malformed_json / 413 / 422 required, type, unknown_field]
+    D -- ok --> F[Validation by annotations on the JsonElement]
+    F -- fails --> E2[422 validation_error with all errors]
     F -- ok --> G[handler suspend KastCall.I -> O]
-    G -- HttpError --> E3[status indicado, http_error]
-    G -- otra excepción --> E4[500 internal_error, sin stack trace]
-    G -- ok --> H{O es Unit?}
-    H -- sí --> I[Respuesta sin cuerpo]
+    G -- HttpError --> E3[given status, http_error]
+    G -- other exception --> E4[500 internal_error, no stack trace]
+    G -- ok --> H{Is O Unit?}
+    H -- yes --> I[Response without a body]
     H -- no --> J[encodeToString serializer O]
 ```
 
 ### 5.1 Binding
 
-| Método | Propiedades de `{path}` | Resto de propiedades |
+| Method | `{path}` properties | Remaining properties |
 | --- | --- | --- |
 | GET, DELETE | path | query string |
-| POST, PUT, PATCH sin propiedades de path | | todo `I` es el cuerpo JSON |
-| POST, PUT, PATCH con propiedades de path | path | cuerpo JSON |
+| POST, PUT, PATCH without path properties | | all of `I` is the JSON body |
+| POST, PUT, PATCH with path properties | path | JSON body |
 
-- Los valores de path y query llegan como texto y se convierten según el tipo de la propiedad: `String`, `Int`, `Long`, `Double`, `Boolean`, `enum` (por nombre serializado) y, en query, `List<T>` de esos tipos (`?tag=a&tag=b`).
-- Opcional = con valor por defecto o nullable. Requerida = sin valor por defecto y no nullable.
-- Los objetos anidados en path o query no se soportan (error de arranque).
-- Se construye un `JsonObject` y se decodifica con `json.decodeFromJsonElement(serializer<I>(), ...)` ([ADR-0002](adr/0002-serialdescriptor-sin-reflexion.md)).
-- Antes de decodificar, `binding/BodyValidator` recorre el `SerialDescriptor` contra el JSON del cuerpo y recoge todos los errores (`required`, `type`, `unknown_field`), con el `field` en notación de puntos e índices.
-- Un cuerpo que no es JSON válido responde `400 malformed_json`; uno vacío se trata como `{}`.
-- Si una propiedad aparece como `{nombre}` en la ruta, se lee de la URL y el valor que traiga el cuerpo para ese nombre se ignora.
-- El cuerpo se lee con un límite (`maxBodyBytes`, 1 MiB por defecto). Con `Content-Length` mayor se rechaza sin leer; sin él se leen como máximo `maxBodyBytes + 1` bytes. Si se supera, responde `413 payload_too_large`.
+- Path and query values arrive as text and are converted according to the property type: `String`, `Int`, `Long`, `Double`, `Boolean`, `enum` (by serialized name) and, in query, `List<T>` of those types (`?tag=a&tag=b`).
+- Optional = with a default value or nullable. Required = without a default value and not nullable.
+- Nested objects in path or query are not supported (startup error).
+- A `JsonObject` is built and decoded with `json.decodeFromJsonElement(serializer<I>(), ...)` ([ADR-0002](adr/0002-serialdescriptor-no-reflection.md)).
+- Before decoding, `binding/BodyValidator` walks the `SerialDescriptor` against the body's JSON and collects all errors (`required`, `type`, `unknown_field`), with `field` in dot and index notation.
+- A body that is not valid JSON responds `400 malformed_json`; an empty one is treated as `{}`.
+- If a property appears as `{name}` in the route, it is read from the URL and the value the body carries for that name is ignored.
+- The body is read with a limit (`maxBodyBytes`, 1 MiB by default). With a larger `Content-Length` it is rejected without reading; without it, at most `maxBodyBytes + 1` bytes are read. If exceeded, it responds `413 payload_too_large`.
 
-### 5.2 Validación
+### 5.2 Validation
 
-- Fuente: `SerialDescriptor.getElementAnnotations(i)` más el `JsonElement` ya decodificado.
-- Se recorren las propiedades anidadas y los elementos de las listas de objetos.
-- Los `null` en propiedades opcionales no se validan.
-- Se recolectan **todos** los errores, no solo el primero.
+- Source: `SerialDescriptor.getElementAnnotations(i)` plus the already decoded `JsonElement`.
+- Nested properties and elements of lists of objects are walked.
+- `null` in optional properties is not validated.
+- **All** errors are collected, not just the first one.
 
-| Anotación | Tipos | Regla | `code` |
+| Annotation | Types | Rule | `code` |
 | --- | --- | --- | --- |
-| `@Min(Long)` | numéricos | `>= value` | `min` |
-| `@Max(Long)` | numéricos | `<= value` | `max` |
-| `@Length(min, max)` | `String`, `List` | longitud en rango | `length` |
-| `@NotBlank` | `String` | no vacío ni solo espacios | `not_blank` |
-| `@Email` | `String` | `algo@dominio.ext`, sin espacios | `email` |
-| `@Pattern(regex)` | `String` | coincidencia completa | `pattern` |
+| `@Min(Long)` | numeric | `>= value` | `min` |
+| `@Max(Long)` | numeric | `<= value` | `max` |
+| `@Length(min, max)` | `String`, `List` | length in range | `length` |
+| `@NotBlank` | `String` | not empty and not only whitespace | `not_blank` |
+| `@Email` | `String` | `something@domain.ext`, no spaces | `email` |
+| `@Pattern(regex)` | `String` | full match | `pattern` |
 
-Al registrar una ruta, `validation/RuleSet` recorre el `SerialDescriptor` de la entrada (incluidas las clases anidadas, listas y mapas) y convierte las anotaciones de cada propiedad en reglas (`validation/Rule`), compilando los regex una sola vez. En cada petición las reglas se aplican en body, path y query, y el `location` del error es el del origen de la propiedad. Solo se evalúan valores que pasaron la validación estructural.
+When a route is registered, `validation/RuleSet` walks the input's `SerialDescriptor` (including nested classes, lists and maps) and turns each property's annotations into rules (`validation/Rule`), compiling the regexes only once. On each request the rules are applied to body, path and query, and the error's `location` is the property's origin. Only values that passed structural validation are evaluated.
 
-`@Min` y `@Max` comparan enteros de forma exacta y decimales contra el valor convertido a `Double`. `@Email` se evalúa en una sola pasada, sin regex, para evitar un coste cuadrático ante entradas hostiles. `@Pattern` usa el regex que escribe el desarrollador: un patrón con backtracking catastrófico sigue siendo su responsabilidad.
+`@Min` and `@Max` compare integers exactly and decimals against the value converted to `Double`. `@Email` is evaluated in a single pass, without a regex, to avoid quadratic cost on hostile inputs. `@Pattern` uses the regex the developer writes: a pattern with catastrophic backtracking remains their responsibility.
 
-### 5.3 Respuesta y errores
+### 5.3 Response and errors
 
-Formato único (`application/json`):
+Single format (`application/json`):
 
 ```json
 {
@@ -194,112 +194,112 @@ Formato único (`application/json`):
 }
 ```
 
-| Caso | Status | `error` |
+| Case | Status | `error` |
 | --- | --- | --- |
-| JSON mal formado | 400 | `malformed_json` |
-| Falta un campo, tipo incorrecto, campo desconocido o anotación fallida | 422 | `validation_error` |
-| Cuerpo mayor que `maxBodyBytes` | 413 | `payload_too_large` |
-| Ruta inexistente | 404 | `not_found` |
-| Método no permitido en una ruta que existe | 405 | `method_not_allowed` |
-| `throw HttpError(status, msg)` | el indicado | `http_error` |
-| Excepción no controlada | 500 | `internal_error` |
+| Malformed JSON | 400 | `malformed_json` |
+| Missing field, wrong type, unknown field or failed annotation | 422 | `validation_error` |
+| Body larger than `maxBodyBytes` | 413 | `payload_too_large` |
+| Unknown route | 404 | `not_found` |
+| Method not allowed on an existing route | 405 | `method_not_allowed` |
+| `throw HttpError(status, msg)` | the given one | `http_error` |
+| Unhandled exception | 500 | `internal_error` |
 
-- `location` es `path`, `query` o `body`. `field` usa puntos e índices: `items[2].name`.
-- El 500 nunca incluye el stack trace en el cuerpo; se registra con el logger de la aplicación, con el método, la ruta y la excepción. Un `HttpError` no se registra como error del servidor.
-- El 404, el 405, `HttpError` y el 500 los resuelve `StatusPages`, que instala `installKastApi` (`errors/ErrorPages.kt`). Los 400, 413 y 422 de binding y validación se responden dentro de la propia ruta.
-- Si la aplicación ya instaló su `StatusPages`, KastAPI no instala el suyo y respeta sus manejadores. El `StatusPages` propio debe instalarse **antes** de `installKastApi`.
-- `kastapi-core` no trae una implementación de logging (SLF4J): la aplicación debe aportar una, por ejemplo Logback, para ver el registro del 500.
-- Todos los textos (en inglés en 0.1) viven en un solo archivo: `errors/Messages.kt`.
+- `location` is `path`, `query` or `body`. `field` uses dots and indexes: `items[2].name`.
+- The 500 never includes the stack trace in the body; it is logged with the application's logger, with the method, the path and the exception. An `HttpError` is not logged as a server error.
+- The 404, the 405, `HttpError` and the 500 are resolved by `StatusPages`, which `installKastApi` installs (`errors/ErrorPages.kt`). The 400, 413 and 422 from binding and validation are answered inside the route itself.
+- If the application already installed its own `StatusPages`, KastAPI does not install its own and respects its handlers. The application's `StatusPages` must be installed **before** `installKastApi`.
+- `kastapi-core` does not ship a logging implementation (SLF4J): the application must provide one, for example Logback, to see the 500 log entry.
+- All texts (English in 0.1) live in a single file: `errors/Messages.kt`.
 
 ---
 
-## 6. Generación de OpenAPI
+## 6. OpenAPI generation
 
 ```mermaid
 flowchart LR
-    R[Rutas registradas en core] -->|ApiRoute neutral| G[OpenApiGenerator]
+    R[Routes registered in core] -->|neutral ApiRoute| G[OpenApiGenerator]
     D[SerialDescriptor] --> S[SchemaGenerator]
     S --> G
-    G --> J[Documento OpenAPI 3.1 cacheado]
+    G --> J[Cached OpenAPI 3.1 document]
     J --> E1[GET openApiPath]
-    J -.referenciado por.-> E2[GET docsPath: HTML de Swagger UI]
+    J -.referenced by.-> E2[GET docsPath: Swagger UI HTML]
 ```
 
-### 6.1 Esquemas
+### 6.1 Schemas
 
-`SchemaGenerator` (`kastapi-openapi`, `internal`) acumula los componentes de un documento.
+`SchemaGenerator` (`kastapi-openapi`, `internal`) accumulates the components of a document.
 
-- `schemaOf(descriptor)` devuelve el esquema de un tipo: en línea para primitivos, listas, mapas y enums, y una referencia `$ref` para las clases, cuya definición queda en `components`.
-- El nombre de una clase se reserva **antes** de generar sus propiedades, lo que corta los ciclos de los tipos recursivos. Dos clases son la misma si tienen igual nombre y propiedades con los mismos tipos, así que `Box<Int>` y `Box<String>` son componentes distintos.
-- Nombres: el simple (`User`); si ya existe, el completo (`dev.app.User`); si también existe, el completo con sufijo (`_2`).
-- Primitivos con `format` (`int32`, `int64`, `float`, `double`); `Char` como cadena de longitud 1. Nullable: `type: [X, "null"]`, y `oneOf: [{$ref}, {type: "null"}]` para una clase. `required` son las propiedades sin valor por defecto y no nullable.
-- Las anotaciones se reflejan así: `@Min`→`minimum`, `@Max`→`maximum`, `@Length`→`minLength`/`maxLength` o `minItems`/`maxItems`, `@Pattern`→`pattern`, `@Email`→`format: email` y `@NotBlank`→`minLength: 1`. Las que no corresponden al tipo se ignoran (el arranque ya las rechaza).
-- Limitaciones: los tipos `sealed`, polimórficos y contextuales generan `{}`; los valores por defecto no se documentan, porque los descriptores no los exponen ([ADR-0002](adr/0002-serialdescriptor-sin-reflexion.md)).
+- `schemaOf(descriptor)` returns a type's schema: inline for primitives, lists, maps and enums, and a `$ref` reference for classes, whose definition goes in `components`.
+- A class's name is reserved **before** generating its properties, which breaks the cycles of recursive types. Two classes are the same if they have the same name and properties with the same types, so `Box<Int>` and `Box<String>` are distinct components.
+- Names: the simple one (`User`); if it already exists, the full one (`dev.app.User`); if that also exists, the full one with a suffix (`_2`).
+- Primitives with `format` (`int32`, `int64`, `float`, `double`); `Char` as a string of length 1. Nullable: `type: [X, "null"]`, and `oneOf: [{$ref}, {type: "null"}]` for a class. `required` are the properties without a default value and not nullable.
+- Annotations are reflected as follows: `@Min`→`minimum`, `@Max`→`maximum`, `@Length`→`minLength`/`maxLength` or `minItems`/`maxItems`, `@Pattern`→`pattern`, `@Email`→`format: email` and `@NotBlank`→`minLength: 1`. Those that do not apply to the type are ignored (startup already rejects them).
+- Limitations: `sealed`, polymorphic and contextual types generate `{}`; default values are not documented, because descriptors do not expose them ([ADR-0002](adr/0002-serialdescriptor-no-reflection.md)).
 
-### 6.2 Documento
+### 6.2 Document
 
-- Al terminar `installKastApi`, `core` traduce cada ruta a un `ApiRoute` neutral (`docs/Documentation.kt`): método, ruta, metadatos, parámetros clasificados como `path` o `query` (con su `required`), cuerpo, salida y si la ruta tiene entrada. `openapi` recibe también el descriptor del error estándar para la respuesta 422.
-- `OpenApiGenerator.generate` construye el documento como `JsonObject` (`openapi: 3.1.0`, `info`, `paths`, `components.schemas`). Se genera **una sola vez** al arrancar y se sirve desde memoria.
-- Una operación lleva `tags`, `summary`, `description`, `operationId` (`get_users_id`; la raíz es `get_root` y un duplicado recibe `_2`), `parameters`, `requestBody` y `responses`. Los parámetros no admiten `null`: un valor ausente ya equivale a `null`.
-- Si la entrada mezcla propiedades de path y de cuerpo, el `requestBody` apunta a un componente derivado `<Nombre>Body` sin las propiedades de path. El cuerpo es `required` solo si tiene alguna propiedad sin valor por defecto y no nullable.
-- La respuesta exitosa usa el status declarado y la frase estándar como `description`; una salida `Unit` no lleva `content`. Toda operación con entrada añade la respuesta `422` con `ErrorResponse` (y `ErrorDetail` como componente).
-- `docsPath` sirve el HTML de `swaggerUiHtml`: `swagger-ui-dist` 5.34.1 desde jsDelivr, con versión fija y hashes SRI, y con la ruta del esquema escapada para el `<script>`. No es una dependencia de Gradle.
-- `openApiPath = null` desactiva el esquema y también `/docs`; `docsPath = null` desactiva solo la interfaz. Las rutas de documentación no aparecen en el documento.
-
----
-
-## 7. Integración con Ktor
-
-KastAPI es una capa sobre Ktor ([ADR-0001](adr/0001-construir-sobre-ktor.md)): usa Netty por defecto, routing, content negotiation y status pages.
-
-- `Application.installKastApi` permite integrarse en una aplicación existente.
-- `KastCall.call` da acceso al `ApplicationCall` (la salida hacia Ktor puro).
-- `installKastApi` instala `StatusPages` solo si la aplicación no lo tiene ya (ver la sección 5.3).
-- Otros plugins (CORS, autenticación, métricas) se instalan directamente en Ktor.
+- When `installKastApi` finishes, `core` translates each route into a neutral `ApiRoute` (`docs/Documentation.kt`): method, route, metadata, parameters classified as `path` or `query` (with their `required`), body, output and whether the route has input. `openapi` also receives the standard error's descriptor for the 422 response.
+- `OpenApiGenerator.generate` builds the document as a `JsonObject` (`openapi: 3.1.0`, `info`, `paths`, `components.schemas`). It is generated **once** at startup and served from memory.
+- An operation carries `tags`, `summary`, `description`, `operationId` (`get_users_id`; the root is `get_root` and a duplicate gets `_2`), `parameters`, `requestBody` and `responses`. Parameters do not admit `null`: an absent value already equals `null`.
+- If the input mixes path and body properties, the `requestBody` points to a derived component `<Name>Body` without the path properties. The body is `required` only if it has some property without a default value and not nullable.
+- The success response uses the declared status and the standard phrase as `description`; a `Unit` output has no `content`. Every operation with input adds the `422` response with `ErrorResponse` (and `ErrorDetail` as a component).
+- `docsPath` serves the HTML from `swaggerUiHtml`: `swagger-ui-dist` 5.34.1 from jsDelivr, with a pinned version and SRI hashes, and with the schema path escaped for the `<script>`. It is not a Gradle dependency.
+- `openApiPath = null` disables the schema and `/docs` too; `docsPath = null` disables only the interface. The documentation routes do not appear in the document.
 
 ---
 
-## 8. Decisiones de diseño
+## 7. Ktor integration
 
-| ADR | Decisión | Razón | Costo aceptado |
+KastAPI is a layer on top of Ktor ([ADR-0001](adr/0001-build-on-ktor.md)): it uses Netty by default, routing, content negotiation and status pages.
+
+- `Application.installKastApi` allows integrating into an existing application.
+- `KastCall.call` gives access to the `ApplicationCall` (the way out to plain Ktor).
+- `installKastApi` installs `StatusPages` only if the application does not have it already (see section 5.3).
+- Other plugins (CORS, authentication, metrics) are installed directly in Ktor.
+
+---
+
+## 8. Design decisions
+
+| ADR | Decision | Reason | Accepted cost |
 | --- | --- | --- | --- |
-| [0001](adr/0001-construir-sobre-ktor.md) | Construir sobre Ktor | No reinventar servidor, engines, TLS ni testing | Depende de la evolución de la API de Ktor |
-| [0002](adr/0002-serialdescriptor-sin-reflexion.md) | `SerialDescriptor` en lugar de `kotlin-reflect` | Sin reflexión: arranque rápido y compatible con R8 y GraalVM | Los modelos deben ser `@Serializable`; sin valores por defecto en OpenAPI |
-| [0003](adr/0003-dsl-reified-antes-que-ksp.md) | DSL con tipos `reified` en 0.1, KSP en 0.3 | Sin generación de código; iteración rápida | Una `data class` por endpoint con entrada |
-| [0004](adr/0004-modulo-anotaciones.md) | Módulo `kastapi-annotations` | Grafo de módulos sin ciclos | Un módulo extra pequeño |
+| [0001](adr/0001-build-on-ktor.md) | Build on Ktor | Do not reinvent the server, engines, TLS or testing | Depends on the evolution of Ktor's API |
+| [0002](adr/0002-serialdescriptor-no-reflection.md) | `SerialDescriptor` instead of `kotlin-reflect` | No reflection: fast startup and compatible with R8 and GraalVM | Models must be `@Serializable`; no default values in OpenAPI |
+| [0003](adr/0003-reified-dsl-before-ksp.md) | DSL with `reified` types in 0.1, KSP in 0.3 | No code generation; fast iteration | One `data class` per endpoint with input |
+| [0004](adr/0004-annotations-module.md) | `kastapi-annotations` module | Module graph without cycles | One extra small module |
 
 ---
 
-## 9. Visibilidad entre módulos
+## 9. Visibility across modules
 
-En Kotlin lo `internal` no se ve entre módulos de Gradle, y `kastapi-core` necesita llamar a `kastapi-openapi`. Por eso las clases que `core` usa de `openapi` (`ApiRoute`, `OpenApiGenerator`, `swaggerUiHtml`, etc.) son públicas pero llevan el marcador `@InternalKastApi`, un `@RequiresOptIn` de nivel `ERROR`. `core` y `openapi` se acogen al opt-in con un argumento del compilador, y `apiValidation.nonPublicMarkers` las excluye del `.api`. Así no forman parte de la API estable.
+In Kotlin, `internal` is not visible across Gradle modules, and `kastapi-core` needs to call `kastapi-openapi`. That is why the classes `core` uses from `openapi` (`ApiRoute`, `OpenApiGenerator`, `swaggerUiHtml`, etc.) are public but carry the `@InternalKastApi` marker, a `@RequiresOptIn` of level `ERROR`. `core` and `openapi` opt in with a compiler argument, and `apiValidation.nonPublicMarkers` excludes them from the `.api`. That way they are not part of the stable API.
 
 ---
 
-## 10. Calidad y estabilidad
+## 10. Quality and stability
 
-- Kotlin idiomático, ktlint y JVM 21 (`jvmToolchain(21)`).
-- `explicitApi()` y warnings como errores en los módulos de librería.
-- `binary-compatibility-validator`: `apiCheck` se ejecuta en CI y excluye `examples`. No cubre las funciones `inline reified` del DSL (`get`, `post`, `bodyAs`...), que cubre la compilación del ejemplo y de las pruebas.
-- Los handlers son siempre `suspend`.
-- Sin `kotlin-reflect` en el camino de cada petición.
-- `kastTest` crea un `testApplication`, instala KastAPI con `installKastApi` y un cliente con ContentNegotiation JSON que usa el mismo `Json` de `KastApiConfig`. El constructor de `KastTestClient` es `internal`.
-- `examples/hello` reproduce el "Hola mundo" de la [referencia](reference.md) literalmente (paquete por defecto, sin ktlint) y una prueba lo compara con ella.
-- Publicación: `maven-publish` con POM y JAR de fuentes en los cuatro módulos de librería, configurado en el `build.gradle.kts` raíz. Por ahora solo se publica en el repositorio Maven local (`publishToMavenLocal`).
+- Idiomatic Kotlin, ktlint and JVM 21 (`jvmToolchain(21)`).
+- `explicitApi()` and warnings as errors in the library modules.
+- `binary-compatibility-validator`: `apiCheck` runs in CI and excludes `examples`. It does not cover the DSL's `inline reified` functions (`get`, `post`, `bodyAs`...), which are covered by compiling the example and the tests.
+- Handlers are always `suspend`.
+- No `kotlin-reflect` on the per-request path.
+- `kastTest` creates a `testApplication`, installs KastAPI with `installKastApi` and a client with JSON ContentNegotiation that uses the same `Json` from `KastApiConfig`. `KastTestClient`'s constructor is `internal`.
+- `examples/hello` reproduces the "Hello world" of the [reference](reference.md) verbatim (default package, no ktlint) and a test compares it with it.
+- Publishing: `maven-publish` with a POM and a sources JAR in the four library modules, configured in the root `build.gradle.kts`. For now it is only published to the local Maven repository (`publishToMavenLocal`).
 
-### Dependencias externas
+### External dependencies
 
-| Módulo | Dependencias |
+| Module | Dependencies |
 | --- | --- |
 | core | ktor-server-core, ktor-server-netty, ktor-server-content-negotiation, ktor-server-status-pages, ktor-serialization-kotlinx-json, kotlinx-serialization-json |
-| openapi y annotations | kotlinx-serialization-json |
+| openapi and annotations | kotlinx-serialization-json |
 | test | kastapi-core, ktor-server-test-host, ktor-client-content-negotiation |
-| pruebas | kotlin-test, ktor-server-test-host |
+| tests | kotlin-test, ktor-server-test-host |
 
-Las versiones se fijan en `gradle/libs.versions.toml` y son siempre estables.
+Versions are pinned in `gradle/libs.versions.toml` and are always stable.
 
 ---
 
-## 11. Fuera de alcance de 0.1
+## 11. Out of scope for 0.1
 
-Inyección de dependencias, autenticación, headers y cookies tipados, formularios y archivos, WebSockets, KSP, cliente generado, versionado de API y CORS propio. Las fases siguientes están en el [roadmap](ROADMAP.md) y el estado actual, en [STATUS.md](STATUS.md).
+Dependency injection, authentication, typed headers and cookies, forms and files, WebSockets, KSP, a generated client, API versioning and CORS of its own. The following phases are in the [roadmap](ROADMAP.md) and the current status is in [STATUS.md](STATUS.md).
