@@ -107,14 +107,14 @@ Swagger UI se carga desde un CDN, así que necesita conexión a internet. El esq
 
 ## Documentación
 
-Guía completa en [`docs/guide`](docs/guide):
+Guía completa en [`docs/guide`](docs/guide) (en inglés):
 
-1. [Primeros pasos](docs/guide/01-primeros-pasos.md)
-2. [Parámetros: path, query y body](docs/guide/02-parametros.md)
-3. [Validación](docs/guide/03-validacion.md)
-4. [Errores](docs/guide/04-errores.md)
+1. [Primeros pasos](docs/guide/01-getting-started.md)
+2. [Parámetros: path, query y body](docs/guide/02-parameters.md)
+3. [Validación](docs/guide/03-validation.md)
+4. [Errores](docs/guide/04-errors.md)
 5. [OpenAPI y Swagger UI](docs/guide/05-openapi.md)
-6. [Integrar con Ktor y probar](docs/guide/06-integrar-con-ktor.md)
+6. [Integrar con Ktor y probar](docs/guide/06-ktor-integration.md)
 
 El estado del proyecto, las limitaciones conocidas y lo que falta para 1.0 están en [`docs/STATUS.md`](docs/STATUS.md). La referencia de la API está en [`docs/reference.md`](docs/reference.md) y la arquitectura en [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
