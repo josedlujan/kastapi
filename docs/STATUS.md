@@ -35,7 +35,7 @@ Ordered from most to least important.
 | Error messages are in English only | No internationalization | Planned for 0.2 |
 | The maximum depth of the body's JSON has not been verified | Possible stack consumption with extreme nesting | Test with deeply nested inputs and, if needed, a limit |
 | Classes shared between modules are public with `@InternalKastApi` | They are public in the bytecode, although they are not part of the stable API (`apiCheck` excludes them) | Review before 1.0 |
-| Part of the documentation, code comments and test names may still be in Spanish | Mixed languages while the translation is completed | Translation contributions are welcome |
+| The project was first written in Spanish and then translated to English | Some text may still be untranslated or read awkwardly | Translation reports and fixes are welcome (there is an issue template for it) |
 
 ## What is missing
 
