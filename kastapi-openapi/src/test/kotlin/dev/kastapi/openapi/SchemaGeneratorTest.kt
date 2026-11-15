@@ -16,8 +16,8 @@ import kotlin.test.fail
 private val prettyJson = Json { prettyPrint = true }
 
 /**
- * Genera los esquemas de [roots] con un solo generador y los compara, como estructura JSON, con el snapshot
- * `src/test/resources/schemas/[name].json`. Si el snapshot no existe la prueba falla e imprime lo obtenido.
+ * Generates the schemas of [roots] with a single generator and compares them, as a JSON structure, with the snapshot
+ * `src/test/resources/schemas/[name].json`. If the snapshot does not exist the test fails and prints what was obtained.
  */
 private fun assertSnapshot(
     name: String,
@@ -33,40 +33,40 @@ private fun assertSnapshot(
     val pretty = prettyJson.encodeToString(JsonObject.serializer(), actual)
 
     val resource = SchemaGeneratorTest::class.java.getResource("/schemas/$name.json")
-    if (resource == null) fail("Falta el snapshot schemas/$name.json. Esto es lo que se obtuvo:\n$pretty")
+    if (resource == null) fail("Missing snapshot schemas/$name.json. This is what was obtained:\n$pretty")
 
     val expected = Json.parseToJsonElement(resource.readText())
-    assertEquals(expected, actual, "El esquema no coincide con el snapshot schemas/$name.json. Obtenido:\n$pretty")
+    assertEquals(expected, actual, "The schema does not match the snapshot schemas/$name.json. Got:\n$pretty")
 }
 
 class SchemaGeneratorTest {
     @Test
-    fun `genera el esquema de todos los tipos primitivos`() =
+    fun `generates the schema of all primitive types`() =
         assertSnapshot("primitives", AllPrimitives.serializer().descriptor)
 
     @Test
-    fun `genera nullable y opcional y solo exige lo que no tiene default ni es nullable`() =
+    fun `generates nullable and optional and only requires what has no default and is not nullable`() =
         assertSnapshot("nullables", Nullables.serializer().descriptor)
 
     @Test
-    fun `genera listas conjuntos listas de listas y mapas`() =
+    fun `generates lists and sets and lists of lists and maps`() =
         assertSnapshot("collections", Collected.serializer().descriptor)
 
     @Test
-    fun `genera enums con los nombres serializados`() = assertSnapshot("enums", EnumHolder.serializer().descriptor)
+    fun `generates enums with the serialized names`() = assertSnapshot("enums", EnumHolder.serializer().descriptor)
 
     @Test
-    fun `refleja las anotaciones de validacion`() = assertSnapshot("annotations", Annotated.serializer().descriptor)
+    fun `reflects the validation annotations`() = assertSnapshot("annotations", Annotated.serializer().descriptor)
 
     @Test
-    fun `las clases anidadas son referencias a componentes`() = assertSnapshot("nested", Person.serializer().descriptor)
+    fun `nested classes are references to components`() = assertSnapshot("nested", Person.serializer().descriptor)
 
     @Test
-    fun `dos clases con el mismo nombre simple se distinguen usando el nombre completo`() =
+    fun `two classes with the same simple name are told apart using the full name`() =
         assertSnapshot("collision", Catalog.serializer().descriptor)
 
     @Test
-    fun `los tipos recursivos no entran en bucle`() =
+    fun `recursive types do not loop`() =
         assertSnapshot(
             "recursive",
             Node.serializer().descriptor,
@@ -75,7 +75,7 @@ class SchemaGeneratorTest {
         )
 
     @Test
-    fun `el esquema raiz es en linea para primitivos listas mapas y enums`() =
+    fun `the root schema is inline for primitives and lists and maps and enums`() =
         assertSnapshot(
             "roots",
             String.serializer().descriptor,
@@ -85,19 +85,18 @@ class SchemaGeneratorTest {
         )
 
     @Test
-    fun `los genericos con distintos argumentos generan componentes distintos`() =
+    fun `generics with different arguments generate different components`() =
         assertSnapshot("generics", Boxes.serializer().descriptor)
 
     @Test
-    fun `una value class se documenta como el tipo que envuelve`() =
-        assertSnapshot("inline", Account.serializer().descriptor)
+    fun `a value class is documented as the type it wraps`() = assertSnapshot("inline", Account.serializer().descriptor)
 
     @Test
-    fun `los tipos que no se pueden describir generan un esquema abierto`() =
+    fun `types that cannot be described generate an open schema`() =
         assertSnapshot("unsupported", Drawing.serializer().descriptor)
 
     @Test
-    fun `una clase usada varias veces genera un solo componente`() {
+    fun `a class used several times generates a single component`() {
         val generator = SchemaGenerator()
 
         val person = generator.schemaOf(Person.serializer().descriptor)

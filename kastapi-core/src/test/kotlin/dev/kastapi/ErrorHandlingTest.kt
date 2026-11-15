@@ -32,7 +32,7 @@ private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.c
 
 private suspend fun HttpResponse.errorBody(): JsonObject = Json.parseToJsonElement(bodyAsText()).jsonObject
 
-/** Logger de SLF4J que solo recuerda las llamadas a `error(mensaje, excepción)`. */
+/** SLF4J logger that only remembers the calls to `error(message, exception)`. */
 private class CapturedLogs {
     val messages = mutableListOf<String>()
     val causes = mutableListOf<Throwable>()
@@ -49,7 +49,7 @@ private class CapturedLogs {
 
 class ErrorHandlingTest {
     @Test
-    fun `una ruta inexistente responde 404 con el formato estandar`() =
+    fun `an unknown route responds 404 with the standard format`() =
         testApplication {
             application { installKastApi { get<NoInput, Health>("/health") { Health("ok") } } }
 
@@ -65,11 +65,11 @@ class ErrorHandlingTest {
         }
 
     @Test
-    fun `HttpError responde con su status y el error http_error`() =
+    fun `HttpError responds with its status and the http_error error`() =
         testApplication {
             application {
                 installKastApi {
-                    get<NoInput, Health>("/users") { throw HttpError(409, "ya existe") }
+                    get<NoInput, Health>("/users") { throw HttpError(409, "already exists") }
                 }
             }
 
@@ -77,17 +77,17 @@ class ErrorHandlingTest {
 
             assertEquals(HttpStatusCode.Conflict, response.status)
             assertEquals(
-                """{"status":409,"error":"http_error","message":"ya existe","details":[]}""",
+                """{"status":409,"error":"http_error","message":"already exists","details":[]}""",
                 response.bodyAsText(),
             )
         }
 
     @Test
-    fun `HttpError con status 404 sigue siendo http_error y no not_found`() =
+    fun `HttpError with status 404 is still http_error and not not_found`() =
         testApplication {
             application {
                 installKastApi {
-                    get<NoInput, Health>("/users") { throw HttpError(404, "el usuario no existe") }
+                    get<NoInput, Health>("/users") { throw HttpError(404, "the user does not exist") }
                 }
             }
 
@@ -96,11 +96,11 @@ class ErrorHandlingTest {
 
             assertEquals(HttpStatusCode.NotFound, response.status)
             assertEquals("http_error", body.text("error"))
-            assertEquals("el usuario no existe", body.text("message"))
+            assertEquals("the user does not exist", body.text("message"))
         }
 
     @Test
-    fun `una excepcion generica responde 500 sin detalles internos`() =
+    fun `a generic exception responds 500 without internal details`() =
         testApplication {
             application {
                 installKastApi {
@@ -115,13 +115,13 @@ class ErrorHandlingTest {
             assertEquals(HttpStatusCode.InternalServerError, response.status)
             assertEquals("internal_error", body.text("error"))
             assertEquals("Internal server error", body.text("message"))
-            assertFalse(raw.contains("secreto-interno"), "el cuerpo no debe revelar el mensaje de la excepción")
-            assertFalse(raw.contains("IllegalStateException"), "el cuerpo no debe revelar el tipo de la excepción")
-            assertFalse(raw.contains("kastapi"), "el cuerpo no debe revelar paquetes ni stack trace")
+            assertFalse(raw.contains("secreto-interno"), "the body must not reveal the exception message")
+            assertFalse(raw.contains("IllegalStateException"), "the body must not reveal the exception type")
+            assertFalse(raw.contains("kastapi"), "the body must not reveal packages or a stack trace")
         }
 
     @Test
-    fun `una excepcion generica se registra en el log con su causa`() {
+    fun `a generic exception is logged with its cause`() {
         val logs = CapturedLogs()
         testApplication {
             environment { log = logs.logger }
@@ -136,17 +136,17 @@ class ErrorHandlingTest {
 
         assertEquals(1, logs.causes.size)
         assertEquals("secreto-interno", logs.causes.single().message)
-        assertTrue(logs.messages.single().contains("GET /boom"), "el log debe indicar método y ruta")
+        assertTrue(logs.messages.single().contains("GET /boom"), "the log must indicate method and path")
     }
 
     @Test
-    fun `un HttpError no se registra como error del servidor`() {
+    fun `an HttpError is not logged as a server error`() {
         val logs = CapturedLogs()
         testApplication {
             environment { log = logs.logger }
             application {
                 installKastApi {
-                    get<NoInput, Health>("/users") { throw HttpError(409, "ya existe") }
+                    get<NoInput, Health>("/users") { throw HttpError(409, "already exists") }
                 }
             }
 
@@ -158,7 +158,7 @@ class ErrorHandlingTest {
     }
 
     @Test
-    fun `una aplicacion con su propio StatusPages conserva sus manejadores`() =
+    fun `an application with its own StatusPages keeps its handlers`() =
         testApplication {
             application {
                 install(StatusPages) {
@@ -178,7 +178,7 @@ class ErrorHandlingTest {
         }
 
     @Test
-    fun `un metodo no permitido sobre una ruta existente responde 405 con el formato estandar`() =
+    fun `a method not allowed on an existing route responds 405 with the standard format`() =
         testApplication {
             application { installKastApi { get<NoInput, Health>("/health") { Health("ok") } } }
 
@@ -194,32 +194,32 @@ class ErrorHandlingTest {
         }
 
     @Test
-    fun `HttpError rechaza un status fuera del rango 400 a 599`() {
-        assertFailsWith<IllegalArgumentException> { HttpError(200, "no es un error") }
-        assertFailsWith<IllegalArgumentException> { HttpError(399, "no es un error") }
+    fun `HttpError rejects a status outside the 400 to 599 range`() {
+        assertFailsWith<IllegalArgumentException> { HttpError(200, "is not an error") }
+        assertFailsWith<IllegalArgumentException> { HttpError(399, "is not an error") }
         assertFailsWith<IllegalArgumentException> { HttpError(600, "no existe") }
         assertEquals(400, HttpError(400, "limite inferior").status)
         assertEquals(599, HttpError(599, "limite superior").status)
-        assertEquals("ya existe", HttpError(409, "ya existe").message)
+        assertEquals("already exists", HttpError(409, "already exists").message)
     }
 
     @Test
-    fun `los textos de error estan centralizados en Messages`() {
+    fun `error texts are centralized in Messages`() {
         val sources = mainSources().filterNot { it.invariantSeparatorsPath.endsWith("errors/Messages.kt") }
         val constants = messageConstants()
         val accented = Regex("\"[^\"\\n]*[áéíóúñÁÉÍÓÚÑ¿¡][^\"\\n]*\"")
 
-        assertTrue(sources.isNotEmpty(), "no se encontraron fuentes de main")
-        assertTrue(constants.isNotEmpty(), "no se encontraron constantes en Messages")
+        assertTrue(sources.isNotEmpty(), "no main sources were found")
+        assertTrue(constants.isNotEmpty(), "no constants were found in Messages")
         for (file in sources) {
             val code = codeLines(file)
             for (text in constants) {
-                assertFalse(code.contains("\"$text\""), "${file.name} repite el texto de Messages: $text")
+                assertFalse(code.contains("\"$text\""), "${file.name} repeats a Messages text: $text")
             }
             assertContentEquals(
                 emptyList<String>(),
                 accented.findAll(code).map { it.value }.toList(),
-                "${file.name} tiene textos con acentos fuera de Messages",
+                "${file.name} has accented texts outside Messages",
             )
         }
     }
@@ -227,7 +227,7 @@ class ErrorHandlingTest {
     private fun mainSources(): List<File> =
         File("src/main/kotlin").walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
 
-    /** Código de [file] sin líneas de comentario ni KDoc. */
+    /** Code of [file] without comment or KDoc lines. */
     private fun codeLines(file: File): String =
         file
             .readLines()

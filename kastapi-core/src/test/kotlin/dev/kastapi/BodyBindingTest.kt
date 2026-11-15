@@ -105,7 +105,7 @@ private suspend fun HttpClient.putJson(
 
 class BodyBindingTest {
     @Test
-    fun `post decodifica el JSON del cuerpo`() =
+    fun `post decodes the JSON body`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -118,7 +118,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `put toma el id de la URL y el name del cuerpo`() =
+    fun `put takes the id from the URL and the name from the body`() =
         testApplication {
             application {
                 installKastApi { put<UpdateUser, UpdateUser>("/users/{id}") { it } }
@@ -131,7 +131,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `el path gana si el cuerpo trae la misma propiedad`() =
+    fun `the path wins if the body carries the same property`() =
         testApplication {
             application {
                 installKastApi { put<UpdateUser, UpdateUser>("/users/{id}") { it } }
@@ -144,7 +144,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `JSON mal formado responde 400 con malformed_json`() =
+    fun `malformed JSON responds 400 with malformed_json`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -159,7 +159,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `campo requerido ausente responde 422 con code required y su field`() =
+    fun `a missing required field responds 422 with code required and its field`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -176,7 +176,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `campo desconocido responde 422 con code unknown_field`() =
+    fun `an unknown field responds 422 with code unknown_field`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -191,7 +191,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `un campo ausente dentro de un objeto anidado reporta address punto zip`() =
+    fun `a missing field inside a nested object reports address dot zip`() =
         testApplication {
             application {
                 installKastApi { post<Person, Person>("/people") { it } }
@@ -207,7 +207,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `un tipo incorrecto dentro de un objeto anidado reporta address punto zip`() =
+    fun `a wrong type inside a nested object reports address dot zip`() =
         testApplication {
             application {
                 installKastApi { post<Person, Person>("/people") { it } }
@@ -222,7 +222,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `tipo incorrecto responde 422 con code type y el valor recibido`() =
+    fun `a wrong type responds 422 with code type and the received value`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -236,7 +236,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `un entero fuera del rango de Int responde 422 con code type`() =
+    fun `an integer outside the Int range responds 422 with code type`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -249,7 +249,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `varios errores del cuerpo se devuelven juntos`() =
+    fun `several body errors are returned together`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -262,7 +262,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `el error en una lista de objetos reporta items corchete 1 punto name`() =
+    fun `an error in a list of objects reports items bracket 1 dot name`() =
         testApplication {
             application {
                 installKastApi { post<Order, Order>("/orders") { it } }
@@ -275,7 +275,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `null en una propiedad no nullable responde 422 con code type`() =
+    fun `null in a non-nullable property responds 422 with code type`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -289,7 +289,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `un cuerpo que no es un objeto responde 422 con code type y field vacio`() =
+    fun `a body that is not an object responds 422 with code type and an empty field`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -304,7 +304,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `un cuerpo vacio se trata como objeto vacio y reporta los requeridos`() =
+    fun `an empty body is treated as an empty object and reports the required fields`() =
         testApplication {
             application {
                 installKastApi { post<CreateUser, CreateUser>("/users") { it } }
@@ -320,7 +320,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `un cuerpo vacio funciona si todas las propiedades son opcionales`() =
+    fun `an empty body works if all properties are optional`() =
         testApplication {
             application {
                 installKastApi { post<AllOptional, AllOptional>("/opts") { it } }
@@ -333,7 +333,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `patch tambien lee el cuerpo`() =
+    fun `patch also reads the body`() =
         testApplication {
             application {
                 installKastApi { patch<AllOptional, AllOptional>("/opts") { it } }
@@ -350,7 +350,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `con ignoreUnknownKeys los campos desconocidos se ignoran`() =
+    fun `with ignoreUnknownKeys unknown fields are ignored`() =
         testApplication {
             application {
                 val config =
@@ -372,7 +372,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `enum y mapa validos se decodifican`() =
+    fun `a valid enum and map are decoded`() =
         testApplication {
             application {
                 installKastApi { post<Profile, Profile>("/profiles") { it } }
@@ -385,7 +385,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `enum desconocido y valor de mapa incorrecto reportan su field`() =
+    fun `an unknown enum and a wrong map value report their field`() =
         testApplication {
             application {
                 installKastApi { post<Profile, Profile>("/profiles") { it } }
@@ -399,7 +399,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `propiedad nullable sin default ausente del cuerpo llega como null`() =
+    fun `a nullable property without a default that is absent from the body arrives as null`() =
         testApplication {
             application {
                 installKastApi { post<NullableBody, NullableBody>("/notes") { it } }
@@ -412,7 +412,7 @@ class BodyBindingTest {
         }
 
     @Test
-    fun `errores de path y de cuerpo se devuelven juntos`() =
+    fun `path and body errors are returned together`() =
         testApplication {
             application {
                 installKastApi { put<UpdateUser, UpdateUser>("/users/{id}") { it } }

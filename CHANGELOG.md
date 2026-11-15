@@ -65,7 +65,7 @@ First public release (experimental): the API may change before 1.0.
 - In the JSON schema, `sealed`, polymorphic and contextual types are documented as an open schema (`{}`) and default values are not documented.
 - Of the error responses, only the `422` is documented; the `400`, `404`, `405` and `500` are not.
 - Swagger UI is loaded from a CDN: without an internet connection the `/docs` interface is not shown (the `/openapi.json` document is still served).
-- Some documentation, code comments and test names may still be in Spanish while the translation is completed.
+- The project was first written in Spanish and then translated to English. Some text may still be untranslated or read awkwardly; reports and fixes are welcome.
 
 [Unreleased]: https://github.com/josedlujan/kastapi/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/josedlujan/kastapi/releases/tag/v0.1.0

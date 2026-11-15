@@ -23,11 +23,11 @@ class ExampleTest {
     }
 
     @Test
-    fun `humo - docs y openapi json responden en el ejemplo arrancado`() {
+    fun `smoke - docs and openapi json respond in the running example`() {
         try {
             ServerSocket(8080).close()
         } catch (e: java.io.IOException) {
-            fail("El puerto 8080 está ocupado; libéralo para ejecutar la prueba de humo: ${e.message}")
+            fail("Port 8080 is in use; free it to run the smoke test: ${e.message}")
         }
         val java = File(System.getProperty("java.home"), "bin/java").path
         val process =
@@ -51,15 +51,15 @@ class ExampleTest {
             val deadline = System.currentTimeMillis() + 30_000
             var docs = get("/docs")
             while (docs == null && System.currentTimeMillis() < deadline) {
-                assertTrue(process.isAlive, "El ejemplo terminó antes de arrancar")
+                assertTrue(process.isAlive, "The example exited before starting")
                 Thread.sleep(250)
                 docs = get("/docs")
             }
-            assertEquals(200, docs?.statusCode(), "/docs no respondió 200")
+            assertEquals(200, docs?.statusCode(), "/docs did not respond 200")
             assertTrue(docs!!.body().contains("swagger-ui"), "/docs no sirve Swagger UI")
 
             val openapi = get("/openapi.json")
-            assertEquals(200, openapi?.statusCode(), "/openapi.json no respondió 200")
+            assertEquals(200, openapi?.statusCode(), "/openapi.json did not respond 200")
             assertTrue(openapi!!.body().contains("Users API"))
             assertTrue(openapi.body().contains("/users/{id}"))
         } finally {

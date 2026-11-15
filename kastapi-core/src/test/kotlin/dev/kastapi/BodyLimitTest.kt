@@ -39,12 +39,12 @@ class BodyLimitTest {
     }
 
     @Test
-    fun `el limite por defecto es 1 MiB`() {
+    fun `the default limit is 1 MiB`() {
         assertEquals(1_048_576L, KastApiConfig().maxBodyBytes)
     }
 
     @Test
-    fun `un cuerpo mayor que el limite responde 413 payload_too_large con el formato estandar`() =
+    fun `a body larger than the limit responds 413 payload_too_large with the standard format`() =
         limited(100) {
             val response =
                 post("/n") {
@@ -58,7 +58,7 @@ class BodyLimitTest {
         }
 
     @Test
-    fun `un cuerpo exactamente del tamano del limite se acepta`() =
+    fun `a body exactly the size of the limit is accepted`() =
         limited(json("x").length.toLong()) {
             val response =
                 post("/n") {
@@ -69,7 +69,7 @@ class BodyLimitTest {
         }
 
     @Test
-    fun `un byte por encima del limite se rechaza`() =
+    fun `one byte over the limit is rejected`() =
         limited(json("x").length.toLong() - 1) {
             val response =
                 post("/n") {
@@ -80,7 +80,7 @@ class BodyLimitTest {
         }
 
     @Test
-    fun `el limite se aplica tambien sin Content-Length (chunked)`() =
+    fun `the limit also applies without Content-Length (chunked)`() =
         limited(100) {
             val response =
                 post("/n") {
@@ -91,7 +91,7 @@ class BodyLimitTest {
         }
 
     @Test
-    fun `el limite cuenta bytes y no caracteres`() =
+    fun `the limit counts bytes and not characters`() =
         limited(json("ñññ").toByteArray().size.toLong() - 1) {
             val response =
                 post("/n") {
@@ -102,7 +102,7 @@ class BodyLimitTest {
         }
 
     @Test
-    fun `una ruta sin cuerpo no se ve afectada por el limite`() =
+    fun `a route without a body is not affected by the limit`() =
         testApplication {
             application {
                 installKastApi(KastApiConfig(maxBodyBytes = 1)) { get<NoInput, BlNote>("/g") { BlNote("ok") } }
@@ -111,7 +111,7 @@ class BodyLimitTest {
         }
 
     @Test
-    fun `un limite no positivo es un error de configuracion`() {
+    fun `a non-positive limit is a configuration error`() {
         assertFailsWith<IllegalArgumentException> { KastApiConfig(maxBodyBytes = 0) }
         assertFailsWith<IllegalArgumentException> { KastApiConfig(maxBodyBytes = -5) }
         assertTrue(runCatching { KastApiConfig(maxBodyBytes = 1) }.isSuccess)

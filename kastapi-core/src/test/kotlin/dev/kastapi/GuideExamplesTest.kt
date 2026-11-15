@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import io.ktor.client.request.get as clientGet
 
-// Ejemplos de las guías de docs/guide: si cambia el comportamiento, estas pruebas obligan a revisarlas.
+// Examples from the guides in docs/guide: if the behavior changes, these tests force a review of them.
 @Serializable
 data class GdSearch(
     @Min(1) @Max(100) val limit: Int = 20,
@@ -54,7 +54,7 @@ data class GdSignup(
 
 class GuideExamplesTest {
     @Test
-    fun `guia 02 - query con defecto, nullable y lista`() =
+    fun `guide 02 - query with a default, nullable and a list`() =
         kastTest({
             get<GdSearch, GdSearch>("/users") { it }
         }) {
@@ -65,7 +65,7 @@ class GuideExamplesTest {
         }
 
     @Test
-    fun `guia 02 - path y cuerpo mezclados, el path gana`() =
+    fun `guide 02 - path and body mixed, the path wins`() =
         kastTest({
             put<GdUpdate, GdUser>("/users/{id}") { GdUser(it.id, it.name) }
         }) {
@@ -78,25 +78,25 @@ class GuideExamplesTest {
         }
 
     @Test
-    fun `guia 02 - group aplica prefijo y etiquetas, y delete 204 no tiene cuerpo`() =
+    fun `guide 02 - group applies prefix and tags, and delete 204 has no body`() =
         kastTest({
             group("/v1", tags = listOf("users")) {
-                get<NoInput, GdUser>("/me") { GdUser(1, "yo") }
+                get<NoInput, GdUser>("/me") { GdUser(1, "me") }
                 delete<NoInput, Unit>("/me", status = 204) { }
             }
         }) {
-            assertEquals(GdUser(1, "yo"), client.clientGet("/v1/me").bodyAs<GdUser>())
+            assertEquals(GdUser(1, "me"), client.clientGet("/v1/me").bodyAs<GdUser>())
             val deleted = client.delete("/v1/me")
             assertEquals(HttpStatusCode.NoContent, deleted.status)
             assertEquals("", deleted.bodyAsText())
         }
 
     @Test
-    fun `guia 02 - header desde KastCall`() =
+    fun `guide 02 - header from KastCall`() =
         kastTest({
-            get<NoInput, GdUser>("/who") { GdUser(1, header("X-User") ?: "anonimo") }
+            get<NoInput, GdUser>("/who") { GdUser(1, header("X-User") ?: "anonymous") }
         }) {
-            assertEquals("anonimo", client.clientGet("/who").bodyAs<GdUser>().name)
+            assertEquals("anonymous", client.clientGet("/who").bodyAs<GdUser>().name)
             val named =
                 client.clientGet("/who") {
                     header("X-User", "ana")
@@ -105,7 +105,7 @@ class GuideExamplesTest {
         }
 
     @Test
-    fun `guia 03 - todos los errores de validacion a la vez`() =
+    fun `guide 03 - all validation errors at once`() =
         kastTest({
             post<GdSignup, GdUser>("/signup") { GdUser(1, it.email) }
         }) {
@@ -121,9 +121,9 @@ class GuideExamplesTest {
         }
 
     @Test
-    fun `guia 04 - HttpError responde con su status y error http_error`() =
+    fun `guide 04 - HttpError responds with its status and error http_error`() =
         kastTest({
-            get<NoInput, GdUser>("/teapot") { throw HttpError(409, "ya existe") }
+            get<NoInput, GdUser>("/teapot") { throw HttpError(409, "already exists") }
         }) {
             val response = client.clientGet("/teapot")
             assertEquals(HttpStatusCode.Conflict, response.status)
@@ -131,12 +131,12 @@ class GuideExamplesTest {
         }
 
     @Test
-    fun `guia 06 - installKastApi convive con rutas y plugins propios de Ktor`() =
+    fun `guide 06 - installKastApi coexists with Ktor routes and plugins of its own`() =
         testApplication {
             application {
                 install(StatusPages) { }
                 routing { get("/ping") { call.respondText("pong") } }
-                installKastApi { get<NoInput, GdUser>("/me") { GdUser(1, "yo") } }
+                installKastApi { get<NoInput, GdUser>("/me") { GdUser(1, "me") } }
             }
             assertEquals("pong", client.clientGet("/ping").bodyAsText())
             assertEquals(HttpStatusCode.OK, client.clientGet("/me").status)
@@ -144,17 +144,17 @@ class GuideExamplesTest {
         }
 
     @Test
-    fun `guia 05 - info, docsPath y openApiPath configurables`() =
+    fun `guide 05 - info, docsPath and openApiPath are configurable`() =
         testApplication {
             application {
-                installKastApi(KastApiConfig(docsPath = "/ayuda", openApiPath = "/schema.json")) {
-                    info(title = "Mi API", version = "2.0.0", description = "Demo")
-                    get<NoInput, GdUser>("/me", summary = "Yo", tags = listOf("users")) { GdUser(1, "yo") }
+                installKastApi(KastApiConfig(docsPath = "/help", openApiPath = "/schema.json")) {
+                    info(title = "My API", version = "2.0.0", description = "Demo")
+                    get<NoInput, GdUser>("/me", summary = "Me", tags = listOf("users")) { GdUser(1, "me") }
                 }
             }
             val schema = client.clientGet("/schema.json").bodyAsText()
-            assertTrue(""""title":"Mi API"""" in schema && """"summary":"Yo"""" in schema)
-            assertEquals(HttpStatusCode.OK, client.clientGet("/ayuda").status)
+            assertTrue(""""title":"My API"""" in schema && """"summary":"Me"""" in schema)
+            assertEquals(HttpStatusCode.OK, client.clientGet("/help").status)
             assertEquals(HttpStatusCode.NotFound, client.clientGet("/docs").status)
         }
 }

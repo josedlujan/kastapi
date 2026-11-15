@@ -138,7 +138,7 @@ private suspend fun HttpClient.postJson(
 
 class ValidationTest {
     @Test
-    fun `Min acepta un valor igual al minimo`() =
+    fun `Min accepts a value equal to the minimum`() =
         testApplication {
             application { installKastApi { post<VMin, VMin>("/min") { it } } }
 
@@ -149,7 +149,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Min rechaza un valor menor con code min y el valor recibido`() =
+    fun `Min rejects a smaller value with code min and the received value`() =
         testApplication {
             application { installKastApi { post<VMin, VMin>("/min") { it } } }
 
@@ -165,7 +165,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Max acepta un valor igual al maximo`() =
+    fun `Max accepts a value equal to the maximum`() =
         testApplication {
             application { installKastApi { post<VMax, VMax>("/max") { it } } }
 
@@ -173,7 +173,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Max rechaza un valor mayor con code max`() =
+    fun `Max rejects a larger value with code max`() =
         testApplication {
             application { installKastApi { post<VMax, VMax>("/max") { it } } }
 
@@ -185,7 +185,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Length acepta un texto dentro del rango`() =
+    fun `Length accepts a text within the range`() =
         testApplication {
             application { installKastApi { post<VLength, VLength>("/len") { it } } }
 
@@ -194,7 +194,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Length rechaza un texto demasiado corto o demasiado largo`() =
+    fun `Length rejects a text that is too short or too long`() =
         testApplication {
             application { installKastApi { post<VLength, VLength>("/len") { it } } }
 
@@ -207,7 +207,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Length cuenta un emoji como un solo caracter`() =
+    fun `Length counts an emoji as a single character`() =
         testApplication {
             application { installKastApi { post<VLength, VLength>("/len") { it } } }
 
@@ -217,7 +217,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Length valida el tamano de una lista`() =
+    fun `Length validates the size of a list`() =
         testApplication {
             application { installKastApi { post<VTags, VTags>("/tags") { it } } }
 
@@ -231,7 +231,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `NotBlank acepta un texto con contenido`() =
+    fun `NotBlank accepts a text with content`() =
         testApplication {
             application { installKastApi { post<VNotBlank, VNotBlank>("/nb") { it } } }
 
@@ -239,7 +239,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `NotBlank rechaza un texto vacio o de solo espacios`() =
+    fun `NotBlank rejects an empty or whitespace-only text`() =
         testApplication {
             application { installKastApi { post<VNotBlank, VNotBlank>("/nb") { it } } }
 
@@ -252,7 +252,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Email acepta una direccion valida`() =
+    fun `Email accepts a valid address`() =
         testApplication {
             application { installKastApi { post<VEmail, VEmail>("/em") { it } } }
 
@@ -260,7 +260,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Email rechaza una direccion invalida con el valor recibido`() =
+    fun `Email rejects an invalid address with the received value`() =
         testApplication {
             application { installKastApi { post<VEmail, VEmail>("/em") { it } } }
 
@@ -272,7 +272,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Pattern acepta un texto que coincide completo`() =
+    fun `Pattern accepts a text that matches entirely`() =
         testApplication {
             application { installKastApi { post<VPattern, VPattern>("/pt") { it } } }
 
@@ -280,7 +280,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Pattern rechaza un texto que no coincide`() =
+    fun `Pattern rejects a text that does not match`() =
         testApplication {
             application { installKastApi { post<VPattern, VPattern>("/pt") { it } } }
 
@@ -291,7 +291,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `las anotaciones tambien se validan en el query con location query`() =
+    fun `annotations are also validated in query with location query`() =
         testApplication {
             application { installKastApi { get<VLimitQuery, VLimitQuery>("/items") { it } } }
 
@@ -307,7 +307,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `el valor por defecto de una propiedad anotada no se valida`() =
+    fun `the default value of an annotated property is not validated`() =
         testApplication {
             application { installKastApi { get<VLimitQuery, VLimitQuery>("/items") { it } } }
 
@@ -318,7 +318,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `las anotaciones tambien se validan en el path con location path`() =
+    fun `annotations are also validated in path with location path`() =
         testApplication {
             application { installKastApi { get<VPathId, VPathId>("/p/{id}") { it } } }
 
@@ -333,7 +333,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `Min compara un Double con su valor decimal`() =
+    fun `Min compares a Double with its decimal value`() =
         testApplication {
             application { installKastApi { post<VRatio, VRatio>("/ratio") { it } } }
 
@@ -346,7 +346,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `varios errores de anotaciones se devuelven juntos`() =
+    fun `several annotation errors are returned together`() =
         testApplication {
             application { installKastApi { post<VMulti, VMulti>("/multi") { it } } }
 
@@ -360,7 +360,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `un error de tipo y uno de anotacion se devuelven juntos`() =
+    fun `a type error and an annotation error are returned together`() =
         testApplication {
             application { installKastApi { post<VMulti, VMulti>("/multi") { it } } }
 
@@ -373,7 +373,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `las anotaciones se validan dentro de objetos anidados`() =
+    fun `annotations are validated inside nested objects`() =
         testApplication {
             application { installKastApi { post<VNested, VNested>("/nested") { it } } }
 
@@ -385,7 +385,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `las anotaciones se validan en cada elemento de una lista de objetos`() =
+    fun `annotations are validated on each element of a list of objects`() =
         testApplication {
             application { installKastApi { post<VBasket, VBasket>("/basket") { it } } }
 
@@ -397,7 +397,7 @@ class ValidationTest {
         }
 
     @Test
-    fun `null o ausencia en una propiedad opcional anotada no se valida`() =
+    fun `null or absence in an annotated optional property is not validated`() =
         testApplication {
             application { installKastApi { post<VOptional, VOptional>("/opt") { it } } }
 

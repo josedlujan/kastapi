@@ -71,7 +71,7 @@ data class GoodModel(
     val tags: List<String> = emptyList(),
 )
 
-/** Arranca una aplicación con [block] y devuelve la excepción de configuración que lanza `installKastApi`. */
+/** Starts an application with [block] and returns the configuration exception that `installKastApi` throws. */
 private fun assertStartupFails(
     config: KastApiConfig = KastApiConfig(),
     block: KastApi.() -> Unit,
@@ -82,13 +82,13 @@ private fun assertStartupFails(
             failure = assertFailsWith<KastApiConfigurationException> { installKastApi(config, block) }
         }
 
-        // Fuerza el arranque de la aplicación para que se ejecute el bloque anterior.
+        // Forces the application to start so that the previous block runs.
         client.get("/")
     }
     return checkNotNull(failure)
 }
 
-/** Arranca una aplicación con [block]; la prueba falla si `installKastApi` lanza una excepción. */
+/** Starts an application with [block]; the test fails if `installKastApi` throws an exception. */
 private fun assertStartupSucceeds(
     config: KastApiConfig = KastApiConfig(),
     block: KastApi.() -> Unit,
@@ -103,55 +103,55 @@ private fun assertStartupSucceeds(
 private fun KastApiConfigurationException.assertMentions(vararg fragments: String) {
     val text = message.orEmpty()
     for (fragment in fragments) {
-        assertTrue(text.contains(fragment), "el mensaje debe contener '$fragment' pero fue:\n$text")
+        assertTrue(text.contains(fragment), "the message must contain '$fragment' but was:\n$text")
     }
 }
 
 class StartupValidationTest {
     @Test
-    fun `un parametro de la ruta sin propiedad en la entrada falla y nombra la ruta y el parametro`() {
+    fun `a route parameter without a property in the input fails and names the route and the parameter`() {
         val error = assertStartupFails { get<UserPath, Health>("/users/{userId}") { Health("x") } }
 
         error.assertMentions("GET /users/{userId}", "userId", "UserPath")
     }
 
     @Test
-    fun `un parametro de la ruta con NoInput falla`() {
+    fun `a route parameter with NoInput fails`() {
         val error = assertStartupFails { get<NoInput, Health>("/users/{id}") { Health("x") } }
 
         error.assertMentions("GET /users/{id}", "id", "NoInput")
     }
 
     @Test
-    fun `una propiedad de path nullable falla`() {
+    fun `a nullable path property fails`() {
         val error = assertStartupFails { get<NullablePath, Health>("/n/{id}") { Health("x") } }
 
         error.assertMentions("GET /n/{id}", "id", "nullable")
     }
 
     @Test
-    fun `una propiedad de path con valor por defecto falla`() {
+    fun `a path property with a default value fails`() {
         val error = assertStartupFails { get<DefaultPath, Health>("/d/{id}") { Health("x") } }
 
         error.assertMentions("GET /d/{id}", "id", "default value")
     }
 
     @Test
-    fun `un objeto anidado en query falla y menciona la ruta y la propiedad`() {
+    fun `a nested object in query fails and mentions the route and the property`() {
         val error = assertStartupFails { get<WithNested, Health>("/x") { Health("x") } }
 
         error.assertMentions("GET /x", "inner")
     }
 
     @Test
-    fun `una lista en el path falla y menciona la propiedad`() {
+    fun `a list in the path fails and mentions the property`() {
         val error = assertStartupFails { get<ListInPath, Health>("/l/{ids}") { Health("x") } }
 
         error.assertMentions("GET /l/{ids}", "ids")
     }
 
     @Test
-    fun `dos rutas con el mismo metodo y la misma ruta fallan`() {
+    fun `two routes with the same method and the same path fail`() {
         val error =
             assertStartupFails {
                 get<NoInput, Health>("/a") { Health("uno") }
@@ -162,7 +162,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `dos rutas con el mismo patron y distinto nombre de parametro cuentan como duplicadas`() {
+    fun `two routes with the same pattern and a different parameter name count as duplicates`() {
         val error =
             assertStartupFails {
                 get<UserPath, Health>("/u/{id}") { Health("uno") }
@@ -173,7 +173,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `un grupo con el mismo prefijo que otra ruta cuenta como duplicado`() {
+    fun `a group with the same prefix as another route counts as a duplicate`() {
         val error =
             assertStartupFails {
                 group("/v1") { get<NoInput, Health>("/a") { Health("uno") } }
@@ -184,7 +184,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `la misma ruta con distinto metodo no es un duplicado`() {
+    fun `the same route with a different method is not a duplicate`() {
         assertStartupSucceeds {
             get<NoInput, Health>("/a") { Health("get") }
             post<NoInput, Health>("/a") { Health("post") }
@@ -192,14 +192,14 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `una anotacion en un tipo incompatible falla y nombra la anotacion y la propiedad`() {
+    fun `an annotation on an incompatible type fails and names the annotation and the property`() {
         val error = assertStartupFails { post<VIncompatible, VIncompatible>("/inc") { it } }
 
         error.assertMentions("POST /inc", "@Email", "VIncompatible.n")
     }
 
     @Test
-    fun `Min en un String NotBlank en un Int Length en un Int y Pattern en un Int fallan`() {
+    fun `Min on a String and NotBlank on an Int and Length on an Int and Pattern on an Int fail`() {
         val error =
             assertStartupFails {
                 post<BadMin, BadMin>("/min") { it }
@@ -212,14 +212,14 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `una anotacion incompatible dentro de una clase anidada falla`() {
+    fun `an incompatible annotation inside a nested class fails`() {
         val error = assertStartupFails { post<NestedBad, NestedBad>("/nested") { it } }
 
         error.assertMentions("POST /nested", "@Email", "VIncompatible.n")
     }
 
     @Test
-    fun `una configuracion valida no lanza ninguna excepcion`() {
+    fun `a valid configuration throws no exception`() {
         assertStartupSucceeds {
             get<NoInput, Health>("/health") { Health("ok") }
             get<UserPath, Health>("/users/{id}") { Health("x") }
@@ -233,7 +233,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `varios problemas se reportan juntos en un solo mensaje`() {
+    fun `several problems are reported together in a single message`() {
         val error =
             assertStartupFails {
                 get<UserPath, Health>("/users/{userId}") { Health("x") }
@@ -250,7 +250,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `con validateOnStartup en false no se comprueba la consistencia de las rutas`() {
+    fun `with validateOnStartup set to false route consistency is not checked`() {
         val config = KastApiConfig(validateOnStartup = false)
 
         assertStartupSucceeds(config) {
@@ -262,7 +262,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `con validateOnStartup en false un tipo no soportado sigue fallando`() {
+    fun `with validateOnStartup set to false an unsupported type still fails`() {
         val config = KastApiConfig(validateOnStartup = false)
 
         val error = assertStartupFails(config) { get<WithNested, Health>("/x") { Health("x") } }
@@ -271,7 +271,7 @@ class StartupValidationTest {
     }
 
     @Test
-    fun `un regex invalido en Pattern se reporta como problema con la propiedad`() {
+    fun `an invalid regex in Pattern is reported as a problem with the property`() {
         val error = assertStartupFails { post<BadRegex, BadRegex>("/re") { it } }
 
         error.assertMentions("POST /re", "@Pattern", "BadRegex.code", "[abc")

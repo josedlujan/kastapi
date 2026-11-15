@@ -21,7 +21,7 @@ data class Echo(
 
 class KastTestTest {
     @Test
-    fun `kastTest levanta la aplicacion y responde a una ruta declarada`() =
+    fun `kastTest starts the application and answers a declared route`() =
         kastTest({
             get<NoInput, Echo>("/echo") { Echo(7) }
         }) {
@@ -30,7 +30,7 @@ class KastTestTest {
         }
 
     @Test
-    fun `bodyAs deserializa la respuesta JSON al tipo pedido`() =
+    fun `bodyAs deserializes the JSON response into the requested type`() =
         kastTest({
             get<NoInput, Echo>("/echo") { Echo(7) }
         }) {
@@ -39,7 +39,7 @@ class KastTestTest {
         }
 
     @Test
-    fun `el cliente envia JSON y el servidor valida el cuerpo`() =
+    fun `the client sends JSON and the server validates the body`() =
         kastTest({
             post<Echo, Echo>("/echo") { body -> body }
         }) {
