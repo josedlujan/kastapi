@@ -5,13 +5,13 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 
 /**
- * Reglas de validación de todas las clases alcanzables desde la entrada de una ruta, calculadas una vez al
- * registrarla (ADR-0002: se leen de `SerialDescriptor.getElementAnnotations`, sin reflexión).
+ * Validation rules of all the classes reachable from a route's input, computed once when
+ * registering it (ADR-0002: they are read from `SerialDescriptor.getElementAnnotations`, no reflection).
  */
 internal class RuleSet private constructor(
     private val byClass: Map<String, List<List<Rule>>>,
 ) {
-    /** Reglas de la propiedad número [index] de la clase descrita por [descriptor]. */
+    /** Rules of property number [index] of the class described by [descriptor]. */
     fun rulesOf(
         descriptor: SerialDescriptor,
         index: Int,
@@ -21,8 +21,8 @@ internal class RuleSet private constructor(
         val EMPTY = RuleSet(emptyMap())
 
         /**
-         * Recorre [root] y todas las clases anidadas (también dentro de listas y mapas).
-         * Los problemas de configuración de las anotaciones se añaden a [problems].
+         * Walks [root] and all nested classes (also inside lists and maps).
+         * Configuration problems with the annotations are added to [problems].
          */
         fun build(
             root: SerialDescriptor,
@@ -55,7 +55,7 @@ internal class RuleSet private constructor(
             result: MutableMap<String, List<List<Rule>>>,
             problems: MutableList<Problem>,
         ) {
-            // Evita bucles con tipos recursivos.
+            // Avoids loops with recursive types.
             if (descriptor.serialName in result) return
 
             val indices = 0 until descriptor.elementsCount

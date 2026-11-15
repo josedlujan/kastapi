@@ -16,10 +16,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * Recorre [body] contra el [descriptor] de la entrada y devuelve todos los errores estructurales:
- * campos requeridos ausentes, tipos incorrectos y campos desconocidos (ADR-0002, sin reflexión).
+ * Walks [body] against the input's [descriptor] and returns all the structural errors:
+ * missing required fields, wrong types and unknown fields (ADR-0002, no reflection).
  *
- * Las propiedades de [skip] vienen del path y no se leen del cuerpo.
+ * The properties in [skip] come from the path and are not read from the body.
  */
 internal fun validateBody(
     descriptor: SerialDescriptor,
@@ -59,7 +59,7 @@ private class BodyValidator(
             if (value != null) {
                 val errorsBefore = errors.size
                 checkValue(element, value, field)
-                // Las anotaciones solo se evalúan sobre valores que pasaron la validación estructural.
+                // Annotations are only evaluated on values that passed structural validation.
                 if (errors.size == errorsBefore) applyRules(descriptor, index, value, field)
             } else if (!descriptor.isElementOptional(index) && !element.isNullable) {
                 add(field, ErrorCode.REQUIRED, Messages.REQUIRED)
@@ -114,7 +114,7 @@ private class BodyValidator(
             return
         }
 
-        // Polimórficos, contextuales y otros tipos (rama else): los valida el decodificador.
+        // Polymorphic, contextual and other types (else branch): the decoder validates them.
         val kind = descriptor.kind
         when {
             kind is PrimitiveKind -> checkPrimitive(kind, element, field)

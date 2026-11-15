@@ -32,19 +32,19 @@ private val NUMERIC_KINDS: Set<SerialKind> =
     )
 
 /**
- * Convierte `SerialDescriptor` en esquemas JSON Schema (OpenAPI 3.1), sin reflexión (ADR-0002).
+ * Converts `SerialDescriptor` into JSON Schema schemas (OpenAPI 3.1), without reflection (ADR-0002).
  *
- * Una instancia acumula los esquemas de las clases (componentes) que va encontrando: el esquema de una clase
- * es una referencia `$ref` y su definición queda en [components]. Se usa una instancia por documento.
+ * An instance accumulates the schemas of the classes (components) it finds: a class's schema
+ * is a `$ref` reference and its definition is kept in [components]. One instance is used per document.
  */
 internal class SchemaGenerator {
     private val componentSchemas = LinkedHashMap<String, JsonObject>()
     private val namesByKey = HashMap<ComponentKey, String>()
 
-    /** Definiciones de las clases encontradas hasta ahora, en el orden en que se registraron. */
+    /** Definitions of the classes found so far, in the order they were registered. */
     val components: Map<String, JsonObject> get() = componentSchemas
 
-    /** Esquema de [descriptor]: en línea para primitivos, listas, mapas y enums; `$ref` para clases. */
+    /** Schema of [descriptor]: inline for primitives, lists, maps and enums; `$ref` for classes. */
     fun schemaOf(descriptor: SerialDescriptor): JsonObject {
         val base = baseSchema(descriptor)
         return if (descriptor.isNullable) base.nullable() else base
@@ -70,9 +70,9 @@ internal class SchemaGenerator {
     }
 
     /**
-     * Esquema de la propiedad [index] de la clase [owner], con las restricciones de sus anotaciones.
+     * Schema of property [index] of class [owner], with the constraints of its annotations.
      *
-     * No admite `null`: se usa para parámetros de path y query, donde un valor ausente ya equivale a `null`.
+     * It does not admit `null`: it is used for path and query parameters, where an absent value already equals `null`.
      */
     fun schemaOfProperty(
         owner: SerialDescriptor,
@@ -84,8 +84,8 @@ internal class SchemaGenerator {
     }
 
     /**
-     * Esquema del cuerpo de una ruta. Si [excluded] no tiene propiedades de [descriptor] es el de la clase; si no,
-     * es un componente derivado `<Nombre>Body` sin esas propiedades (las que vienen de la URL).
+     * Schema of a route's body. If [excluded] has no properties of [descriptor] it is the class's own; otherwise
+     * it is a derived `<Name>Body` component without those properties (the ones that come from the URL).
      */
     fun bodySchemaOf(
         descriptor: SerialDescriptor,
@@ -116,13 +116,13 @@ internal class SchemaGenerator {
     ): String {
         val name = uniqueName(serialName)
         namesByKey[key] = name
-        // Reservar el nombre antes de generar las propiedades evita bucles con tipos recursivos.
+        // Reserving the name before generating the properties avoids loops with recursive types.
         componentSchemas[name] = JsonObject(emptyMap())
         componentSchemas[name] = build()
         return name
     }
 
-    /** Nombre simple; si ya existe, el nombre completo; si también existe, el completo con sufijo `_2`, `_3`... */
+    /** Simple name; if it already exists, the full name; if that also exists, the full one with a suffix `_2`, `_3`... */
     private fun uniqueName(serialName: String): String {
         val full = serialName.replace(Regex("[^A-Za-z0-9._-]"), "_")
         val simple = full.substringAfterLast('.')
@@ -152,7 +152,7 @@ internal class SchemaGenerator {
     }
 }
 
-/** Identifica una clase por su nombre y la forma de sus propiedades, para distinguir los genéricos. */
+/** Identifies a class by its name and the shape of its properties, to tell generics apart. */
 private data class ComponentKey(
     val serialName: String,
     val elements: List<Pair<String, String>>,
@@ -188,7 +188,7 @@ private fun arraySchema(items: JsonObject): JsonObject = schema("type" to JsonPr
 private fun mapSchema(values: JsonObject): JsonObject =
     schema("type" to JsonPrimitive("object"), "additionalProperties" to values)
 
-/** Versión que también admite `null`: `type: [X, "null"]` o `oneOf` si es una referencia. */
+/** Version that also admits `null`: `type: [X, "null"]` or `oneOf` if it is a reference. */
 private fun JsonObject.nullable(): JsonObject =
     when {
         isEmpty() -> this
@@ -213,14 +213,14 @@ private fun JsonObject.withNullableType(): JsonObject {
 private fun JsonObject.withConstraints(constraints: Map<String, JsonElement>): JsonObject =
     if (constraints.isEmpty()) this else JsonObject(toMutableMap().apply { putAll(constraints) })
 
-/** Tipo de [element]; para una `value class` es el tipo que envuelve. */
+/** Type of [element]; for a `value class` it is the type it wraps. */
 private fun underlyingKind(element: SerialDescriptor): SerialKind {
     var current = element
     while (current.isInline) current = current.getElementDescriptor(0)
     return current.kind
 }
 
-/** Restricciones de las anotaciones de validación que aplican al tipo de [element]; el resto se ignora. */
+/** Constraints from the validation annotations that apply to the type of [element]; the rest are ignored. */
 private fun constraintsOf(
     annotations: List<Annotation>,
     element: SerialDescriptor,

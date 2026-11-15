@@ -11,17 +11,17 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
 /**
- * Problema de configuración de una ruta.
+ * Configuration problem of a route.
  *
- * Un problema [fatal] impide construir la ruta (por ejemplo, un tipo que no se puede enlazar); el resto son
- * problemas de consistencia que solo se comprueban si `validateOnStartup` está activo.
+ * A [fatal] problem prevents building the route (for example, a type that cannot be bound); the rest are
+ * consistency problems that are only checked if `validateOnStartup` is enabled.
  */
 internal class Problem(
     val message: String,
     val fatal: Boolean,
 )
 
-/** Ruta registrada en el DSL, todavía sin analizar: el plan de binding se calcula al terminar el bloque. */
+/** Route registered in the DSL, not yet analyzed: the binding plan is computed when the block ends. */
 internal class RouteDraft(
     val method: HttpMethod,
     val path: String,
@@ -35,7 +35,7 @@ internal class RouteDraft(
     val handler: suspend (KastCall, Any?) -> Any?,
     val encode: (Json, Any?) -> String,
 ) {
-    /** "METHOD /ruta", como se muestra en los mensajes. */
+    /** "METHOD /path", as shown in the messages. */
     val label: String get() = "${method.value} $path"
 
     fun toDefinition(plan: RoutePlan): RouteDefinition =
@@ -56,10 +56,10 @@ internal class RouteDraft(
 }
 
 /**
- * Analiza las rutas registradas (referencia §6) y devuelve las definiciones listas para montarse.
+ * Analyzes the registered routes (reference §6) and returns the definitions ready to be mounted.
  *
- * Recoge **todos** los problemas antes de lanzar [KastApiConfigurationException]. Con [validate] en `false`
- * solo se reportan los problemas fatales.
+ * Collects **all** the problems before throwing [KastApiConfigurationException]. With [validate] set to `false`
+ * only the fatal problems are reported.
  */
 internal fun planRoutes(
     drafts: List<RouteDraft>,
@@ -83,7 +83,7 @@ internal fun planRoutes(
     return drafts.zip(results).map { (draft, result) -> draft.toDefinition(result.plan) }
 }
 
-/** Rutas `GET` de la aplicación que coinciden con las que KastAPI reserva para la documentación. */
+/** `GET` routes of the application that match the ones KastAPI reserves for the documentation. */
 private fun reservedRoutes(
     drafts: List<RouteDraft>,
     reservedPaths: List<String>,
@@ -94,7 +94,7 @@ private fun reservedRoutes(
         .map { "${it.label}: ${Messages.RESERVED_ROUTE}" }
 }
 
-/** Rutas con el mismo método y la misma plantilla (sin contar los nombres de los parámetros). */
+/** Routes with the same method and the same template (ignoring parameter names). */
 private fun duplicateRoutes(drafts: List<RouteDraft>): List<String> {
     val first = mutableMapOf<String, RouteDraft>()
     val duplicates = mutableListOf<String>()

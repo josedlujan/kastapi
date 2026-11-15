@@ -3,19 +3,19 @@ package dev.kastapi
 import dev.kastapi.errors.Messages
 
 /**
- * Error HTTP que un handler puede lanzar para responder con un [status] concreto.
+ * HTTP error that a handler can throw to respond with a specific [status].
  *
- * La respuesta usa el formato de error estándar con `error = "http_error"` y [message] como mensaje:
+ * The response uses the standard error format with `error = "http_error"` and [message] as the message:
  *
  * ```kotlin
  * get<UserPath, UserResponse>("/users/{id}") { path ->
- *     users[path.id] ?: throw HttpError(404, "el usuario no existe")
+ *     users[path.id] ?: throw HttpError(404, "the user does not exist")
  * }
  * ```
  *
- * @property status código HTTP de la respuesta; debe estar entre 400 y 599.
- * @param message descripción del error que verá el cliente.
- * @throws IllegalArgumentException si [status] no está entre 400 y 599.
+ * @property status HTTP code of the response; must be between 400 and 599.
+ * @param message description of the error that the client will see.
+ * @throws IllegalArgumentException if [status] is not between 400 and 599.
  */
 public class HttpError(
     public val status: Int,
@@ -26,6 +26,6 @@ public class HttpError(
     }
 }
 
-// Constantes de archivo: en un companion privado se publicarían como campos públicos de la clase.
+// File-level constants: in a private companion they would be published as public fields of the class.
 private const val MIN_STATUS = 400
 private const val MAX_STATUS = 599

@@ -20,7 +20,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-/** Resultado de construir la entrada de una ruta. */
+/** Result of building a route's input. */
 internal sealed interface BindingResult {
     class Success(
         val input: Any?,
@@ -30,7 +30,7 @@ internal sealed interface BindingResult {
         val errors: List<ErrorDetail>,
     ) : BindingResult
 
-    /** El cuerpo no es JSON válido (400). */
+    /** The body is not valid JSON (400). */
     data object MalformedJson : BindingResult
 
     /** El cuerpo supera `maxBodyBytes` (413). */
@@ -38,9 +38,9 @@ internal sealed interface BindingResult {
 }
 
 /**
- * Construye la entrada de la ruta: arma un `JsonObject` con los valores de path, query y cuerpo, lo valida
- * contra el descriptor y lo decodifica con el serializador de la entrada (ADR-0002).
- * Recoge todos los errores, no solo el primero.
+ * Builds the route's input: assembles a `JsonObject` with the path, query and body values, validates it
+ * against the descriptor and decodes it with the input's serializer (ADR-0002).
+ * Collects all the errors, not just the first one.
  */
 @OptIn(ExperimentalSerializationApi::class)
 internal suspend fun RoutePlan.bind(
@@ -74,7 +74,7 @@ internal suspend fun RoutePlan.bind(
         val ignoreUnknownKeys = json.configuration.ignoreUnknownKeys
         errors += validateBody(serializer.descriptor, body, pathNames, ignoreUnknownKeys, rules)
         if (body is JsonObject) {
-            // El path gana: se descartan del cuerpo las propiedades que vienen de la URL.
+            // The path wins: properties that come from the URL are discarded from the body.
             body.filterKeys { it !in pathNames }.forEach { (key, value) -> merged[key] = value }
         }
         bodyNullables.forEach { merged.putIfAbsent(it, JsonNull) }
@@ -86,8 +86,8 @@ internal suspend fun RoutePlan.bind(
 }
 
 /**
- * Lee el cuerpo como texto sin cargar nunca más de [maxBodyBytes] bytes en memoria; devuelve `null` si lo supera.
- * Con `Content-Length` conocido se rechaza antes de leer; sin él (chunked) se lee hasta `maxBodyBytes + 1`.
+ * Reads the body as text without ever loading more than [maxBodyBytes] bytes into memory; returns `null` if it exceeds that.
+ * With a known `Content-Length` it is rejected before reading; without it (chunked) it reads up to `maxBodyBytes + 1`.
  */
 private suspend fun RoutingCall.readBodyText(maxBodyBytes: Long): String? {
     val declared = request.headers[HttpHeaders.ContentLength]?.toLongOrNull()
@@ -97,7 +97,7 @@ private suspend fun RoutingCall.readBodyText(maxBodyBytes: Long): String? {
     return String(bytes, request.contentCharset() ?: Charsets.UTF_8)
 }
 
-/** Un cuerpo vacío se trata como `{}`; devuelve `null` si no es JSON válido. */
+/** An empty body is treated as `{}`; returns `null` if it is not valid JSON. */
 private fun parseBody(
     text: String,
     json: Json,
@@ -119,7 +119,7 @@ private fun RoutePlan.decode(
     try {
         BindingResult.Success(json.decodeFromJsonElement(serializer, element))
     } catch (_: SerializationException) {
-        // Último recurso: el validador no detectó el problema (tipos poco comunes).
+        // Last resort: the validator did not detect the problem (uncommon types).
         val location = if (hasBody) ErrorLocation.BODY else ErrorLocation.QUERY
         BindingResult.Failure(listOf(ErrorDetail(location, "", ErrorCode.TYPE, Messages.INVALID_BODY)))
     }
@@ -129,7 +129,7 @@ private fun bindAbsent(
     values: MutableMap<String, JsonElement>,
     errors: MutableList<ErrorDetail>,
 ) {
-    // Con valor por defecto se omite: lo aplica el decodificador.
+    // With a default value it is omitted: the decoder applies it.
     if (param.hasDefault) return
 
     if (param.nullable) {
@@ -168,7 +168,7 @@ private fun RoutePlan.bindPresent(
     }
 }
 
-/** Aplica las anotaciones de validación a un valor de path o query ya convertido. */
+/** Applies the validation annotations to an already converted path or query value. */
 private fun RoutePlan.checkRules(
     param: ParamSpec,
     value: JsonElement,
@@ -198,7 +198,7 @@ private fun expectedTypeMessage(param: ParamSpec): String =
         ScalarType.ENUM -> Messages.expectedOneOf(param.enumNames)
     }
 
-/** Convierte [text] al tipo de [param]; devuelve `null` si no es válido. */
+/** Converts [text] to the type of [param]; returns `null` if it is not valid. */
 private fun convert(
     param: ParamSpec,
     text: String,

@@ -3,15 +3,15 @@ package dev.kastapi
 import io.ktor.server.application.ApplicationCall
 
 /**
- * Receptor de los handlers. Da acceso a la petición y permite bajar a Ktor puro.
+ * Receiver of the handlers. Gives access to the request and lets you drop down to plain Ktor.
  *
- * @property call la llamada de Ktor (`ApplicationCall`) en curso.
+ * @property call the current Ktor call (`ApplicationCall`).
  */
 public class KastCall internal constructor(
     public val call: ApplicationCall,
 ) {
     /**
-     * Devuelve el valor del header [name], o `null` si la petición no lo trae.
+     * Returns the value of the [name] header, or `null` if the request does not carry it.
      */
     public fun header(name: String): String? = call.request.headers[name]
 }

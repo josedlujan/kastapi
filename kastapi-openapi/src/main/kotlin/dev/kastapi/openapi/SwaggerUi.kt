@@ -4,15 +4,15 @@ import kotlinx.serialization.json.JsonPrimitive
 
 private const val SWAGGER_UI_BASE = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.34.1"
 
-// Hashes SRI (sha384) de los recursos de la versión fijada; el navegador rechaza un archivo alterado.
+// SRI hashes (sha384) of the pinned version's resources; the browser rejects a tampered file.
 private const val CSS_INTEGRITY = "sha384-4c3vsE5f+trhFyHrFrLM1fFGUn531NIaC7dcqEWIJdoRQJ5CkJbSuSCwXLpaS1KF"
 private const val BUNDLE_INTEGRITY = "sha384-XFYN47VzPiDY6qPtxYKg0nqUeW/upo20xf1j2SUE7gT/i35FJB4cuS/71Iegzk8Z"
 
 /**
- * HTML de Swagger UI: carga `swagger-ui-dist` desde un CDN con versión fija y apunta a [openApiPath].
+ * Swagger UI HTML: loads `swagger-ui-dist` from a CDN with a pinned version and points to [openApiPath].
  *
- * @param title título de la página.
- * @param openApiPath ruta desde la que se sirve el documento OpenAPI.
+ * @param title page title.
+ * @param openApiPath path from which the OpenAPI document is served.
  */
 @InternalKastApi
 public fun swaggerUiHtml(
@@ -21,7 +21,7 @@ public fun swaggerUiHtml(
 ): String =
     """
     <!DOCTYPE html>
-    <html lang="es">
+    <html lang="en">
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,7 +48,7 @@ private fun htmlEscape(text: String): String =
         .replace("\"", "&quot;")
         .replace("'", "&#39;")
 
-/** Literal de cadena para un `<script>`: JSON con `<`, `>` y `&` escapados para que no pueda cerrar la etiqueta. */
+/** String literal for a `<script>`: JSON with `<`, `>` and `&` escaped so it cannot close the tag. */
 private fun scriptString(text: String): String =
     JsonPrimitive(text)
         .toString()
