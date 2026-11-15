@@ -33,7 +33,7 @@ private fun assertStartupFails(
             failure = assertFailsWith<KastApiConfigurationException> { installKastApi(config, block) }
         }
 
-        // Fuerza el arranque de la aplicación para que se ejecute el bloque anterior.
+        // Forces the application to start so that the previous block runs.
         client.get("/")
     }
     return checkNotNull(failure)
@@ -41,7 +41,7 @@ private fun assertStartupFails(
 
 class DocsRoutesTest {
     @Test
-    fun `GET docs devuelve el HTML de Swagger UI que referencia el esquema`() =
+    fun `GET docs returns the Swagger UI HTML that references the schema`() =
         testApplication {
             application { installKastApi { exampleApi() } }
 
@@ -50,13 +50,13 @@ class DocsRoutesTest {
 
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals(ContentType.Text.Html, response.contentType()?.withoutParameters())
-            assertTrue(html.contains("/openapi.json"), "el HTML debe referenciar /openapi.json")
-            assertTrue(html.contains("swagger-ui-dist@5.34.1"), "la versión de Swagger UI debe estar fijada")
-            assertTrue(html.contains("integrity=\"sha384-"), "los recursos del CDN deben llevar integrity")
+            assertTrue(html.contains("/openapi.json"), "the HTML must reference /openapi.json")
+            assertTrue(html.contains("swagger-ui-dist@5.34.1"), "the Swagger UI version must be pinned")
+            assertTrue(html.contains("integrity=\"sha384-"), "the CDN resources must carry integrity")
         }
 
     @Test
-    fun `GET openapi json se sirve como application json`() =
+    fun `GET openapi json is served as application json`() =
         testApplication {
             application { installKastApi { exampleApi() } }
 
@@ -68,7 +68,7 @@ class DocsRoutesTest {
         }
 
     @Test
-    fun `las rutas configuradas sustituyen a las de por defecto y el HTML apunta al esquema configurado`() =
+    fun `configured paths replace the default ones and the HTML points to the configured schema`() =
         testApplication {
             val config = KastApiConfig(docsPath = "/api/docs", openApiPath = "/api/schema.json")
             application { installKastApi(config) { exampleApi() } }
@@ -82,7 +82,7 @@ class DocsRoutesTest {
         }
 
     @Test
-    fun `docsPath en null desactiva Swagger UI y deja el esquema`() =
+    fun `docsPath set to null disables Swagger UI and keeps the schema`() =
         testApplication {
             application { installKastApi(KastApiConfig(docsPath = null)) { exampleApi() } }
 
@@ -94,7 +94,7 @@ class DocsRoutesTest {
         }
 
     @Test
-    fun `openApiPath en null desactiva el esquema y tambien la documentacion`() =
+    fun `openApiPath set to null disables the schema and the documentation too`() =
         testApplication {
             application { installKastApi(KastApiConfig(openApiPath = null)) { exampleApi() } }
 
@@ -103,14 +103,14 @@ class DocsRoutesTest {
         }
 
     @Test
-    fun `el HTML escapa la ruta del esquema para que no se pueda inyectar codigo`() {
-        val html = swaggerUiHtml("Mi API", "/a</script><script>alert(1)</script>")
+    fun `the HTML escapes the schema path so code cannot be injected`() {
+        val html = swaggerUiHtml("My API", "/a</script><script>alert(1)</script>")
 
-        assertFalse(html.contains("<script>alert(1)"), "la ruta no debe poder cerrar el script")
+        assertFalse(html.contains("<script>alert(1)"), "the path must not be able to close the script")
     }
 
     @Test
-    fun `una ruta de usuario que choca con la documentacion es un problema de arranque`() {
+    fun `a user route that clashes with the documentation is a startup problem`() {
         val docs = assertStartupFails(KastApiConfig()) { get<NoInput, Health>("/docs") { Health("x") } }
         val schema = assertStartupFails(KastApiConfig()) { get<NoInput, Health>("/openapi.json") { Health("x") } }
 
@@ -119,7 +119,7 @@ class DocsRoutesTest {
     }
 
     @Test
-    fun `una ruta de usuario puede usar el path de la documentacion si esta desactivada o con otro metodo`() =
+    fun `a user route can use the documentation path if it is disabled or with another method`() =
         testApplication {
             val config = KastApiConfig(docsPath = null)
             application {

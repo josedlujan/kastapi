@@ -28,7 +28,7 @@ data class Created(
 
 class DslRoutesTest {
     @Test
-    fun `get con NoInput responde 200 y el JSON serializado`() =
+    fun `get with NoInput responds 200 and the serialized JSON`() =
         testApplication {
             application {
                 installKastApi {
@@ -44,7 +44,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `post responde 201 por defecto`() =
+    fun `post responds 201 by default`() =
         testApplication {
             application {
                 installKastApi {
@@ -59,7 +59,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `post respeta status 202 cuando se indica`() =
+    fun `post respects status 202 when it is given`() =
         testApplication {
             application {
                 installKastApi {
@@ -74,7 +74,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `delete con Unit y status 204 responde sin cuerpo`() =
+    fun `delete with Unit and status 204 responds without a body`() =
         testApplication {
             application {
                 installKastApi {
@@ -89,7 +89,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `group monta las rutas bajo el prefijo`() =
+    fun `group mounts the routes under the prefix`() =
         testApplication {
             application {
                 installKastApi {
@@ -104,7 +104,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `KastCall call da acceso al ApplicationCall`() =
+    fun `KastCall call gives access to the ApplicationCall`() =
         testApplication {
             application {
                 installKastApi {
@@ -116,7 +116,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `put y patch responden 200 por defecto`() =
+    fun `put and patch respond 200 by default`() =
         testApplication {
             application {
                 installKastApi {
@@ -135,7 +135,7 @@ class DslRoutesTest {
         }
 
     @Test
-    fun `header devuelve el valor o null si falta`() =
+    fun `header returns the value or null if it is missing`() =
         testApplication {
             application {
                 installKastApi {

@@ -29,10 +29,10 @@ data class KtItemOut(
     val qty: Int = 0,
 )
 
-/** Uso de `kastTest` (referencia §9) sobre el comportamiento del core. */
+/** Use of `kastTest` (reference §9) over the core's behavior. */
 class KastTestUsageTest {
     @Test
-    fun `kastTest enlaza el parametro de ruta y devuelve el cuerpo tipado`() =
+    fun `kastTest binds the path parameter and returns the typed body`() =
         kastTest({
             get<KtItemPath, KtItemOut>("/items/{id}") { path -> KtItemOut(path.id) }
         }) {
@@ -41,7 +41,7 @@ class KastTestUsageTest {
         }
 
     @Test
-    fun `kastTest responde 201 con cuerpo valido y 422 con cuerpo invalido`() =
+    fun `kastTest responds 201 with a valid body and 422 with an invalid one`() =
         kastTest({
             post<KtItemIn, KtItemOut>("/items", status = 201) { body -> KtItemOut(1, body.qty) }
         }) {
@@ -62,7 +62,7 @@ class KastTestUsageTest {
         }
 
     @Test
-    fun `kastTest sirve delete 204 y el 404 uniforme para rutas inexistentes`() =
+    fun `kastTest serves delete 204 and the uniform 404 for unknown routes`() =
         kastTest({
             delete<KtItemPath, Unit>("/items/{id}", status = 204) { _ -> }
         }) {

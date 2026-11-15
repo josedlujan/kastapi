@@ -6,13 +6,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class EmailRuleTest {
-    /** Regex original de v0.1 (cuadrático): sirve como referencia de comportamiento. */
+    /** Original v0.1 regex (quadratic): serves as the behavioral reference. */
     private val reference = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
 
     private fun accepts(text: String): Boolean = EmailRule.check(JsonPrimitive(text)) == null
 
     @Test
-    fun `acepta y rechaza igual que la expresion de referencia en casos conocidos`() {
+    fun `accepts and rejects like the reference expression in known cases`() {
         val cases =
             listOf(
                 "a@b.c",
@@ -50,7 +50,7 @@ class EmailRuleTest {
     }
 
     @Test
-    fun `coincide con la expresion de referencia en todas las cadenas cortas de un alfabeto reducido`() {
+    fun `matches the reference expression on all short strings of a reduced alphabet`() {
         val alphabet = listOf('a', '.', '@', ' ')
         var strings = listOf("")
         repeat(7) {
@@ -60,12 +60,12 @@ class EmailRuleTest {
     }
 
     @Test
-    fun `una entrada hostil de 200000 caracteres se evalua en tiempo lineal`() {
+    fun `a hostile input of 200000 characters is evaluated in linear time`() {
         val hostile = "a@" + ".".repeat(200_000) + " "
         val start = System.nanoTime()
         val result = accepts(hostile)
         val millis = (System.nanoTime() - start) / 1_000_000
         assertEquals(false, result)
-        assertTrue(millis < 1_000, "tardó $millis ms; la expresión original tarda decenas de segundos")
+        assertTrue(millis < 1_000, "took $millis ms; the original expression takes tens of seconds")
     }
 }

@@ -102,7 +102,7 @@ private suspend fun HttpResponse.errorBody(): JsonObject = Json.parseToJsonEleme
 
 class PathQueryBindingTest {
     @Test
-    fun `path recibe id como Long`() =
+    fun `path receives id as Long`() =
         testApplication {
             application {
                 installKastApi {
@@ -117,7 +117,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query usa los valores por defecto cuando no se envian`() =
+    fun `query uses the default values when they are not sent`() =
         testApplication {
             application {
                 installKastApi {
@@ -132,7 +132,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query toma los valores indicados`() =
+    fun `query takes the given values`() =
         testApplication {
             application {
                 installKastApi {
@@ -147,7 +147,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query convierte Int`() =
+    fun `query converts Int`() =
         testApplication {
             application { installKastApi { get<IntQuery, IntQuery>("/n") { it } } }
 
@@ -155,7 +155,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query convierte Long`() =
+    fun `query converts Long`() =
         testApplication {
             application { installKastApi { get<LongQuery, LongQuery>("/n") { it } } }
 
@@ -163,7 +163,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query convierte Double`() =
+    fun `query converts Double`() =
         testApplication {
             application { installKastApi { get<DoubleQuery, DoubleQuery>("/n") { it } } }
 
@@ -171,7 +171,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query convierte Boolean`() =
+    fun `query converts Boolean`() =
         testApplication {
             application { installKastApi { get<BooleanQuery, BooleanQuery>("/b") { it } } }
 
@@ -180,7 +180,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query convierte enum por nombre`() =
+    fun `query converts an enum by name`() =
         testApplication {
             application { installKastApi { get<EnumQuery, EnumQuery>("/c") { it } } }
 
@@ -188,7 +188,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query convierte List de String con parametros repetidos`() =
+    fun `query converts a List of String with repeated parameters`() =
         testApplication {
             application { installKastApi { get<TagsQuery, TagsQuery>("/t") { it } } }
 
@@ -198,7 +198,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `query requerido ausente responde 422 con code required`() =
+    fun `a missing required query parameter responds 422 with code required`() =
         testApplication {
             application { installKastApi { get<RequiredQuery, RequiredQuery>("/s") { it } } }
 
@@ -214,7 +214,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `limit con texto responde 422 con code type`() =
+    fun `limit with text responds 422 with code type`() =
         testApplication {
             application { installKastApi { get<ListQuery, ListQuery>("/users") { it } } }
 
@@ -229,7 +229,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `path no numerico responde 422 con location path`() =
+    fun `a non-numeric path responds 422 with location path`() =
         testApplication {
             application { installKastApi { get<UserPath, UserPath>("/users/{id}") { it } } }
 
@@ -243,7 +243,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `varios errores de binding se devuelven juntos`() =
+    fun `several binding errors are returned together`() =
         testApplication {
             application { installKastApi { get<TwoInts, TwoInts>("/two") { it } } }
 
@@ -256,7 +256,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `enum con un valor desconocido responde 422 con code type`() =
+    fun `an enum with an unknown value responds 422 with code type`() =
         testApplication {
             application { installKastApi { get<EnumQuery, EnumQuery>("/c") { it } } }
 
@@ -267,7 +267,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `delete tambien enlaza path y query`() =
+    fun `delete also binds path and query`() =
         testApplication {
             application {
                 installKastApi {
@@ -282,7 +282,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `path y query se combinan en la misma entrada`() =
+    fun `path and query are combined in the same input`() =
         testApplication {
             application { installKastApi { get<UserWithQuery, UserWithQuery>("/users/{id}") { it } } }
 
@@ -291,7 +291,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `propiedad nullable sin default ausente llega como null`() =
+    fun `a nullable property without a default that is absent arrives as null`() =
         testApplication {
             application {
                 installKastApi {
@@ -306,7 +306,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `parametros de query no declarados se ignoran`() =
+    fun `undeclared query parameters are ignored`() =
         testApplication {
             application { installKastApi { get<ListQuery, ListQuery>("/users") { it } } }
 
@@ -317,7 +317,7 @@ class PathQueryBindingTest {
         }
 
     @Test
-    fun `un objeto anidado en query falla al registrar y menciona la propiedad`() =
+    fun `a nested object in query fails at registration and mentions the property`() =
         testApplication {
             application {
                 val error =
@@ -326,10 +326,10 @@ class PathQueryBindingTest {
                             get<WithNested, Health>("/x") { Health("x") }
                         }
                     }
-                assertTrue(error.message.orEmpty().contains("inner"), "el mensaje debe mencionar la propiedad")
+                assertTrue(error.message.orEmpty().contains("inner"), "the message must mention the property")
             }
 
-            // Fuerza el arranque de la aplicación para que se ejecute el bloque anterior.
+            // Forces the application to start so that the previous block runs.
             client.get("/")
         }
 }

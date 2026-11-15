@@ -49,7 +49,7 @@ data class OptionalBody(
 
 private val json = Json
 
-/** Descarga el documento OpenAPI de la aplicación de prueba. */
+/** Downloads the OpenAPI document of the test application. */
 private suspend fun ApplicationTestBuilder.openApiDocument(): JsonObject =
     json.parseToJsonElement(client.get("/openapi.json").bodyAsText()).jsonObject
 
@@ -66,19 +66,19 @@ private fun ApplicationTestBuilder.startWith(block: KastApi.() -> Unit) {
 
 class OpenApiDocumentTest {
     @Test
-    fun `el documento del ejemplo de la referencia coincide con el snapshot`() =
+    fun `the reference example document matches the snapshot`() =
         testApplication {
             startWith { exampleApi() }
 
             val actual = openApiDocument()
 
             val resource = OpenApiDocumentTest::class.java.getResource("/openapi/spec-example.json")
-            if (resource == null) fail("Falta el snapshot openapi/spec-example.json. Obtenido:\n$actual")
+            if (resource == null) fail("Missing snapshot openapi/spec-example.json. Got:\n$actual")
             assertEquals(json.parseToJsonElement(resource.readText()), actual, "Obtenido:\n$actual")
         }
 
     @Test
-    fun `el documento del ejemplo de la referencia es una estructura OpenAPI 3_1 valida`() =
+    fun `the reference example document is a valid OpenAPI 3_1 structure`() =
         testApplication {
             startWith { exampleApi() }
 
@@ -86,7 +86,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `toda operacion con entrada documenta la respuesta 422 con el esquema de error`() =
+    fun `every operation with input documents the 422 response with the error schema`() =
         testApplication {
             startWith { exampleApi() }
 
@@ -102,7 +102,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `una operacion sin entrada no documenta el 422 ni parametros ni cuerpo`() =
+    fun `an operation without input documents no 422 and no parameters and no body`() =
         testApplication {
             startWith { get<NoInput, Health>("/health") { Health("ok") } }
 
@@ -114,7 +114,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `sin llamar a info se usan el titulo y la version por defecto`() =
+    fun `without calling info the default title and version are used`() =
         testApplication {
             startWith { get<NoInput, Health>("/health") { Health("ok") } }
 
@@ -126,7 +126,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `la ultima llamada a info gana`() =
+    fun `the last call to info wins`() =
         testApplication {
             startWith {
                 info(title = "Primera", version = "1")
@@ -141,7 +141,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `el operationId usa el metodo y la ruta normalizada y siempre es unico`() =
+    fun `the operationId uses the method and the normalized path and is always unique`() =
         testApplication {
             startWith {
                 get<NoInput, Health>("/") { Health("raiz") }
@@ -160,7 +160,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `los parametros de query indican required y su esquema`() =
+    fun `query parameters state required and their schema`() =
         testApplication {
             startWith { get<FilterQuery, Health>("/items") { Health("x") } }
 
@@ -176,7 +176,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `una entrada con propiedades de path y de cuerpo usa un componente derivado sin las de path`() =
+    fun `an input with path and body properties uses a derived component without the path ones`() =
         testApplication {
             startWith { put<UpdateUser, Health>("/users/{id}") { Health("x") } }
 
@@ -196,7 +196,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `el cuerpo no es obligatorio si ninguna de sus propiedades es obligatoria`() =
+    fun `the body is not required if none of its properties is required`() =
         testApplication {
             startWith { post<OptionalBody, Health>("/notes") { Health("x") } }
 
@@ -206,7 +206,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `la descripcion de la respuesta es la frase estandar del status`() =
+    fun `the response description is the standard phrase of the status`() =
         testApplication {
             startWith { post<NoInput, Health>("/jobs", status = 202) { Health("x") } }
 
@@ -216,7 +216,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `las rutas de la documentacion no aparecen en el documento`() =
+    fun `the documentation routes do not appear in the document`() =
         testApplication {
             startWith { get<NoInput, Health>("/health") { Health("ok") } }
 
@@ -226,7 +226,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `el documento se genera una vez y es el mismo en cada peticion`() =
+    fun `the document is generated once and is the same on every request`() =
         testApplication {
             startWith { exampleApi() }
 
@@ -237,7 +237,7 @@ class OpenApiDocumentTest {
         }
 
     @Test
-    fun `components siempre existe aunque no haya rutas`() =
+    fun `components always exists even without routes`() =
         testApplication {
             startWith { }
 

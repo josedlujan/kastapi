@@ -10,7 +10,7 @@ import dev.kastapi.validation.Max
 import dev.kastapi.validation.Min
 import kotlinx.serialization.Serializable
 
-// Modelos del ejemplo de la referencia §1.
+// Models of the reference example (§1).
 
 @Serializable
 data class CreateUser(
@@ -37,7 +37,7 @@ data class ListQuery(
     val search: String? = null,
 )
 
-/** Las rutas del ejemplo de la referencia §1, tal cual. */
+/** The routes of the reference example (§1), verbatim. */
 fun KastApi.exampleApi() {
     info(title = "Users API", version = "1.0.0", description = "KastAPI example")
 
