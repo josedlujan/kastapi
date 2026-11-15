@@ -1,121 +1,119 @@
 package dev.kastapi.errors
 
 /**
- * Todos los textos de error de KastAPI (en español en v0.1) viven aquí.
+ * All KastAPI error texts (in English in v0.1) live here.
  *
- * Centralizarlos facilita la internacionalización posterior (ver ROADMAP, v0.2).
+ * Keeping them in one place makes later internationalization easier (see the roadmap, v0.2).
  */
 internal object Messages {
-    // Mensajes de validación para el cliente de la API.
-    const val REQUIRED = "es requerido"
-    const val NOT_NULL = "no puede ser nulo"
-    const val NOT_BLANK = "no puede estar vacío"
-    const val EMAIL = "debe ser un correo electrónico válido"
-    const val PATTERN = "no cumple el formato requerido"
-    const val UNKNOWN_FIELD = "campo desconocido"
-    const val UNIT_CHARACTERS = "caracteres"
-    const val UNIT_ITEMS = "elementos"
-    const val EXPECTED_TEXT = "debe ser un texto"
-    const val EXPECTED_INTEGER = "debe ser un número entero"
-    const val EXPECTED_DECIMAL = "debe ser un número decimal"
-    const val EXPECTED_BOOLEAN = "debe ser true o false"
-    const val EXPECTED_OBJECT = "debe ser un objeto"
-    const val EXPECTED_ARRAY = "debe ser una lista"
-    const val INTERNAL_ERROR = "Error interno del servidor"
-    const val MALFORMED_JSON = "El cuerpo de la petición no es un JSON válido"
-    const val INVALID_BODY = "El cuerpo de la petición no se pudo interpretar"
+    // Validation messages for API clients.
+    const val REQUIRED = "is required"
+    const val NOT_NULL = "must not be null"
+    const val NOT_BLANK = "must not be blank"
+    const val EMAIL = "must be a valid email address"
+    const val PATTERN = "does not match the required format"
+    const val UNKNOWN_FIELD = "unknown field"
+    const val UNIT_CHARACTERS = "characters"
+    const val UNIT_ITEMS = "items"
+    const val EXPECTED_TEXT = "must be a string"
+    const val EXPECTED_INTEGER = "must be an integer"
+    const val EXPECTED_DECIMAL = "must be a decimal number"
+    const val EXPECTED_BOOLEAN = "must be true or false"
+    const val EXPECTED_OBJECT = "must be an object"
+    const val EXPECTED_ARRAY = "must be an array"
+    const val INTERNAL_ERROR = "Internal server error"
+    const val MALFORMED_JSON = "The request body is not valid JSON"
+    const val INVALID_BODY = "The request body could not be interpreted"
 
-    fun payloadTooLarge(maxBodyBytes: Long): String = "El cuerpo de la petición supera el máximo de $maxBodyBytes bytes"
+    fun payloadTooLarge(maxBodyBytes: Long): String = "The request body exceeds the maximum of $maxBodyBytes bytes"
 
-    fun expectedOneOf(values: Collection<String>): String = "debe ser uno de: ${values.joinToString(", ")}"
+    fun expectedOneOf(values: Collection<String>): String = "must be one of: ${values.joinToString(", ")}"
 
-    fun min(value: Long): String = "debe ser mayor o igual a $value"
+    fun min(value: Long): String = "must be greater than or equal to $value"
 
-    fun max(value: Long): String = "debe ser menor o igual a $value"
+    fun max(value: Long): String = "must be less than or equal to $value"
 
-    /** [unit] es "caracteres" o "elementos". */
+    /** [unit] is "characters" or "items". */
     fun length(
         min: Int,
         max: Int,
         unit: String,
     ): String =
         when {
-            min > 0 && max < Int.MAX_VALUE -> "debe tener entre $min y $max $unit"
-            min > 0 -> "debe tener al menos $min $unit"
-            else -> "debe tener como máximo $max $unit"
+            min > 0 && max < Int.MAX_VALUE -> "must have between $min and $max $unit"
+            min > 0 -> "must have at least $min $unit"
+            else -> "must have at most $max $unit"
         }
 
     fun notFound(
         method: String,
         path: String,
-    ): String = "La ruta $method $path no existe"
+    ): String = "Route $method $path does not exist"
 
     fun methodNotAllowed(
         method: String,
         path: String,
-    ): String = "El método $method no está permitido en $path"
+    ): String = "Method $method is not allowed on $path"
 
     fun validationSummary(count: Int): String =
         if (count == 1) {
-            "La petición tiene 1 error de validación"
+            "The request has 1 validation error"
         } else {
-            "La petición tiene $count errores de validación"
+            "The request has $count validation errors"
         }
 
-    // Mensajes de configuración para quien desarrolla con KastAPI (se reportan al arrancar, ver StartupValidator).
-    // Cada problema se muestra después de "METHOD /ruta: ", que añade el validador.
-    const val RESERVED_ROUTE = "la ruta está reservada para la documentación de la API."
-    const val APPLIES_TO_NUMBER = "tipos numéricos"
+    // Configuration messages for whoever builds with KastAPI (reported at startup, see StartupValidator).
+    // Each problem is shown after "METHOD /path: ", which the validator adds.
+    const val RESERVED_ROUTE = "the route is reserved for the API documentation."
+    const val APPLIES_TO_NUMBER = "numeric types"
     const val APPLIES_TO_TEXT = "String"
-    const val APPLIES_TO_TEXT_OR_LIST = "String y List"
+    const val APPLIES_TO_TEXT_OR_LIST = "String and List"
 
     fun configurationProblems(problems: List<String>): String {
         val header =
             if (problems.size == 1) {
-                "KastAPI encontró 1 problema de configuración:"
+                "KastAPI found 1 configuration problem:"
             } else {
-                "KastAPI encontró ${problems.size} problemas de configuración:"
+                "KastAPI found ${problems.size} configuration problems:"
             }
         return problems.mapIndexed { index, problem -> " ${index + 1}. $problem" }.joinToString("\n", "$header\n")
     }
 
-    fun inputMustBeClass(typeName: String): String =
-        "la entrada '$typeName' debe ser una data class @Serializable o NoInput."
+    fun inputMustBeClass(typeName: String): String = "input '$typeName' must be a @Serializable data class or NoInput."
 
     fun pathParameterWithoutProperty(
         name: String,
         typeName: String,
-    ): String = "el parámetro {$name} de la ruta no existe como propiedad de '$typeName'."
+    ): String = "path parameter {$name} does not exist as a property of '$typeName'."
 
-    fun pathPropertyNullable(name: String): String = "la propiedad de path '$name' no puede ser nullable."
+    fun pathPropertyNullable(name: String): String = "path property '$name' must not be nullable."
 
-    fun pathPropertyHasDefault(name: String): String = "la propiedad de path '$name' no puede tener valor por defecto."
+    fun pathPropertyHasDefault(name: String): String = "path property '$name' must not have a default value."
 
-    fun duplicateRoute(first: String): String = "la ruta está duplicada: ya se declaró como $first."
+    fun duplicateRoute(first: String): String = "duplicate route: already declared as $first."
 
     fun incompatibleAnnotation(
         annotation: String,
         property: String,
         typeName: String,
         appliesTo: String,
-    ): String = "la anotación @$annotation en '$property' (tipo '$typeName') solo aplica a $appliesTo."
+    ): String = "annotation @$annotation on '$property' (type '$typeName') only applies to $appliesTo."
 
-    fun invalidHttpErrorStatus(status: Int): String =
-        "El status de HttpError debe estar entre 400 y 599, pero fue $status"
+    fun invalidHttpErrorStatus(status: Int): String = "HttpError status must be between 400 and 599, but was $status"
 
-    // Mensaje para el log del servidor (no se envía al cliente).
+    // Message for the server log (never sent to the client).
     fun unhandledException(
         method: String,
         path: String,
-    ): String = "Excepción no controlada en $method $path"
+    ): String = "Unhandled exception in $method $path"
 
     fun invalidPattern(
         property: String,
         regex: String,
-    ): String = "la anotación @Pattern de '$property' tiene una expresión regular inválida: $regex"
+    ): String = "the @Pattern annotation on '$property' has an invalid regular expression: $regex"
 
     fun unsupportedParameter(
         property: String,
         typeName: String,
-    ): String = "la propiedad '$property' (tipo '$typeName') no se puede enlazar desde el path o el query."
+    ): String = "property '$property' (type '$typeName') cannot be bound from path or query."
 }

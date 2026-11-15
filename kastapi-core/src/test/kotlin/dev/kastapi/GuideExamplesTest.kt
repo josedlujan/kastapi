@@ -116,7 +116,7 @@ class GuideExamplesTest {
                 }
             assertEquals(HttpStatusCode.UnprocessableEntity, response.status)
             val text = response.bodyAsText()
-            assertTrue("La petición tiene 2 errores de validación" in text)
+            assertTrue("The request has 2 validation errors" in text)
             assertTrue(""""code":"email"""" in text && """"code":"min"""" in text)
         }
 

@@ -160,7 +160,7 @@ class ValidationTest {
             assertEquals("body", body.detailText("location"))
             assertEquals("age", body.detailText("field"))
             assertEquals("min", body.detailText("code"))
-            assertEquals("debe ser mayor o igual a 18", body.detailText("message"))
+            assertEquals("must be greater than or equal to 18", body.detailText("message"))
             assertEquals("17", body.detailText("value"))
         }
 
@@ -181,7 +181,7 @@ class ValidationTest {
 
             assertEquals("score", body.detailText("field"))
             assertEquals("max", body.detailText("code"))
-            assertEquals("debe ser menor o igual a 100", body.detailText("message"))
+            assertEquals("must be less than or equal to 100", body.detailText("message"))
         }
 
     @Test
@@ -202,7 +202,7 @@ class ValidationTest {
             val largo = client.postJson("/len", """{"name":"abcdef"}""").errorBody()
 
             assertEquals("length", corto.detailText("code"))
-            assertEquals("debe tener entre 2 y 5 caracteres", corto.detailText("message"))
+            assertEquals("must have between 2 and 5 characters", corto.detailText("message"))
             assertEquals("length", largo.detailText("code"))
         }
 
@@ -227,7 +227,7 @@ class ValidationTest {
             assertEquals(HttpStatusCode.Created, valido.status)
             assertEquals("tags", invalido.detailText("field"))
             assertEquals("length", invalido.detailText("code"))
-            assertEquals("debe tener como máximo 2 elementos", invalido.detailText("message"))
+            assertEquals("must have at most 2 items", invalido.detailText("message"))
         }
 
     @Test
@@ -248,7 +248,7 @@ class ValidationTest {
 
             assertEquals("not_blank", vacio.detailText("code"))
             assertEquals("not_blank", espacios.detailText("code"))
-            assertEquals("no puede estar vacío", espacios.detailText("message"))
+            assertEquals("must not be blank", espacios.detailText("message"))
         }
 
     @Test
@@ -267,7 +267,7 @@ class ValidationTest {
             val body = client.postJson("/em", """{"email":"ana@kastapi"}""").errorBody()
 
             assertEquals("email", body.detailText("code"))
-            assertEquals("debe ser un correo electrónico válido", body.detailText("message"))
+            assertEquals("must be a valid email address", body.detailText("message"))
             assertEquals("ana@kastapi", body.detailText("value"))
         }
 
@@ -287,7 +287,7 @@ class ValidationTest {
             val body = client.postJson("/pt", """{"code":"abc"}""").errorBody()
 
             assertEquals("pattern", body.detailText("code"))
-            assertEquals("no cumple el formato requerido", body.detailText("message"))
+            assertEquals("does not match the required format", body.detailText("message"))
         }
 
     @Test
@@ -356,7 +356,7 @@ class ValidationTest {
             assertEquals("min", body.detailText("code", index = 0))
             assertEquals("not_blank", body.detailText("code", index = 1))
             assertEquals("email", body.detailText("code", index = 2))
-            assertEquals("La petición tiene 3 errores de validación", body.text("message"))
+            assertEquals("The request has 3 validation errors", body.text("message"))
         }
 
     @Test
