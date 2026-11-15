@@ -1,14 +1,13 @@
 ---
-name: Propuesta
-about: Sugiere una funcionalidad o un cambio de diseño
+name: Proposal
+about: Suggest a feature or a design change
 labels: enhancement
 ---
 
-**Problema que resuelve:**
+**Problem it solves:**
 
-**Cómo te gustaría escribirlo (código del usuario):**
-
+**How you would like to write it (user code):**
 ```kotlin
 ```
 
-**Alternativas que consideraste:**
+**Alternatives you considered:**

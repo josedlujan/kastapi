@@ -1,16 +1,15 @@
 ---
-name: Reporte de bug
-about: Algo no funciona como dice la documentación
+name: Bug report
+about: Something does not work as the documentation says
 labels: bug
 ---
 
-**Versión de KastAPI / Kotlin / Ktor:**
+**KastAPI / Kotlin / Ktor versions:**
 
-**Código mínimo para reproducir:**
-
+**Minimal code to reproduce:**
 ```kotlin
 ```
 
-**Qué esperabas:**
+**What you expected:**
 
-**Qué pasó (incluye la respuesta HTTP o el error):**
+**What happened (include the HTTP response or the error):**
