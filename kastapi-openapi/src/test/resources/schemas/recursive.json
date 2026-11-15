@@ -1,0 +1,56 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Node" },
+    { "$ref": "#/components/schemas/TreeNode" },
+    { "$ref": "#/components/schemas/Even" }
+  ],
+  "components": {
+    "Node": {
+      "type": "object",
+      "properties": {
+        "value": { "type": "integer", "format": "int32" },
+        "children": { "type": "array", "items": { "$ref": "#/components/schemas/Node" } }
+      },
+      "required": ["value", "children"]
+    },
+    "TreeNode": {
+      "type": "object",
+      "properties": {
+        "left": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/TreeNode" },
+            { "type": "null" }
+          ]
+        },
+        "right": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/TreeNode" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "Even": {
+      "type": "object",
+      "properties": {
+        "next": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/Odd" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "Odd": {
+      "type": "object",
+      "properties": {
+        "next": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/Even" },
+            { "type": "null" }
+          ]
+        }
+      }
+    }
+  }
+}

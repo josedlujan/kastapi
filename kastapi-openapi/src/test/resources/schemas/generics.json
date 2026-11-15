@@ -1,0 +1,29 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Boxes" }
+  ],
+  "components": {
+    "Boxes": {
+      "type": "object",
+      "properties": {
+        "ints": { "$ref": "#/components/schemas/Box" },
+        "texts": { "$ref": "#/components/schemas/dev.kastapi.openapi.Box" }
+      },
+      "required": ["ints", "texts"]
+    },
+    "Box": {
+      "type": "object",
+      "properties": {
+        "value": { "type": "integer", "format": "int32" }
+      },
+      "required": ["value"]
+    },
+    "dev.kastapi.openapi.Box": {
+      "type": "object",
+      "properties": {
+        "value": { "type": "string" }
+      },
+      "required": ["value"]
+    }
+  }
+}

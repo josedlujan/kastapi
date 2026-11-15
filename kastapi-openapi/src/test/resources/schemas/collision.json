@@ -1,0 +1,29 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Catalog" }
+  ],
+  "components": {
+    "Catalog": {
+      "type": "object",
+      "properties": {
+        "first": { "$ref": "#/components/schemas/Product" },
+        "second": { "$ref": "#/components/schemas/dev.kastapi.openapi.second.Product" }
+      },
+      "required": ["first", "second"]
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "dev.kastapi.openapi.second.Product": {
+      "type": "object",
+      "properties": {
+        "price": { "type": "integer", "format": "int32" }
+      },
+      "required": ["price"]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/AllPrimitives" }
+  ],
+  "components": {
+    "AllPrimitives": {
+      "type": "object",
+      "properties": {
+        "textValue": { "type": "string" },
+        "flagValue": { "type": "boolean" },
+        "byteValue": { "type": "integer", "format": "int32" },
+        "shortValue": { "type": "integer", "format": "int32" },
+        "intValue": { "type": "integer", "format": "int32" },
+        "longValue": { "type": "integer", "format": "int64" },
+        "floatValue": { "type": "number", "format": "float" },
+        "doubleValue": { "type": "number", "format": "double" },
+        "charValue": { "type": "string", "minLength": 1, "maxLength": 1 }
+      },
+      "required": [
+        "textValue",
+        "flagValue",
+        "byteValue",
+        "shortValue",
+        "intValue",
+        "longValue",
+        "floatValue",
+        "doubleValue",
+        "charValue"
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/EnumHolder" }
+  ],
+  "components": {
+    "EnumHolder": {
+      "type": "object",
+      "properties": {
+        "level": { "type": "string", "enum": ["LOW", "HIGH"] },
+        "status": { "type": "string", "enum": ["in_progress", "DONE"] },
+        "levels": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["LOW", "HIGH"] }
+        }
+      },
+      "required": ["level", "status", "levels"]
+    }
+  }
+}

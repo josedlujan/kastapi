@@ -1,0 +1,27 @@
+{
+  "roots": [
+    { "type": "string" },
+    { "type": "array", "items": { "$ref": "#/components/schemas/Person" } },
+    { "type": "object", "additionalProperties": { "$ref": "#/components/schemas/Address" } },
+    { "type": "string", "enum": ["LOW", "HIGH"] }
+  ],
+  "components": {
+    "Person": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "$ref": "#/components/schemas/Address" },
+        "previous": { "type": "array", "items": { "$ref": "#/components/schemas/Address" } }
+      },
+      "required": ["name", "address", "previous"]
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string" },
+        "zip": { "type": "string" }
+      },
+      "required": ["street", "zip"]
+    }
+  }
+}

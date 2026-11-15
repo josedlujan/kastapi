@@ -1,0 +1,32 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Nullables" }
+  ],
+  "components": {
+    "Nullables": {
+      "type": "object",
+      "properties": {
+        "nullableText": { "type": ["string", "null"] },
+        "nullableInt": { "type": ["integer", "null"], "format": "int32" },
+        "nullableList": { "type": ["array", "null"], "items": { "type": "string" } },
+        "nullableEnum": { "type": ["string", "null"], "enum": ["LOW", "HIGH", null] },
+        "nullableObject": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/Inner" },
+            { "type": "null" }
+          ]
+        },
+        "withDefault": { "type": "string" },
+        "requiredText": { "type": "string" }
+      },
+      "required": ["requiredText"]
+    },
+    "Inner": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" }
+      },
+      "required": ["id"]
+    }
+  }
+}

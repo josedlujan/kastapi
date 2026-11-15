@@ -1,0 +1,57 @@
+package dev.kastapi.docs
+
+import dev.kastapi.KastApi
+import dev.kastapi.delete
+import dev.kastapi.get
+import dev.kastapi.post
+import dev.kastapi.validation.Email
+import dev.kastapi.validation.Length
+import dev.kastapi.validation.Max
+import dev.kastapi.validation.Min
+import kotlinx.serialization.Serializable
+
+// Modelos del ejemplo de la referencia §1.
+
+@Serializable
+data class CreateUser(
+    @Email val email: String,
+    @Min(18) val age: Int,
+    @Length(min = 2, max = 30) val nickname: String? = null,
+)
+
+@Serializable
+data class UserResponse(
+    val id: Long,
+    val email: String,
+    val nickname: String? = null,
+)
+
+@Serializable
+data class UserPath(
+    val id: Long,
+)
+
+@Serializable
+data class ListQuery(
+    @Min(1) @Max(100) val limit: Int = 20,
+    val search: String? = null,
+)
+
+/** Las rutas del ejemplo de la referencia §1, tal cual. */
+fun KastApi.exampleApi() {
+    info(title = "Users API", version = "1.0.0", description = "Ejemplo de KastAPI")
+
+    post<CreateUser, UserResponse>("/users", summary = "Crea un usuario", status = 201) { body ->
+        UserResponse(id = 1, email = body.email, nickname = body.nickname)
+    }
+
+    get<UserPath, UserResponse>("/users/{id}", summary = "Obtiene un usuario") { path ->
+        UserResponse(id = path.id, email = "demo@kastapi.dev")
+    }
+
+    get<ListQuery, List<UserResponse>>("/users", tags = listOf("users")) { _ ->
+        emptyList()
+    }
+
+    delete<UserPath, Unit>("/users/{id}", status = 204) { _ -> }
+}

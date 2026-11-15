@@ -1,0 +1,35 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Collected" }
+  ],
+  "components": {
+    "Collected": {
+      "type": "object",
+      "properties": {
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "numbers": { "type": "array", "items": { "type": "integer", "format": "int32" } },
+        "matrix": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "integer", "format": "int32" } }
+        },
+        "entries": { "type": "array", "items": { "$ref": "#/components/schemas/Entry" } },
+        "scores": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "format": "int32" }
+        },
+        "byName": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/components/schemas/Entry" }
+        }
+      },
+      "required": ["tags", "numbers", "matrix", "entries", "scores", "byName"]
+    },
+    "Entry": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    }
+  }
+}

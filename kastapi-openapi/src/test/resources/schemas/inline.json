@@ -1,0 +1,15 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Account" }
+  ],
+  "components": {
+    "Account": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "owner": { "type": ["integer", "null"], "format": "int64" }
+      },
+      "required": ["id"]
+    }
+  }
+}

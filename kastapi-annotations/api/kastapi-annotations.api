@@ -1,0 +1,53 @@
+public abstract interface annotation class dev/kastapi/validation/Email : java/lang/annotation/Annotation {
+}
+
+public final synthetic class dev/kastapi/validation/Email$Impl : dev/kastapi/validation/Email {
+	public fun <init> ()V
+}
+
+public abstract interface annotation class dev/kastapi/validation/Length : java/lang/annotation/Annotation {
+	public abstract fun max ()I
+	public abstract fun min ()I
+}
+
+public final synthetic class dev/kastapi/validation/Length$Impl : dev/kastapi/validation/Length {
+	public fun <init> (II)V
+	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final synthetic fun max ()I
+	public final synthetic fun min ()I
+}
+
+public abstract interface annotation class dev/kastapi/validation/Max : java/lang/annotation/Annotation {
+	public abstract fun value ()J
+}
+
+public final synthetic class dev/kastapi/validation/Max$Impl : dev/kastapi/validation/Max {
+	public fun <init> (J)V
+	public final synthetic fun value ()J
+}
+
+public abstract interface annotation class dev/kastapi/validation/Min : java/lang/annotation/Annotation {
+	public abstract fun value ()J
+}
+
+public final synthetic class dev/kastapi/validation/Min$Impl : dev/kastapi/validation/Min {
+	public fun <init> (J)V
+	public final synthetic fun value ()J
+}
+
+public abstract interface annotation class dev/kastapi/validation/NotBlank : java/lang/annotation/Annotation {
+}
+
+public final synthetic class dev/kastapi/validation/NotBlank$Impl : dev/kastapi/validation/NotBlank {
+	public fun <init> ()V
+}
+
+public abstract interface annotation class dev/kastapi/validation/Pattern : java/lang/annotation/Annotation {
+	public abstract fun regex ()Ljava/lang/String;
+}
+
+public final synthetic class dev/kastapi/validation/Pattern$Impl : dev/kastapi/validation/Pattern {
+	public fun <init> (Ljava/lang/String;)V
+	public final synthetic fun regex ()Ljava/lang/String;
+}
+

@@ -1,0 +1,24 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Person" }
+  ],
+  "components": {
+    "Person": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "$ref": "#/components/schemas/Address" },
+        "previous": { "type": "array", "items": { "$ref": "#/components/schemas/Address" } }
+      },
+      "required": ["name", "address", "previous"]
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string" },
+        "zip": { "type": "string" }
+      },
+      "required": ["street", "zip"]
+    }
+  }
+}

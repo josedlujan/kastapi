@@ -1,0 +1,3 @@
+public abstract interface annotation class dev/kastapi/openapi/InternalKastApi : java/lang/annotation/Annotation {
+}
+

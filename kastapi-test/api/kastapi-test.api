@@ -1,0 +1,8 @@
+public final class dev/kastapi/test/KastTestClient {
+	public final fun getClient ()Lio/ktor/client/HttpClient;
+}
+
+public final class dev/kastapi/test/KastTestKt {
+	public static final fun kastTest (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;)V
+}
+

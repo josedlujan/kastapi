@@ -1,0 +1,38 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Annotated" }
+  ],
+  "components": {
+    "Annotated": {
+      "type": "object",
+      "properties": {
+        "age": { "type": "integer", "format": "int32", "minimum": 18 },
+        "score": { "type": "integer", "format": "int32", "maximum": 100 },
+        "rating": { "type": "number", "format": "double", "minimum": 1, "maximum": 10 },
+        "nickname": { "type": "string", "minLength": 2, "maxLength": 30 },
+        "minOnly": { "type": "string", "minLength": 1 },
+        "maxOnly": { "type": "string", "maxLength": 5 },
+        "tags": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 3 },
+        "code": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "email": { "type": "string", "format": "email" },
+        "title": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 3, "maxLength": 8 },
+        "backupEmail": { "type": ["string", "null"], "format": "email" },
+        "optionalTags": { "type": ["array", "null"], "items": { "type": "string" }, "maxItems": 2 }
+      },
+      "required": [
+        "age",
+        "score",
+        "rating",
+        "nickname",
+        "minOnly",
+        "maxOnly",
+        "tags",
+        "code",
+        "email",
+        "title",
+        "label"
+      ]
+    }
+  }
+}

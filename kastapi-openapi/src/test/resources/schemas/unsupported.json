@@ -1,0 +1,15 @@
+{
+  "roots": [
+    { "$ref": "#/components/schemas/Drawing" }
+  ],
+  "components": {
+    "Drawing": {
+      "type": "object",
+      "properties": {
+        "shape": {},
+        "nothing": { "type": "object" }
+      },
+      "required": ["shape", "nothing"]
+    }
+  }
+}
