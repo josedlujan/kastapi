@@ -111,7 +111,7 @@ Given `I` and the method:
 5. Optionality: a property with a default value or a nullable type is optional. Without a default and not nullable, it is required.
 6. Query/path properties with unsupported types (nested objects) → startup error (§6).
 
-With the converted values a `JsonObject` is built and decoded with `json.decodeFromJsonElement(serializer<I>(), ...)` (see [ADR-0002](adr/0002-serialdescriptor-sin-reflexion.md)).
+With the converted values a `JsonObject` is built and decoded with `json.decodeFromJsonElement(serializer<I>(), ...)` (see [ADR-0002](adr/0002-serialdescriptor-no-reflection.md)).
 
 ## 5. Validation
 

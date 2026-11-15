@@ -1,16 +1,16 @@
-# ADR-NNNN: Título
+# ADR-NNNN: Title
 
-- Estado: Propuesto | Aceptado | Reemplazado por ADR-XXXX
-- Fecha: AAAA-MM-DD
+- Status: Proposed | Accepted | Superseded by ADR-XXXX
+- Date: YYYY-MM-DD
 
-## Contexto
+## Context
 
-Qué problema hay y qué restricciones existen.
+What the problem is and what constraints exist.
 
-## Decisión
+## Decision
 
-Qué se decidió, en una o dos frases claras.
+What was decided, in one or two clear sentences.
 
-## Consecuencias
+## Consequences
 
-Qué ganamos, qué perdemos, qué queda abierto.
+What we gain, what we lose, what remains open.
