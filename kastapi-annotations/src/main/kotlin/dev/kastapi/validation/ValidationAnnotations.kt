@@ -3,10 +3,10 @@ package dev.kastapi.validation
 import kotlinx.serialization.SerialInfo
 
 /**
- * El valor numérico debe ser mayor o igual a [value].
+ * The numeric value must be greater than or equal to [value].
  *
- * Se aplica a propiedades numéricas. Con enteros la comparación es exacta; con decimales se compara
- * contra [value] convertido a `Double`.
+ * Applies to numeric properties. With integers the comparison is exact; with decimals it is compared
+ * against [value] converted to `Double`.
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
@@ -15,10 +15,10 @@ public annotation class Min(
 )
 
 /**
- * El valor numérico debe ser menor o igual a [value].
+ * The numeric value must be less than or equal to [value].
  *
- * Se aplica a propiedades numéricas. Con enteros la comparación es exacta; con decimales se compara
- * contra [value] convertido a `Double`.
+ * Applies to numeric properties. With integers the comparison is exact; with decimals it is compared
+ * against [value] converted to `Double`.
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
@@ -27,8 +27,8 @@ public annotation class Max(
 )
 
 /**
- * La longitud de un `String` (en caracteres Unicode) o el tamaño de una `List` debe estar entre [min] y [max],
- * ambos inclusive.
+ * The length of a `String` (in Unicode characters) or the size of a `List` must be between [min] and [max],
+ * both inclusive.
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
@@ -38,23 +38,23 @@ public annotation class Length(
 )
 
 /**
- * El `String` no puede estar vacío ni contener solo espacios en blanco.
+ * The `String` must not be empty or contain only whitespace.
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
 public annotation class NotBlank
 
 /**
- * El `String` debe parecer una dirección de correo electrónico (`^[^@\s]+@[^@\s]+\.[^@\s]+$`).
+ * The `String` must look like an email address (`^[^@\s]+@[^@\s]+\.[^@\s]+$`).
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
 public annotation class Email
 
 /**
- * El `String` debe coincidir completo con la expresión regular [regex].
+ * The `String` must match the regular expression [regex] entirely.
  *
- * La expresión se compila una sola vez, al registrar la ruta.
+ * The expression is compiled only once, when the route is registered.
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)

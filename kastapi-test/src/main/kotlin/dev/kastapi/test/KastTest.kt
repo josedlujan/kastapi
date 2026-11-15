@@ -11,19 +11,19 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
 
 /**
- * Cliente de pruebas que recibe el bloque de [kastTest].
+ * Test client that the [kastTest] block receives.
  *
- * @property client cliente HTTP de Ktor, ya configurado con JSON (el mismo [KastApiConfig.json] que usa el servidor).
+ * @property client Ktor HTTP client, already configured for JSON (the same [KastApiConfig.json] the server uses).
  */
 public class KastTestClient internal constructor(
     public val client: HttpClient,
 ) {
-    /** Deserializa el cuerpo de la respuesta al tipo [T]. */
+    /** Deserializes the response body into type [T]. */
     public suspend inline fun <reified T> HttpResponse.bodyAs(): T = body()
 }
 
 /**
- * Levanta una aplicación KastAPI en memoria (`testApplication` + `installKastApi`) y ejecuta [test].
+ * Starts a KastAPI application in memory (`testApplication` + `installKastApi`) and runs [test].
  *
  * ```kotlin
  * kastTest({
@@ -33,8 +33,8 @@ public class KastTestClient internal constructor(
  * }
  * ```
  *
- * @param block declaración de rutas, igual que en `kastApi { ... }`.
- * @param test prueba que se ejecuta con un [KastTestClient].
+ * @param block route declarations, just like in `kastApi { ... }`.
+ * @param test test that runs with a [KastTestClient].
  */
 public fun kastTest(
     block: KastApi.() -> Unit,

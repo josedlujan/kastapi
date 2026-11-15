@@ -1,6 +1,6 @@
 package dev.kastapi
 
-/** Datos del bloque `info` de la documentación, compartidos por el bloque de rutas y sus grupos. */
+/** Data of the documentation's `info` block, shared by the routes block and its groups. */
 internal class ApiMetadata {
     var title: String = DEFAULT_TITLE
     var version: String = DEFAULT_VERSION

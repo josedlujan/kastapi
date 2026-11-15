@@ -3,7 +3,7 @@ package dev.kastapi.errors
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
-/** Detalle de un error de validación (referencia §8). */
+/** Detail of a validation error (reference §8). */
 @Serializable
 internal data class ErrorDetail(
     val location: String,
@@ -13,7 +13,7 @@ internal data class ErrorDetail(
     val value: JsonElement? = null,
 )
 
-/** Formato único de error de la API (referencia §8). */
+/** The API's single error format (reference §8). */
 @Serializable
 internal data class ErrorResponse(
     val status: Int,
@@ -22,7 +22,7 @@ internal data class ErrorResponse(
     val details: List<ErrorDetail> = emptyList(),
 )
 
-/** Valores del campo `error`. */
+/** Values of the `error` field. */
 internal object ErrorKind {
     const val VALIDATION = "validation_error"
     const val MALFORMED_JSON = "malformed_json"
@@ -33,7 +33,7 @@ internal object ErrorKind {
     const val INTERNAL_ERROR = "internal_error"
 }
 
-/** Valores del campo `code` en los detalles. */
+/** Values of the `code` field in the details. */
 internal object ErrorCode {
     const val REQUIRED = "required"
     const val TYPE = "type"
@@ -46,7 +46,7 @@ internal object ErrorCode {
     const val PATTERN = "pattern"
 }
 
-/** Valores del campo `location` en los detalles. */
+/** Values of the `location` field in the details. */
 internal object ErrorLocation {
     const val PATH = "path"
     const val QUERY = "query"
@@ -60,7 +60,7 @@ private const val METHOD_NOT_ALLOWED = 405
 private const val UNPROCESSABLE_ENTITY = 422
 private const val INTERNAL_SERVER_ERROR = 500
 
-/** Construye la respuesta 404 para una ruta que no existe. */
+/** Builds the 404 response for a route that does not exist. */
 internal fun notFoundError(
     method: String,
     path: String,
@@ -71,7 +71,7 @@ internal fun notFoundError(
         message = Messages.notFound(method, path),
     )
 
-/** Construye la respuesta 405 para un método no permitido en una ruta que sí existe. */
+/** Builds the 405 response for a method not allowed on a route that does exist. */
 internal fun methodNotAllowedError(
     method: String,
     path: String,
@@ -82,7 +82,7 @@ internal fun methodNotAllowedError(
         message = Messages.methodNotAllowed(method, path),
     )
 
-/** Construye la respuesta de un `HttpError` lanzado desde un handler. */
+/** Builds the response for an `HttpError` thrown from a handler. */
 internal fun httpError(
     status: Int,
     message: String,
@@ -93,7 +93,7 @@ internal fun httpError(
         message = message,
     )
 
-/** Construye la respuesta 500; no incluye ningún dato de la excepción. */
+/** Builds the 500 response; it includes no exception data. */
 internal fun internalError(): ErrorResponse =
     ErrorResponse(
         status = INTERNAL_SERVER_ERROR,
@@ -101,7 +101,7 @@ internal fun internalError(): ErrorResponse =
         message = Messages.INTERNAL_ERROR,
     )
 
-/** Construye la respuesta 422 con todos los [details] encontrados. */
+/** Builds the 422 response with all the [details] found. */
 internal fun validationError(details: List<ErrorDetail>): ErrorResponse =
     ErrorResponse(
         status = UNPROCESSABLE_ENTITY,
@@ -110,7 +110,7 @@ internal fun validationError(details: List<ErrorDetail>): ErrorResponse =
         details = details,
     )
 
-/** Construye la respuesta 400 para un cuerpo que no es JSON válido. */
+/** Builds the 400 response for a body that is not valid JSON. */
 internal fun malformedJsonError(): ErrorResponse =
     ErrorResponse(
         status = BAD_REQUEST,
@@ -118,7 +118,7 @@ internal fun malformedJsonError(): ErrorResponse =
         message = Messages.MALFORMED_JSON,
     )
 
-/** Construye la respuesta 413 para un cuerpo que supera [maxBodyBytes]. */
+/** Builds the 413 response for a body that exceeds [maxBodyBytes]. */
 internal fun payloadTooLargeError(maxBodyBytes: Long): ErrorResponse =
     ErrorResponse(
         status = PAYLOAD_TOO_LARGE,

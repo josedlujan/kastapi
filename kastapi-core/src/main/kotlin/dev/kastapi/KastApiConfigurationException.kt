@@ -1,15 +1,15 @@
 package dev.kastapi
 
 /**
- * Se lanza al instalar KastAPI cuando la configuración de las rutas tiene problemas.
+ * Thrown when installing KastAPI if the route configuration has problems.
  *
- * El mensaje lista **todos** los problemas encontrados, cada uno con la ruta a la que afecta. Con
- * [KastApiConfig.validateOnStartup] en `true` se comprueba, entre otras cosas, que:
- * - cada `{param}` de la ruta exista como propiedad de la entrada;
- * - las propiedades de path no sean nullable ni tengan valor por defecto;
- * - las propiedades de path y query tengan un tipo soportado;
- * - no haya dos rutas con el mismo método y la misma ruta;
- * - las anotaciones de validación estén en tipos compatibles.
+ * The message lists **all** the problems found, each with the route it affects. With
+ * [KastApiConfig.validateOnStartup] set to `true`, it checks, among other things, that:
+ * - each `{param}` of the route exists as a property of the input;
+ * - path properties are neither nullable nor have a default value;
+ * - path and query properties have a supported type;
+ * - there are no two routes with the same method and the same path;
+ * - validation annotations are on compatible types.
  */
 public class KastApiConfigurationException internal constructor(
     message: String,

@@ -13,17 +13,17 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import java.util.regex.PatternSyntaxException
 
-/** Incumplimiento de una regla: el `code` y el `message` del detalle de error. */
+/** A rule violation: the `code` and `message` of the error detail. */
 internal class Violation(
     val code: String,
     val message: String,
 )
 
 /**
- * Regla de validación derivada de una anotación (referencia §5).
+ * Validation rule derived from an annotation (reference §5).
  *
- * Si el valor no es del tipo al que se aplica la regla, [check] devuelve `null`: las anotaciones en tipos
- * incompatibles las detecta la validación al arrancar.
+ * If the value is not of the type the rule applies to, [check] returns `null`: annotations on
+ * incompatible types are detected by startup validation.
  */
 internal sealed interface Rule {
     fun check(value: JsonElement): Violation?
@@ -72,19 +72,19 @@ internal object EmailRule : Rule {
     }
 
     /**
-     * Equivale a `^[^@\s]+@[^@\s]+\.[^@\s]+$` pero en una sola pasada: un regex con esa forma tiene coste
-     * cuadrático ante entradas hostiles (por ejemplo `a@` + muchos puntos + un espacio).
+     * Equivalent to `^[^@\s]+@[^@\s]+\.[^@\s]+$` but in a single pass: a regex of that form has quadratic cost
+     * on hostile inputs (for example `a@` + many dots + a space).
      */
     private fun isEmail(text: String): Boolean {
         val at = text.indexOf('@')
         if (at < 1 || text.indexOf('@', at + 1) != -1) return false
         if (text.any(::isRegexWhitespace)) return false
-        // El dominio necesita un punto con al menos un carácter antes y otro después.
+        // The domain needs a dot with at least one character before it and one after it.
         val dot = text.indexOf('.', at + 2)
         return dot != -1 && dot < text.length - 1
     }
 
-    /** El `\s` de Java sin `UNICODE_CHARACTER_CLASS`: espacio, `\t`, `\n`, `\u000B`, `\u000C` y `\r`. */
+    /** Java's `\s` without `UNICODE_CHARACTER_CLASS`: space, `\t`, `\n`, `\u000B`, `\u000C` and `\r`. */
     private fun isRegexWhitespace(c: Char): Boolean =
         c == ' ' || c == '\t' || c == '\n' || c == '\u000B' || c == '\u000C' || c == '\r'
 }
@@ -98,7 +98,7 @@ internal class PatternRule(
     }
 }
 
-/** Tipos a los que se puede aplicar cada anotación (referencia §5). */
+/** Types each annotation can be applied to (reference §5). */
 private enum class Applies(
     val description: String,
 ) {
@@ -126,13 +126,13 @@ private val NUMERIC_KINDS: Set<SerialKind> =
     )
 
 /**
- * Convierte las anotaciones de una propiedad en reglas. Los regex de `@Pattern` se compilan aquí, una sola vez.
+ * Turns a property's annotations into rules. `@Pattern` regexes are compiled here, only once.
  *
- * Una anotación en un tipo incompatible no genera regla y se añade a [problems] como problema de consistencia;
- * un regex inválido se añade como problema fatal.
+ * An annotation on an incompatible type produces no rule and is added to [problems] as a consistency problem;
+ * an invalid regex is added as a fatal problem.
  *
- * @param property nombre `Clase.propiedad`, solo para los mensajes de configuración.
- * @param element descriptor del tipo de la propiedad.
+ * @param property `Class.property` name, only for configuration messages.
+ * @param element descriptor of the property's type.
  */
 internal fun rulesFor(
     annotations: List<Annotation>,
@@ -170,7 +170,7 @@ internal fun rulesFor(
     return rules
 }
 
-/** Tipo de [element]; para una `value class` es el tipo que envuelve. */
+/** Type of [element]; for a `value class` it is the type it wraps. */
 private fun underlyingKind(element: SerialDescriptor): SerialKind {
     var current = element
     while (current.isInline) current = current.getElementDescriptor(0)
@@ -189,16 +189,16 @@ private fun patternRule(
         null
     }
 
-/** Texto de un valor numérico JSON, o `null` si no es un número. */
+/** Text of a JSON numeric value, or `null` if it is not a number. */
 private fun JsonElement.numberText(): String? =
     (this as? JsonPrimitive)?.takeIf { it !is JsonNull && !it.isString }?.content
 
-/** Contenido de un valor de texto JSON, o `null` si no es un texto. */
+/** Content of a JSON text value, or `null` if it is not text. */
 private fun JsonElement.stringOrNull(): String? = (this as? JsonPrimitive)?.takeIf { it.isString }?.content
 
 /**
- * Compara un número con [bound]: exacto con enteros y como `Double` con decimales.
- * Devuelve `null` si [value] no es numérico.
+ * Compares a number with [bound]: exactly for integers and as `Double` for decimals.
+ * Returns `null` if [value] is not numeric.
  */
 private fun compareToBound(
     value: JsonElement,
@@ -208,7 +208,7 @@ private fun compareToBound(
     return text.toLongOrNull()?.compareTo(bound) ?: text.toDoubleOrNull()?.compareTo(bound.toDouble())
 }
 
-/** Tamaño y unidad de un texto (en caracteres Unicode) o de una lista; `null` para otros valores. */
+/** Size and unit of a text (in Unicode characters) or of a list; `null` for other values. */
 private fun measure(value: JsonElement): Pair<Int, String>? =
     if (value is JsonArray) {
         value.size to Messages.UNIT_ITEMS

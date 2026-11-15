@@ -7,9 +7,9 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
 /**
- * Ruta registrada en el DSL, ya sin tipos genéricos, lista para montarse en Ktor.
+ * Route registered in the DSL, now without generic types, ready to be mounted in Ktor.
  *
- * Los metadatos ([summary], [description], [tags]) los usa la generación de OpenAPI.
+ * The metadata ([summary], [description], [tags]) is used by the OpenAPI generation.
  */
 internal class RouteDefinition(
     val method: HttpMethod,
@@ -18,15 +18,15 @@ internal class RouteDefinition(
     val description: String?,
     val tags: List<String>,
     val status: Int,
-    /** Serializadores de entrada y salida; la documentación OpenAPI lee sus descriptores. */
+    /** Input and output serializers; the OpenAPI documentation reads their descriptors. */
     val inputSerializer: KSerializer<*>,
     val outputSerializer: KSerializer<*>,
-    /** Cómo construir la entrada desde path, query y cuerpo. */
+    /** How to build the input from path, query and body. */
     val plan: RoutePlan,
-    /** `true` cuando la salida es `Unit`: se responde sin cuerpo. */
+    /** `true` when the output is `Unit`: the response has no body. */
     val emptyResponse: Boolean,
-    /** Ejecuta el handler del usuario con la entrada ya construida. */
+    /** Runs the user's handler with the input already built. */
     val handler: suspend (KastCall, Any?) -> Any?,
-    /** Serializa el resultado del handler a JSON. */
+    /** Serializes the handler's result to JSON. */
     val encode: (Json, Any?) -> String,
 )

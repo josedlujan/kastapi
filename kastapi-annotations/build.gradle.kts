@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    // Las anotaciones de validación son @SerialInfo: se exponen para que el usuario no las declare aparte.
+    // The validation annotations are @SerialInfo: they are exposed so users do not have to declare them separately.
     api(libs.kotlinx.serialization.json)
 }

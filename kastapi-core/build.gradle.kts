@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    // ADR-0004: core expone las anotaciones con api(...) para que el usuario no las declare aparte.
+    // ADR-0004: core exposes the annotations with api(...) so users do not have to declare them separately.
     api(project(":kastapi-annotations"))
     implementation(project(":kastapi-openapi"))
 

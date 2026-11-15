@@ -3,9 +3,9 @@ package dev.kastapi
 import kotlinx.serialization.Serializable
 
 /**
- * Modelo de entrada para rutas que no reciben datos.
+ * Input model for routes that receive no data.
  *
- * Se usa como tipo `I` en el DSL: `get<NoInput, Health>("/health") { Health("ok") }`.
+ * It is used as the `I` type in the DSL: `get<NoInput, Health>("/health") { Health("ok") }`.
  */
 @Serializable
 public object NoInput

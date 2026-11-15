@@ -19,13 +19,14 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.JsonObject
 
-/** Rutas que KastAPI reserva para la documentación; vacío si el esquema está desactivado. */
+/** Routes that KastAPI reserves for the documentation; empty if the schema is disabled. */
 internal fun reservedPaths(config: KastApiConfig): List<String> =
     if (config.openApiPath == null) emptyList() else listOfNotNull(config.openApiPath, config.docsPath)
 
 /**
- * Genera el documento OpenAPI **una sola vez** y monta las rutas que lo sirven (`openApiPath`) y la que sirve
- * Swagger UI (`docsPath`). Con `openApiPath = null` no se monta nada; con `docsPath = null` solo se sirve el esquema.
+ * Generates the OpenAPI document **only once** and mounts the routes that serve it (`openApiPath`) and the one that serves
+ * Swagger UI (`docsPath`). With `openApiPath = null` nothing is mounted; with `docsPath = null`
+ * only the schema is served.
  */
 internal fun Application.mountDocumentation(
     routes: List<RouteDefinition>,
@@ -51,7 +52,7 @@ internal fun Application.mountDocumentation(
     }
 }
 
-/** Traduce una ruta registrada al modelo neutral que consume `kastapi-openapi`. */
+/** Translates a registered route into the neutral model that `kastapi-openapi` consumes. */
 private fun RouteDefinition.toApiRoute(): ApiRoute {
     val descriptor = inputSerializer.descriptor
     val parameters =

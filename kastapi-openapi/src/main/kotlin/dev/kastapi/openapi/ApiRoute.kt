@@ -3,53 +3,54 @@ package dev.kastapi.openapi
 import kotlinx.serialization.descriptors.SerialDescriptor
 
 /**
- * Modelo neutral de una ruta: lo que `kastapi-core` entrega a `kastapi-openapi` para generar el documento.
+ * Neutral model of a route: what `kastapi-core` hands to `kastapi-openapi` to generate the document.
  *
- * Así `openapi` no depende de `core` ni repite la lógica que decide qué viene del path, del query o del cuerpo.
+ * This way `openapi` does not depend on `core` or repeat the logic that decides what comes from
+ * the path, the query or the body.
  */
 @InternalKastApi
 public class ApiRoute(
-    /** Método HTTP en mayúsculas (`GET`, `POST`...). */
+    /** HTTP method in uppercase (`GET`, `POST`...). */
     public val method: String,
-    /** Ruta completa, con el prefijo de los grupos y los parámetros como `{nombre}`. */
+    /** Full path, with the group prefixes and the parameters as `{name}`. */
     public val path: String,
     public val summary: String?,
     public val description: String?,
     public val tags: List<String>,
-    /** Código de la respuesta exitosa. */
+    /** Success response code. */
     public val status: Int,
-    /** Frase estándar del [status] (`OK`, `Created`...). */
+    /** Standard phrase of the [status] (`OK`, `Created`...). */
     public val statusDescription: String,
     public val parameters: List<ApiParameter>,
     public val body: ApiBody?,
-    /** Descriptor de la salida, o `null` si la respuesta no tiene cuerpo. */
+    /** Output descriptor, or `null` if the response has no body. */
     public val output: SerialDescriptor?,
-    /** `true` si la ruta tiene entrada y por tanto puede responder 422. */
+    /** `true` if the route has input and can therefore respond 422. */
     public val documentsValidationError: Boolean,
 )
 
-/** Propiedad de la entrada que se lee de la URL. */
+/** Input property that is read from the URL. */
 @InternalKastApi
 public class ApiParameter(
     public val name: String,
     /** `path` o `query`. */
     public val location: String,
     public val required: Boolean,
-    /** Descriptor de la clase de entrada. */
+    /** Descriptor of the input class. */
     public val owner: SerialDescriptor,
-    /** Posición de la propiedad en [owner]. */
+    /** Position of the property in [owner]. */
     public val index: Int,
 )
 
-/** Cuerpo JSON de la entrada. */
+/** JSON body of the input. */
 @InternalKastApi
 public class ApiBody(
     public val descriptor: SerialDescriptor,
-    /** Propiedades de [descriptor] que no salen del cuerpo (las de path). */
+    /** Properties of [descriptor] that do not come from the body (the path ones). */
     public val excluded: Set<String>,
 )
 
-/** Datos del bloque `info` del documento. */
+/** Data of the document's `info` block. */
 @InternalKastApi
 public class ApiInfo(
     public val title: String,

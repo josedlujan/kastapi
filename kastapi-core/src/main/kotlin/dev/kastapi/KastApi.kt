@@ -14,14 +14,14 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
 
 /**
- * Arranca un servidor Ktor (Netty) con las rutas declaradas en [block] y bloquea hasta que se detenga.
+ * Starts a Ktor (Netty) server with the routes declared in [block] and blocks until it stops.
  *
  * Internamente llama a [installKastApi].
  *
- * @param port puerto de escucha.
- * @param host interfaz de red.
- * @param config configuración de KastAPI.
- * @param block declaración de rutas.
+ * @param port listening port.
+ * @param host network interface.
+ * @param config KastAPI configuration.
+ * @param block route declarations.
  */
 public fun kastApi(
     port: Int = 8080,
@@ -35,10 +35,10 @@ public fun kastApi(
 }
 
 /**
- * Instala KastAPI en una aplicación Ktor existente.
+ * Installs KastAPI into an existing Ktor application.
  *
- * @param config configuración de KastAPI.
- * @param block declaración de rutas.
+ * @param config KastAPI configuration.
+ * @param block route declarations.
  */
 public fun Application.installKastApi(
     config: KastApiConfig = KastApiConfig(),
@@ -54,7 +54,7 @@ public fun Application.installKastApi(
 }
 
 /**
- * Receptor del bloque de declaración de rutas. Ver [get], [post], [put], [patch] y [delete].
+ * Receiver of the route declaration block. See [get], [post], [put], [patch] and [delete].
  */
 public class KastApi internal constructor(
     private val routes: MutableList<RouteDraft>,
@@ -63,11 +63,11 @@ public class KastApi internal constructor(
     private val inheritedTags: List<String>,
 ) {
     /**
-     * Define el bloque `info` de la documentación OpenAPI. Si se llama varias veces, gana la última llamada.
+     * Defines the `info` block of the OpenAPI documentation. If called several times, the last call wins.
      *
-     * @param title título de la API.
-     * @param version versión de la API.
-     * @param description descripción opcional.
+     * @param title API title.
+     * @param version API version.
+     * @param description optional description.
      */
     public fun info(
         title: String = ApiMetadata.DEFAULT_TITLE,
@@ -80,11 +80,11 @@ public class KastApi internal constructor(
     }
 
     /**
-     * Agrupa rutas bajo un prefijo común.
+     * Groups routes under a common prefix.
      *
-     * @param prefix prefijo que se antepone a la ruta de cada declaración del grupo.
-     * @param tags etiquetas que heredan las rutas del grupo.
-     * @param block declaración de rutas del grupo.
+     * @param prefix prefix prepended to the path of each declaration in the group.
+     * @param tags tags inherited by the group's routes.
+     * @param block route declarations of the group.
      */
     public fun group(
         prefix: String,
@@ -94,7 +94,7 @@ public class KastApi internal constructor(
         KastApi(routes, metadata, this.prefix.trimEnd('/') + prefix, inheritedTags + tags).block()
     }
 
-    /** Registra una ruta. Solo lo usan las funciones `inline` del DSL. */
+    /** Registers a route. Only the DSL's `inline` functions use it. */
     @PublishedApi
     @Suppress("LongParameterList", "UNCHECKED_CAST")
     internal fun <I : Any, O> register(
@@ -127,16 +127,16 @@ public class KastApi internal constructor(
 }
 
 /**
- * Declara una ruta `GET`.
+ * Declares a `GET` route.
  *
- * @param I modelo de entrada; usa [NoInput] si la ruta no recibe datos.
- * @param O modelo de salida; `Unit` responde sin cuerpo.
- * @param path ruta, relativa al grupo si está dentro de uno.
- * @param summary resumen para la documentación.
- * @param description descripción para la documentación.
- * @param tags etiquetas para la documentación.
- * @param status código de respuesta exitosa.
- * @param handler función suspendida que atiende la petición.
+ * @param I input model; use [NoInput] if the route receives no data.
+ * @param O output model; `Unit` responds without a body.
+ * @param path route, relative to the group if it is inside one.
+ * @param summary summary for the documentation.
+ * @param description description for the documentation.
+ * @param tags tags for the documentation.
+ * @param status success response code.
+ * @param handler suspending function that serves the request.
  */
 public inline fun <reified I : Any, reified O> KastApi.get(
     path: String,
@@ -150,9 +150,9 @@ public inline fun <reified I : Any, reified O> KastApi.get(
 }
 
 /**
- * Declara una ruta `POST`. El [status] por defecto es 201.
+ * Declares a `POST` route. The default [status] is 201.
  *
- * Ver [get] para el significado de los parámetros.
+ * See [get] for the meaning of the parameters.
  */
 public inline fun <reified I : Any, reified O> KastApi.post(
     path: String,
@@ -166,9 +166,9 @@ public inline fun <reified I : Any, reified O> KastApi.post(
 }
 
 /**
- * Declara una ruta `PUT`.
+ * Declares a `PUT` route.
  *
- * Ver [get] para el significado de los parámetros.
+ * See [get] for the meaning of the parameters.
  */
 public inline fun <reified I : Any, reified O> KastApi.put(
     path: String,
@@ -182,9 +182,9 @@ public inline fun <reified I : Any, reified O> KastApi.put(
 }
 
 /**
- * Declara una ruta `PATCH`.
+ * Declares a `PATCH` route.
  *
- * Ver [get] para el significado de los parámetros.
+ * See [get] for the meaning of the parameters.
  */
 public inline fun <reified I : Any, reified O> KastApi.patch(
     path: String,
@@ -198,9 +198,9 @@ public inline fun <reified I : Any, reified O> KastApi.patch(
 }
 
 /**
- * Declara una ruta `DELETE`.
+ * Declares a `DELETE` route.
  *
- * Ver [get] para el significado de los parámetros.
+ * See [get] for the meaning of the parameters.
  */
 public inline fun <reified I : Any, reified O> KastApi.delete(
     path: String,

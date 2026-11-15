@@ -11,7 +11,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 
-/** De dónde sale el valor de una propiedad de la entrada. */
+/** Where the value of an input property comes from. */
 internal enum class ParamLocation(
     val label: String,
 ) {
@@ -19,24 +19,24 @@ internal enum class ParamLocation(
     QUERY("query"),
 }
 
-/** Tipos escalares que se pueden convertir desde texto (referencia §4). */
+/** Scalar types that can be converted from text (reference §4). */
 internal enum class ScalarType { STRING, INT, LONG, DOUBLE, BOOLEAN, ENUM }
 
-/** Cómo se obtiene y convierte una propiedad de la entrada que viene de path o query. */
+/** How an input property that comes from path or query is obtained and converted. */
 internal class ParamSpec(
     val name: String,
-    /** Posición de la propiedad en el `SerialDescriptor` de la entrada. */
+    /** Position of the property in the input's `SerialDescriptor`. */
     val index: Int,
     val location: ParamLocation,
     val scalar: ScalarType,
     val enumNames: List<String>,
     val isList: Boolean,
-    /** `true` si la propiedad tiene valor por defecto (es opcional). */
+    /** `true` if the property has a default value (it is optional). */
     val hasDefault: Boolean,
     val nullable: Boolean,
 )
 
-/** Plan de binding de una ruta junto con los problemas de configuración que se encontraron al calcularlo. */
+/** A route's binding plan together with the configuration problems found while computing it. */
 internal class PlanResult(
     val plan: RoutePlan,
     val problems: List<Problem>,
@@ -44,7 +44,7 @@ internal class PlanResult(
 
 private val PATH_PARAMETER = Regex("\\{([^}/]+)}")
 
-/** Nombres de los parámetros `{nombre}` de [path]; `{id?}` y `{ids...}` se reducen a `id` e `ids`. */
+/** Names of the `{name}` parameters of [path]; `{id?}` and `{ids...}` are reduced to `id` and `ids`. */
 internal fun pathParameterNames(path: String): List<String> =
     PATH_PARAMETER
         .findAll(path)
@@ -52,28 +52,28 @@ internal fun pathParameterNames(path: String): List<String> =
         .filter { it.isNotBlank() }
         .toList()
 
-/** [path] con los nombres de los parámetros sustituidos: dos rutas con la misma plantilla casan las mismas URLs. */
+/** [path] with the parameter names replaced: two routes with the same template match the same URLs. */
 internal fun routeTemplate(path: String): String = PATH_PARAMETER.replace(path, "{}")
 
 /**
- * Plan de binding de una ruta, calculado una vez al registrarla a partir del `SerialDescriptor` (ADR-0002).
+ * A route's binding plan, computed once when it is registered from the `SerialDescriptor` (ADR-0002).
  *
- * En `GET` y `DELETE` todas las propiedades salen de path o query. En `POST`, `PUT` y `PATCH` las que aparecen
- * como `{nombre}` en la ruta salen del path y el resto del cuerpo JSON (referencia §4).
+ * In `GET` and `DELETE` all properties come from path or query. In `POST`, `PUT` and `PATCH` those that appear
+ * as `{name}` in the route come from the path and the rest from the JSON body (reference §4).
  */
 internal class RoutePlan(
     val serializer: KSerializer<*>,
-    /** Propiedades que salen de path o query. En rutas con cuerpo, solo las de path. */
+    /** Properties that come from path or query. In routes with a body, only the path ones. */
     val params: List<ParamSpec>,
     val noInput: Boolean,
-    /** `true` si el resto de la entrada se lee del cuerpo JSON. */
+    /** `true` if the rest of the input is read from the JSON body. */
     val hasBody: Boolean = false,
-    /** Propiedades del cuerpo nullable y sin valor por defecto: si faltan, llegan como `null`. */
+    /** Body properties that are nullable and have no default value: if missing, they arrive as `null`. */
     val bodyNullables: List<String> = emptyList(),
-    /** Reglas de las anotaciones de validación, compiladas al registrar la ruta. */
+    /** Validation annotation rules, compiled when the route is registered. */
     val rules: RuleSet = RuleSet.EMPTY,
 ) {
-    /** Nombres de las propiedades que se leen de la URL y no del cuerpo. */
+    /** Names of the properties read from the URL rather than from the body. */
     val pathNames: Set<String> = params.filter { it.location == ParamLocation.PATH }.mapTo(HashSet()) { it.name }
 
     companion object {
@@ -81,10 +81,10 @@ internal class RoutePlan(
         private val BODY_METHODS = setOf(HttpMethod.Post, HttpMethod.Put, HttpMethod.Patch)
 
         /**
-         * Calcula el plan de [serializer] para la ruta [method] [path] (ya con el prefijo del grupo).
+         * Computes the plan of [serializer] for the route [method] [path] (already with the group prefix).
          *
-         * No lanza excepciones: los problemas de configuración se devuelven en el resultado y los reporta
-         * el validador de arranque. Si hay problemas fatales el plan puede estar incompleto.
+         * It does not throw: configuration problems are returned in the result and reported by
+         * the startup validator. If there are fatal problems the plan may be incomplete.
          */
         fun build(
             method: HttpMethod,
@@ -135,7 +135,7 @@ internal class RoutePlan(
                 .filter { descriptor.getElementDescriptor(it).isNullable && !descriptor.isElementOptional(it) }
                 .map { descriptor.getElementName(it) }
 
-        /** Especificación de una propiedad de path o query, o `null` (con un problema fatal) si no se soporta. */
+        /** Specification of a path or query property, or `null` (with a fatal problem) if it is not supported. */
         private fun paramSpec(
             descriptor: SerialDescriptor,
             index: Int,

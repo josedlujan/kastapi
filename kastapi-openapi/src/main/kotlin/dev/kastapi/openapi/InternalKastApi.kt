@@ -1,14 +1,14 @@
 package dev.kastapi.openapi
 
 /**
- * Marca las declaraciones que son públicas solo porque `kastapi-core` y `kastapi-openapi` son módulos distintos
- * (en Kotlin, `internal` no se ve entre módulos).
+ * Marks declarations that are public only because `kastapi-core` and `kastapi-openapi` are different modules
+ * (in Kotlin, `internal` is not visible across modules).
  *
- * No forman parte de la API estable de KastAPI, no se incluyen en la comprobación de compatibilidad (`apiCheck`)
- * y pueden cambiar sin aviso. Usarlas exige un opt-in explícito.
+ * They are not part of KastAPI's stable API, are not included in the compatibility check (`apiCheck`)
+ * and may change without notice. Using them requires an explicit opt-in.
  */
 @RequiresOptIn(
-    message = "Esta API es interna de KastAPI y puede cambiar sin aviso.",
+    message = "This API is internal to KastAPI and may change without notice.",
     level = RequiresOptIn.Level.ERROR,
 )
 @Retention(AnnotationRetention.BINARY)

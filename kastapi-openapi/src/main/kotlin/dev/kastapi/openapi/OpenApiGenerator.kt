@@ -11,15 +11,15 @@ private const val JSON_MEDIA_TYPE = "application/json"
 private const val VALIDATION_ERROR_STATUS = "422"
 private const val VALIDATION_ERROR_DESCRIPTION = "Unprocessable Entity"
 
-/** Genera el documento OpenAPI 3.1 a partir de las rutas registradas. */
+/** Generates the OpenAPI 3.1 document from the registered routes. */
 @InternalKastApi
 public object OpenApiGenerator {
     /**
-     * Construye el documento.
+     * Builds the document.
      *
-     * @param info datos del bloque `info`.
-     * @param routes rutas de la aplicación, sin las de la propia documentación.
-     * @param errorResponse descriptor del formato de error, usado en la respuesta 422.
+     * @param info data of the `info` block.
+     * @param routes the application's routes, without the documentation's own.
+     * @param errorResponse descriptor of the error format, used in the 422 response.
      */
     public fun generate(
         info: ApiInfo,
@@ -71,7 +71,7 @@ private fun operation(
     return JsonObject(entries)
 }
 
-/** `get_users_id` para `GET /users/{id}`; la raíz es `get_root` y un duplicado recibe el sufijo `_2`. */
+/** `get_users_id` for `GET /users/{id}`; the root is `get_root` and a duplicate gets the `_2` suffix. */
 private fun uniqueOperationId(
     route: ApiRoute,
     used: MutableSet<String>,
@@ -110,7 +110,7 @@ private fun requestBody(
     return JsonObject(entries)
 }
 
-/** `true` si el cuerpo tiene alguna propiedad sin valor por defecto y no nullable. */
+/** `true` if the body has any property that has no default value and is not nullable. */
 private fun hasRequiredProperty(body: ApiBody): Boolean =
     (0 until body.descriptor.elementsCount).any { index ->
         val name = body.descriptor.getElementName(index)

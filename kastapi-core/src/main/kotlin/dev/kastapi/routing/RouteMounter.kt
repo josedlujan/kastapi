@@ -17,7 +17,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 
-/** Monta las rutas registradas en el `routing { }` de Ktor. */
+/** Mounts the registered routes in Ktor's `routing { }`. */
 internal fun Application.mountRoutes(
     routes: List<RouteDefinition>,
     config: KastApiConfig,

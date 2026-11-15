@@ -4,7 +4,7 @@ plugins {
 }
 dependencies {
     implementation(project(":kastapi-core"))
-    // Logging solo para el ejemplo (la librería no impone binding de SLF4J).
+    // Logging only for the example (the library does not impose an SLF4J binding).
     runtimeOnly(libs.logback.classic)
 }
 application {

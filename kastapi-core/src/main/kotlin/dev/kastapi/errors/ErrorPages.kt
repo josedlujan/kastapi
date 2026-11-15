@@ -16,10 +16,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 
 /**
- * Instala el manejo de errores de KastAPI (referencia §8): 404, `HttpError` y excepciones no controladas.
+ * Installs KastAPI's error handling (reference §8): 404, `HttpError` and unhandled exceptions.
  *
- * Si la aplicación ya instaló su propio `StatusPages` no se instala el de KastAPI, para no pisar sus
- * manejadores (principio "sin encierro"); en ese caso los errores siguen la configuración de la aplicación.
+ * If the application already installed its own `StatusPages`, KastAPI's is not installed, so as not to override its
+ * handlers (the "no lock-in" principle); in that case errors follow the application's configuration.
  */
 internal fun Application.installErrorPages(json: Json) {
     if (pluginOrNull(StatusPages) != null) return
@@ -40,7 +40,7 @@ internal fun Application.installErrorPages(json: Json) {
     }
 }
 
-/** Responde con [error] en JSON y el status que indica. */
+/** Responds with [error] as JSON and the status it indicates. */
 internal suspend fun ApplicationCall.respondError(
     error: ErrorResponse,
     json: Json,
@@ -56,7 +56,7 @@ private suspend fun ApplicationCall.handleUnexpected(
     cause: Throwable,
     json: Json,
 ) {
-    // Una cancelación (por ejemplo, el cliente cerró la conexión) no es un error del servidor.
+    // A cancellation (for example, the client closed the connection) is not a server error.
     if (cause is CancellationException) throw cause
 
     application.log.error(Messages.unhandledException(request.httpMethod.value, request.path()), cause)
