@@ -1,18 +1,18 @@
 # Roadmap
 
-El estado actual, las limitaciones conocidas y lo que falta para cada versión están en [STATUS.md](STATUS.md).
+The current status, the known limitations and what is missing for each version are in [STATUS.md](STATUS.md).
 
-| Fase | Versión | Contenido | Condición para empezar |
+| Phase | Version | Content | Condition to start |
 | --- | --- | --- | --- |
-| 1 | v0.1 | MVP: DSL tipado, binding, validación, errores, OpenAPI 3.1, Swagger UI | — |
-| 2 | v0.2 | Dependencias inyectables (`depends`), headers y cookies tipados, respuestas múltiples documentadas, i18n de mensajes | v0.1 publicada y primeros usuarios |
-| 3 | v0.3 | Procesador KSP: controladores por función anotada, validación y planes de binding generados en compilación | Diseño en ADR aprobado |
-| 4 | v0.4 | Cliente Kotlin Multiplatform generado desde los mismos modelos | KSP estable |
-| 5 | v1.0 | Auth (JWT/API key) integrada con OpenAPI `securitySchemes`, estabilidad de API, Maven Central, sitio de documentación | Feedback de adopción |
+| 1 | v0.1 | MVP: typed DSL, binding, validation, errors, OpenAPI 3.1, Swagger UI | — |
+| 2 | v0.2 | Injectable dependencies (`depends`), typed headers and cookies, documented multiple responses, i18n of messages | v0.1 published and first users |
+| 3 | v0.3 | KSP processor: controllers from annotated functions, validation and binding plans generated at compile time | Design approved as an ADR |
+| 4 | v0.4 | Kotlin Multiplatform client generated from the same models | Stable KSP |
+| 5 | v1.0 | Auth (JWT/API key) integrated with OpenAPI `securitySchemes`, API stability, Maven Central, documentation site | Adoption feedback |
 
-## Ideas para evaluar después
+## Ideas to evaluate later
 
-- Generación de pruebas de contrato desde el esquema.
-- Integración con Koin como alternativa a la DI propia.
-- Plantilla `gradle init`/arquetipo para empezar un proyecto.
-- Benchmarks comparativos contra Ktor puro y Spring WebFlux.
+- Contract test generation from the schema.
+- Koin integration as an alternative to the built-in DI.
+- A `gradle init` template/archetype to start a project.
+- Benchmarks against plain Ktor and Spring WebFlux.
