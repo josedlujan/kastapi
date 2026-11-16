@@ -105,6 +105,29 @@ Swagger UI se carga desde un CDN, así que necesita conexión a internet. El esq
 - Integración con apps Ktor existentes: `installKastApi { }`.
 - Pruebas con `kastTest` (módulo `kastapi-test`).
 
+## ¿Por qué KastAPI?
+
+[Ktor](https://ktor.io) es una gran base, y KastAPI corre encima de él: conservas tus rutas, plugins y motor de Ktor.
+Todo lo que sigue se puede hacer con Ktor solo. La idea de KastAPI es que **lo declaras una vez**, en los tipos del
+handler.
+
+| | Ktor solo | KastAPI |
+| --- | --- | --- |
+| Leer path, query y body | `call.parameters`, `receive<T>()` y conversión a mano | Sale de la `data class` de entrada |
+| Validación | El plugin `RequestValidation` o código propio, regla por regla | Anotaciones en el modelo (`@Min`, `@Email`...) |
+| Formato de errores | Lo diseñas tú con `StatusPages` | Un formato estándar que reporta todos los problemas a la vez |
+| OpenAPI | Se genera desde tu código de rutas con el plugin de compilador de Ktor (3.4+), o se escribe a mano | Se genera en ejecución desde los mismos tipos, incluidas tus reglas de validación; sin plugin de compilador adicional |
+| Errores de configuración | Se descubren al llamar al endpoint | Se descubren al arrancar |
+
+**Probablemente es para ti si** vienes de FastAPI o de Android y quieres un backend tipado sin aprender Spring, o si
+tu equipo mantiene hoy a mano la validación, las respuestas de error y la documentación de la API.
+
+**Probablemente no es para ti si** necesitas lo que la 0.1 todavía no tiene (autenticación integrada, inyección de
+dependencias, headers y cookies tipados, subida de archivos, WebSockets), si tu configuración actual de Ktor ya
+funciona bien, o si necesitas una API estable hoy: KastAPI es experimental, tiene un solo mantenedor y puede cambiar
+antes de la 1.0. Cuando te falte algo, puedes bajar a Ktor puro en cualquier momento (`installKastApi`,
+`KastCall.call`).
+
 ## Documentación
 
 Guía completa en [`docs/guide`](docs/guide) (en inglés):
