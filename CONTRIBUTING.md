@@ -42,3 +42,29 @@ KastAPI was designed and first written in Spanish, and then translated to Englis
 ./gradlew publishToMavenLocal    # install the modules to try them in another project
 ./gradlew :examples:hello:run    # example at http://localhost:8080
 ```
+
+## Releasing (maintainers)
+
+Artifacts are published to Maven Central through the Central Portal with the
+[vanniktech plugin](https://vanniktech.github.io/gradle-maven-publish-plugin/central/). The `dev.kastapi`
+namespace is verified with a DNS record on `kastapi.dev`.
+
+Secrets never go in the repository. Put them in `~/.gradle/gradle.properties` (or in `ORG_GRADLE_PROJECT_*`
+environment variables):
+
+```properties
+mavenCentralUsername=<Central Portal user token name>
+mavenCentralPassword=<Central Portal user token password>
+signingInMemoryKey=<output of: gpg --export-secret-keys --armor KEY_ID, as one line with \n for line breaks>
+signingInMemoryKeyId=<last 8 characters of the key ID>
+signingInMemoryKeyPassword=<key passphrase>
+```
+
+Artifacts are only signed when a signing key is configured, so normal builds and CI need no secrets.
+
+1. Update `CHANGELOG.md`, set the version in `build.gradle.kts` and merge the PR.
+2. Tag the release (`git tag -a vX.Y.Z`) on the merged commit and push the tag.
+3. From that tag, run `./gradlew publishToMavenCentral`. This uploads the signed artifacts as a deployment.
+4. Review the deployment in the [Central Portal](https://central.sonatype.com/publishing/deployments) and press
+   **Publish**. A published version is immutable: it cannot be deleted or changed.
+5. Create the GitHub Release from the same tag.

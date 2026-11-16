@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.maven.publish) apply false
     alias(libs.plugins.binary.compatibility.validator)
 }
 
@@ -60,32 +61,40 @@ configure(subprojects.filter { it.path.startsWith(":kastapi-") }) {
     }
 }
 
-// Publishing: for now only to the local Maven repository (`./gradlew publishToMavenLocal`).
-// Maven Central, signing and javadoc are left for phase 5 (docs/ROADMAP.md).
+// Publishing to Maven Central (Central Portal) with the vanniktech plugin, which also builds the sources and
+// javadoc JARs that Central requires. `./gradlew publishToMavenLocal` still works for local testing.
+// Artifacts are signed only when a signing key is configured (see CONTRIBUTING.md), so normal builds and CI
+// do not need any secret.
 configure(subprojects.filter { it.path.startsWith(":kastapi-") }) {
-    apply(plugin = "maven-publish")
-    extensions.configure<JavaPluginExtension> {
-        withSourcesJar()
-    }
-    extensions.configure<PublishingExtension> {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components["java"])
-                pom {
-                    name.set(project.name)
-                    description.set("KastAPI: HTTP APIs in Kotlin on top of Ktor, where the handler's types define validation and OpenAPI.")
-                    url.set("https://github.com/josedlujan/kastapi")
-                    licenses {
-                        license {
-                            name.set("The Apache License, Version 2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-                    scm {
-                        url.set("https://github.com/josedlujan/kastapi")
-                        connection.set("scm:git:https://github.com/josedlujan/kastapi.git")
-                    }
+    apply(plugin = "com.vanniktech.maven.publish")
+    extensions.configure<com.vanniktech.maven.publish.MavenPublishBaseExtension> {
+        publishToMavenCentral()
+        if (project.hasProperty("signingInMemoryKey") || project.hasProperty("signing.keyId")) {
+            signAllPublications()
+        }
+        pom {
+            name.set(project.name)
+            description.set("KastAPI: HTTP APIs in Kotlin on top of Ktor, where the handler's types define validation and OpenAPI.")
+            inceptionYear.set("2026")
+            url.set("https://github.com/josedlujan/kastapi")
+            licenses {
+                license {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    distribution.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                 }
+            }
+            developers {
+                developer {
+                    id.set("josedlujan")
+                    name.set("José Dimas Luján Castillo")
+                    url.set("https://github.com/josedlujan")
+                }
+            }
+            scm {
+                url.set("https://github.com/josedlujan/kastapi")
+                connection.set("scm:git:git://github.com/josedlujan/kastapi.git")
+                developerConnection.set("scm:git:ssh://git@github.com/josedlujan/kastapi.git")
             }
         }
     }
