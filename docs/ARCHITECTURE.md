@@ -285,7 +285,7 @@ In Kotlin, `internal` is not visible across Gradle modules, and `kastapi-core` n
 - No `kotlin-reflect` on the per-request path.
 - `kastTest` creates a `testApplication`, installs KastAPI with `installKastApi` and a client with JSON ContentNegotiation that uses the same `Json` from `KastApiConfig`. `KastTestClient`'s constructor is `internal`.
 - `examples/hello` reproduces the "Hello world" of the [reference](reference.md) verbatim (default package, no ktlint) and a test compares it with it.
-- Publishing: `maven-publish` with a POM and a sources JAR in the four library modules, configured in the root `build.gradle.kts`. For now it is only published to the local Maven repository (`publishToMavenLocal`).
+- Publishing: the four library modules are published to Maven Central through the Central Portal with the `com.vanniktech.maven.publish` plugin, configured in the root `build.gradle.kts`. Artifacts are signed only when a signing key is configured, so normal builds need no secrets. `publishToMavenLocal` installs them locally for testing.
 
 ### External dependencies
 

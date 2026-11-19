@@ -7,7 +7,6 @@ Last updated: version 0.1.0.
 The number follows [Semantic Versioning](https://semver.org/): a `0.x` version means initial development, and the public API may change between minor versions. `1.0.0` will be the commitment to keep the API stable, and the conditions are not met yet:
 
 - There is no external usage feedback yet.
-- It is not published on Maven Central (today it is installed with `./gradlew publishToMavenLocal`).
 - There are known limitations (see below).
 - Features planned in the [roadmap](ROADMAP.md) are missing: dependency injection, authentication, generation with KSP and a multiplatform client.
 
@@ -51,7 +50,7 @@ Entry condition in the roadmap: 0.1 published and first users. Planned content: 
 
 ### For 1.0
 
-Authentication integrated with OpenAPI, freezing the API, publishing on Maven Central with signing and javadoc, and a documentation site. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
+Authentication integrated with OpenAPI, freezing the API, real API documentation (the published javadoc JARs are empty today) and a documentation site. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
 
 ## How decisions are made
 
