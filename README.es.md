@@ -28,15 +28,8 @@ Abre http://localhost:8080/docs y ya tienes Swagger UI con el endpoint documenta
 
 ## Instalación
 
-KastAPI 0.1.0 todavía no está en Maven Central. Se instala en tu repositorio Maven local (requiere JDK 21):
-
-```bash
-git clone https://github.com/josedlujan/kastapi.git
-cd kastapi
-./gradlew publishToMavenLocal
-```
-
-En tu proyecto (Gradle Kotlin DSL):
+KastAPI está publicado en [Maven Central](https://central.sonatype.com/namespace/dev.kastapi) con el grupo
+`dev.kastapi`. Requiere JDK 21. En tu proyecto (Gradle Kotlin DSL):
 
 ```kotlin
 plugins {
@@ -46,7 +39,6 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 

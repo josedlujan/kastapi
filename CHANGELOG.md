@@ -15,7 +15,7 @@ First public release (experimental): the API may change before 1.0.
 - Version catalog in `gradle/libs.versions.toml` (Kotlin 2.4.21, Ktor 3.6.1, kotlinx.serialization 1.12.0).
 - Code quality: ktlint, `explicitApi()` in the library modules and binary-compatibility-validator.
 - Continuous integration with GitHub Actions. `apiCheck` always runs.
-- Publishing to the local Maven repository (`./gradlew publishToMavenLocal`): `dev.kastapi:kastapi-core`, `kastapi-annotations`, `kastapi-openapi` and `kastapi-test`, version `0.1.0`, with a POM and a sources JAR. Maven Central is left for a later version.
+- Published on Maven Central under the `dev.kastapi` group: `kastapi-core`, `kastapi-annotations`, `kastapi-openapi` and `kastapi-test`, version `0.1.0`, signed, with a POM and sources and javadoc JARs (the javadoc JAR is empty for now). `./gradlew publishToMavenLocal` still works to try local changes.
 - Minimal DSL in `kastapi-core`: `kastApi { }`, `installKastApi { }` and `get`, `post`, `put`, `patch` and `delete` routes with `NoInput`.
 - `group(prefix, tags) { }` to group routes under a prefix.
 - `KastCall` with access to the `ApplicationCall` and `header(name)`.
