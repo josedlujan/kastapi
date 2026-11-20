@@ -44,7 +44,7 @@ An unhandled exception responds `500` with a generic message: the body does **no
 KastAPI does not ship a logging implementation. Without one on the classpath, the log entry is not written anywhere. Add one, for example:
 
 ```kotlin
-runtimeOnly("ch.qos.logback:logback-classic:1.6.6")
+runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
 ```
 
 ## Body size

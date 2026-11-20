@@ -28,3 +28,8 @@ jobs:
         run: ./gradlew build
       - name: API compatibility
         run: ./gradlew apiCheck
+      - name: Consumer with the oldest supported Kotlin
+        run: |
+          VERSION=$(sed -n 's/^ *version = "\(.*\)"/\1/p' build.gradle.kts | head -1)
+          ./gradlew publishToMavenLocal
+          ./gradlew -p compat/kotlin-2.3 test -PkastapiVersion="$VERSION"

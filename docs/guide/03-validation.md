@@ -51,7 +51,7 @@ The possible `code` values are `required`, `type`, `unknown_field`, `min`, `max`
 
 ## Be careful with `@Pattern`
 
-KastAPI does not protect against regular expressions with catastrophic backtracking. A pattern such as `(a+)+$` can block a thread on a hostile input. Avoid nested quantifiers and limit the length with `@Length`.
+KastAPI does not protect against regular expressions with catastrophic backtracking. Modern JDKs optimize many classic cases, but not all: with a pattern such as `(.*a){20}`, a 28-character input can keep a thread busy for several seconds, and `^(a{1,9}){1,9}$` needs about two seconds for 40 characters (measured on JDK 21). A hostile client can send such inputs on purpose. Avoid nested or repeated groups with open-ended quantifiers, and always limit the length of the text with `@Length` before the pattern is evaluated.
 
 ## Configuration errors
 
