@@ -1,8 +1,8 @@
 # Project status
 
-Last updated: version 0.1.0.
+Last updated: version 0.1.1.
 
-## Why 0.1.0 and not 1.0
+## Why 0.x and not 1.0
 
 The number follows [Semantic Versioning](https://semver.org/): a `0.x` version means initial development, and the public API may change between minor versions. `1.0.0` will be the commitment to keep the API stable, and the conditions are not met yet:
 
@@ -10,7 +10,7 @@ The number follows [Semantic Versioning](https://semver.org/): a `0.x` version m
 - There are known limitations (see below).
 - Features planned in the [roadmap](ROADMAP.md) are missing: dependency injection, authentication, generation with KSP and a multiplatform client.
 
-## What 0.1.0 includes
+## What 0.1.x includes
 
 Described in the [reference](reference.md): a typed DSL on top of Ktor, reading path, query and body from a `data class`, validation with annotations, errors in a single format, route checks at startup, OpenAPI 3.1, Swagger UI and the `kastapi-test` module. The detail of each change is in the [CHANGELOG](../CHANGELOG.md).
 

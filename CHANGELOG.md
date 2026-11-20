@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-19
+
 ### Added
 
 - A CI job that publishes the modules locally and compiles and tests a small application with Kotlin 2.3, the oldest supported version (`compat/kotlin-2.3`).
@@ -14,6 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Changed
 
 - Updated `kotlinx.serialization` to 1.13.0 (the Kotlin 2.3 consumer job and the JSON depth tests pass with it) and the example's `logback-classic` to 1.6.7.
+- The build falls back to Maven Central when the Gradle plugin portal fails to resolve a plugin.
 - The documentation states that KastAPI requires Kotlin 2.3 or newer.
 - The quickstart includes a minimal `logback.xml`; without it Logback prints very verbose debug output.
 - The `@Pattern` guide uses examples that are really slow on JDK 21 (`(.*a){20}`); the one shown before, `(a+)+$`, is optimized by the JDK.
@@ -80,5 +83,6 @@ First public release (experimental): the API may change before 1.0.
 - Swagger UI is loaded from a CDN: without an internet connection the `/docs` interface is not shown (the `/openapi.json` document is still served).
 - The project was first written in Spanish and then translated to English. Some text may still be untranslated or read awkwardly; reports and fixes are welcome.
 
-[Unreleased]: https://github.com/josedlujan/kastapi/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/josedlujan/kastapi/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/josedlujan/kastapi/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/josedlujan/kastapi/releases/tag/v0.1.0

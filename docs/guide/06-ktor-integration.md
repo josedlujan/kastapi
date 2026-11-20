@@ -30,7 +30,7 @@ Rules:
 Add the test module:
 
 ```kotlin
-testImplementation("dev.kastapi:kastapi-test:0.1.0")
+testImplementation("dev.kastapi:kastapi-test:0.1.1")
 testImplementation(kotlin("test"))
 ```
 
@@ -60,6 +60,6 @@ class HealthTest {
 - The second one is the test. Its receiver exposes `client` and `bodyAs<T>()`.
 - To test with another configuration, install your real application with `testApplication { application { module() } }`.
 
-## What 0.1.0 does not include
+## What 0.1.x does not include
 
 Dependency injection, authentication, typed headers and cookies, forms and files, WebSockets, client generation and API versioning. They are in the [roadmap](../ROADMAP.md).
