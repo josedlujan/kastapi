@@ -29,7 +29,7 @@ Abre http://localhost:8080/docs y ya tienes Swagger UI con el endpoint documenta
 ## Instalación
 
 KastAPI está publicado en [Maven Central](https://central.sonatype.com/namespace/dev.kastapi) con el grupo
-`dev.kastapi`. Requiere JDK 21. En tu proyecto (Gradle Kotlin DSL):
+`dev.kastapi`. Requiere JDK 21 y Kotlin 2.3 o superior. En tu proyecto (Gradle Kotlin DSL):
 
 ```kotlin
 plugins {
@@ -45,7 +45,7 @@ repositories {
 dependencies {
     implementation("dev.kastapi:kastapi-core:0.1.0")
     // Opcional: ver los logs del servidor (KastAPI no incluye una implementación de SLF4J).
-    runtimeOnly("ch.qos.logback:logback-classic:1.6.6")
+    runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
     testImplementation("dev.kastapi:kastapi-test:0.1.0")
     testImplementation(kotlin("test"))
 }
@@ -63,8 +63,23 @@ application {
 
 1. Crea un proyecto con el `build.gradle.kts` anterior y `settings.gradle.kts` con `rootProject.name = "demo"`.
 2. Guarda el código de "Hola mundo" en `src/main/kotlin/Main.kt`.
-3. Ejecuta `./gradlew run` (necesitas el wrapper de Gradle 9 o un Gradle 9 instalado).
-4. Abre http://localhost:8080/docs, despliega `POST /users`, pulsa **Try it out** y envía un cuerpo inválido, por ejemplo `{"email": "x", "age": 15}`. Recibirás un `422` con los dos errores a la vez.
+3. Guarda una configuración mínima de Logback en `src/main/resources/logback.xml`. Sin ella, Logback imprime muchísima salida de depuración de Netty:
+
+```xml
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+```
+
+4. Ejecuta `./gradlew run` (necesitas el wrapper de Gradle 9 o un Gradle 9 instalado).
+5. Abre http://localhost:8080/docs, despliega `POST /users`, pulsa **Try it out** y envía un cuerpo inválido, por ejemplo `{"email": "x", "age": 15}`. Recibirás un `422` con los dos errores a la vez.
 
 O desde la terminal:
 

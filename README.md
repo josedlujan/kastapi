@@ -29,7 +29,7 @@ Open http://localhost:8080/docs and you get Swagger UI with the endpoint documen
 ## Installation
 
 KastAPI is published on [Maven Central](https://central.sonatype.com/namespace/dev.kastapi) under the `dev.kastapi`
-group. It requires JDK 21. In your project (Gradle Kotlin DSL):
+group. It requires JDK 21 and Kotlin 2.3 or newer. In your project (Gradle Kotlin DSL):
 
 ```kotlin
 plugins {
@@ -45,7 +45,7 @@ repositories {
 dependencies {
     implementation("dev.kastapi:kastapi-core:0.1.0")
     // Optional: see the server logs (KastAPI does not ship an SLF4J implementation).
-    runtimeOnly("ch.qos.logback:logback-classic:1.6.6")
+    runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
     testImplementation("dev.kastapi:kastapi-test:0.1.0")
     testImplementation(kotlin("test"))
 }
@@ -63,8 +63,23 @@ application {
 
 1. Create a project with the `build.gradle.kts` above and a `settings.gradle.kts` with `rootProject.name = "demo"`.
 2. Save the "Hello world" code in `src/main/kotlin/Main.kt`.
-3. Run `./gradlew run` (you need the Gradle 9 wrapper or an installed Gradle 9).
-4. Open http://localhost:8080/docs, expand `POST /users`, click **Try it out** and send an invalid body, for example `{"email": "x", "age": 15}`. You get a `422` with both errors at once.
+3. Save a minimal Logback configuration in `src/main/resources/logback.xml`. Without it, Logback prints very verbose debug output from Netty:
+
+```xml
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+```
+
+4. Run `./gradlew run` (you need the Gradle 9 wrapper or an installed Gradle 9).
+5. Open http://localhost:8080/docs, expand `POST /users`, click **Try it out** and send an invalid body, for example `{"email": "x", "age": 15}`. You get a `422` with both errors at once.
 
 Or from the terminal:
 

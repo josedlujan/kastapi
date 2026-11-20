@@ -21,7 +21,7 @@ Ordered from most to least important.
 | Limitation | Effect | What would be needed |
 | --- | --- | --- |
 | Swagger UI is tied to version 5.34.1 from the CDN | It was verified in Chrome (the interface loads and shows the example's operations), but if `swagger-ui-dist` is updated the SRI hashes must be recomputed | An automated browser test is not planned |
-| `@Pattern` does not protect against catastrophic backtracking | A badly written regex can block a thread on a hostile input | Document it (done in the guide) or add a time limit |
+| `@Pattern` does not protect against catastrophic backtracking | A badly written regex can block a thread on a hostile input (some patterns need seconds for a few dozen characters, even on JDK 21) | A length cap and a time limit when evaluating the pattern; a startup warning for suspicious patterns |
 | `Content-Type: application/json` is not required | A body with another content type is still interpreted as JSON | Decide whether to respond `415` or stay permissive |
 | The `/docs` interface depends on a CDN | Without an internet connection it is not shown; `/openapi.json` is still served | Serve the resources from the application itself (changes the dependency policy) |
 | `kastapi-core` does not include logging (SLF4J) | Without an implementation on the classpath, the `500` error log entry is not written | It is documented; the example uses logback |
@@ -32,7 +32,8 @@ Ordered from most to least important.
 | `sealed`, polymorphic and contextual types are documented as `{}` | Open schema in OpenAPI | Support for `oneOf` and discriminators |
 | Default values, `Set` and `Map` keys do not have full support in the schema | Minor details of the document | Extend the schema generator |
 | Error messages are in English only | No internationalization | Planned for 0.2 |
-| The maximum depth of the body's JSON has not been verified | Possible stack consumption with extreme nesting | Test with deeply nested inputs and, if needed, a limit |
+| JSON nesting is limited by kotlinx.serialization (400 levels in 1.12), not by KastAPI | Deeper bodies get `400 malformed_json`, never a server error (covered by tests). The limit depends on the kotlinx.serialization version the application uses | A configurable limit of its own, and a more specific error |
+| Requires Kotlin 2.3 or newer | A project on Kotlin 2.2 cannot compile against 0.1.x: the kotlinx.serialization and Kotlin standard library versions it uses are built with Kotlin 2.4 (checked with kotlinx.serialization 1.12; a CI job keeps checking Kotlin 2.3) | Support older Kotlin by depending on older kotlinx.serialization and Ktor, with a test matrix (only if there is demand) |
 | Classes shared between modules are public with `@InternalKastApi` | They are public in the bytecode, although they are not part of the stable API (`apiCheck` excludes them) | Review before 1.0 |
 | The project was first written in Spanish and then translated to English | Some text may still be untranslated or read awkwardly | Translation reports and fixes are welcome (there is an issue template for it) |
 

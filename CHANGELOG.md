@@ -5,7 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-11-10
+### Added
+
+- A CI job that publishes the modules locally and compiles and tests a small application with Kotlin 2.3, the oldest supported version (`compat/kotlin-2.3`).
+- Tests for deeply nested JSON: moderate nesting is accepted, nesting beyond the parser limit gets `400 malformed_json`, and hostile bodies never cause a server error.
+- Pinned GitHub Actions by commit SHA, read-only workflow permissions, Gradle wrapper validation and Dependabot for Actions and Gradle.
+
+### Changed
+
+- Updated `kotlinx.serialization` to 1.13.0 (the Kotlin 2.3 consumer job and the JSON depth tests pass with it) and the example's `logback-classic` to 1.6.7.
+- The documentation states that KastAPI requires Kotlin 2.3 or newer.
+- The quickstart includes a minimal `logback.xml`; without it Logback prints very verbose debug output.
+- The `@Pattern` guide uses examples that are really slow on JDK 21 (`(.*a){20}`); the one shown before, `(a+)+$`, is optimized by the JDK.
+
+## [0.1.0] - 2026-11-16
 
 First public release (experimental): the API may change before 1.0.
 
