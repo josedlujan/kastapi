@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
 }
 
-val kastapiVersion: String = providers.gradleProperty("kastapiVersion").orElse("0.1.0").get()
+val kastapiVersion: String = providers.gradleProperty("kastapiVersion").orElse("0.1.1").get()
 
 repositories {
     mavenLocal()

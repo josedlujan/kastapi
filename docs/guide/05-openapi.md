@@ -42,7 +42,7 @@ Each route generates an operation with `summary`, `description`, `tags` and an `
 - Validation annotations: `@Min` → `minimum`, `@Max` → `maximum`, `@Length` → `minLength`/`maxLength` (or `minItems`/`maxItems`), `@Pattern` → `pattern`, `@Email` → `format: email`, `@NotBlank` → `minLength: 1`.
 - Nullable types, lists, maps, enums and nested classes.
 
-## Limitations in 0.1.0
+## Limitations in 0.1.x
 
 - Only the `422` is documented. The `400`, `404`, `405`, `413` and `500` are not.
 - `sealed`, polymorphic and contextual types are documented as an open schema (`{}`).

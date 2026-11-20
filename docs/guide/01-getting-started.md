@@ -4,7 +4,7 @@ KastAPI declares routes with typed functions: `get`, `post`, `put`, `patch` and 
 
 ## Installation
 
-Follow the [Installation section of the README](../../README.md#installation). In short: add `mavenCentral()` to your repositories and the dependency `dev.kastapi:kastapi-core:0.1.0`. You need JDK 21, Kotlin 2.3 or newer and the `kotlin("plugin.serialization")` plugin.
+Follow the [Installation section of the README](../../README.md#installation). In short: add `mavenCentral()` to your repositories and the dependency `dev.kastapi:kastapi-core:0.1.1`. You need JDK 21, Kotlin 2.3 or newer and the `kotlin("plugin.serialization")` plugin.
 
 ## Your first API
 
