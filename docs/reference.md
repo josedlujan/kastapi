@@ -111,6 +111,8 @@ Given `I` and the method:
 5. Optionality: a property with a default value or a nullable type is optional. Without a default and not nullable, it is required.
 6. Query/path properties with unsupported types (nested objects) → startup error (§6).
 
+A request body must be declared as JSON: `Content-Type: application/json` or any structured type such as `application/problem+json`, in any case, with no `charset` or with `charset=utf-8`. Anything else, including a missing header, gets a `415`. The text is always decoded as UTF-8. An empty body is treated as `{}` whatever its type, and routes without input do not read the body.
+
 With the converted values a `JsonObject` is built and decoded with `json.decodeFromJsonElement(serializer<I>(), ...)` (see [ADR-0002](adr/0002-serialdescriptor-no-reflection.md)).
 
 ## 5. Validation
@@ -175,6 +177,7 @@ Single format for errors (`application/json`):
 | --- | --- | --- | --- |
 | Malformed JSON | 400 | `malformed_json` | — |
 | Body larger than `maxBodyBytes` | 413 | `payload_too_large` | — |
+| Body that is not JSON in UTF-8 according to its `Content-Type` | 415 | `unsupported_media_type` | — |
 | Required field missing | 422 | `validation_error` | `required` |
 | Wrong type (e.g. text in an `Int`) | 422 | `validation_error` | `type` |
 | Unknown field in the body | 422 | `validation_error` | `unknown_field` |

@@ -22,7 +22,6 @@ Ordered from most to least important.
 | --- | --- | --- |
 | Swagger UI is tied to version 5.34.1 from the CDN | It was verified in Chrome (the interface loads and shows the example's operations), but if `swagger-ui-dist` is updated the SRI hashes must be recomputed | An automated browser test is not planned |
 | `@Pattern` does not protect against catastrophic backtracking | A badly written regex can block a thread on a hostile input (some patterns need seconds for a few dozen characters, even on JDK 21) | A length cap and a time limit when evaluating the pattern; a startup warning for suspicious patterns |
-| `Content-Type: application/json` is not required | A body with another content type is still interpreted as JSON | Decide whether to respond `415` or stay permissive |
 | The `/docs` interface depends on a CDN | Without an internet connection it is not shown; `/openapi.json` is still served | Serve the resources from the application itself (changes the dependency policy) |
 | `kastapi-core` does not include logging (SLF4J) | Without an implementation on the classpath, the `500` error log entry is not written | It is documented; the example uses logback |
 | Only the `422` response is documented in OpenAPI | `400`, `404`, `405`, `413` and `500` do not appear | Documented multiple responses (planned for 0.2) |
