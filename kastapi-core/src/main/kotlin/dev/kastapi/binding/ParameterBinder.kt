@@ -5,8 +5,9 @@ import dev.kastapi.errors.ErrorCode
 import dev.kastapi.errors.ErrorDetail
 import dev.kastapi.errors.ErrorLocation
 import dev.kastapi.errors.Messages
+import io.ktor.http.BadContentTypeFormatException
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.server.request.contentCharset
 import io.ktor.server.request.receiveChannel
 import io.ktor.server.routing.RoutingCall
 import io.ktor.utils.io.readBuffer
@@ -33,8 +34,13 @@ internal sealed interface BindingResult {
     /** The body is not valid JSON (400). */
     data object MalformedJson : BindingResult
 
-    /** El cuerpo supera `maxBodyBytes` (413). */
+    /** The body exceeds `maxBodyBytes` (413). */
     data object PayloadTooLarge : BindingResult
+
+    /** The body is not JSON encoded in UTF-8 according to its `Content-Type` (415). */
+    class UnsupportedMediaType(
+        val message: String,
+    ) : BindingResult
 }
 
 /**
@@ -69,8 +75,19 @@ internal suspend fun RoutePlan.bind(
 
     val merged = mutableMapOf<String, JsonElement>()
     if (hasBody) {
-        val text = call.readBodyText(maxBodyBytes) ?: return BindingResult.PayloadTooLarge
-        val body = parseBody(text, json) ?: return BindingResult.MalformedJson
+        val mediaTypeProblem = mediaTypeProblem(call.request.headers[HttpHeaders.ContentType])
+        val declared = call.request.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+        // A declared body with the wrong type is rejected without reading it.
+        if (mediaTypeProblem != null && declared != null && declared > 0) {
+            return BindingResult.UnsupportedMediaType(mediaTypeProblem)
+        }
+        val bytes = call.readBodyBytes(maxBodyBytes, declared)
+        // An empty body is treated as `{}` whatever its type; anything else must be JSON in UTF-8.
+        if (mediaTypeProblem != null && (bytes == null || bytes.isNotEmpty())) {
+            return BindingResult.UnsupportedMediaType(mediaTypeProblem)
+        }
+        if (bytes == null) return BindingResult.PayloadTooLarge
+        val body = parseBody(String(bytes, Charsets.UTF_8), json) ?: return BindingResult.MalformedJson
         val ignoreUnknownKeys = json.configuration.ignoreUnknownKeys
         errors += validateBody(serializer.descriptor, body, pathNames, ignoreUnknownKeys, rules)
         if (body is JsonObject) {
@@ -86,15 +103,55 @@ internal suspend fun RoutePlan.bind(
 }
 
 /**
- * Reads the body as text without ever loading more than [maxBodyBytes] bytes into memory; returns `null` if it exceeds that.
- * With a known `Content-Length` it is rejected before reading; without it (chunked) it reads up to `maxBodyBytes + 1`.
+ * Reads the body without ever loading more than [maxBodyBytes] bytes into memory; returns `null` if it exceeds that.
+ * With a known `Content-Length` ([declared]) it is rejected before reading; without it (chunked) it reads up to
+ * `maxBodyBytes + 1`.
  */
-private suspend fun RoutingCall.readBodyText(maxBodyBytes: Long): String? {
-    val declared = request.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+private suspend fun RoutingCall.readBodyBytes(
+    maxBodyBytes: Long,
+    declared: Long?,
+): ByteArray? {
     if (declared != null && declared > maxBodyBytes) return null
     val bytes = receiveChannel().readBuffer(maxBodyBytes + 1).readByteArray()
-    if (bytes.size > maxBodyBytes) return null
-    return String(bytes, request.contentCharset() ?: Charsets.UTF_8)
+    return if (bytes.size > maxBodyBytes) null else bytes
+}
+
+/** Longest `Content-Type` value echoed back in an error message. */
+private const val MAX_ECHOED_HEADER = 80
+
+/**
+ * Why a request's [header] (its `Content-Type`, or `null` if it has none) is not acceptable for a JSON body, or `null`
+ * if it is: `application/json` or any
+ * structured JSON type such as `application/problem+json`, in any case, and with no `charset` or `charset=utf-8`.
+ */
+internal fun mediaTypeProblem(header: String?): String? {
+    if (header == null) return Messages.contentTypeNotJson(null)
+    val type =
+        try {
+            ContentType.parse(header)
+        } catch (_: BadContentTypeFormatException) {
+            return Messages.contentTypeNotJson(printable(header))
+        }
+    val isJson =
+        type.contentType.equals("application", ignoreCase = true) &&
+            (
+                type.contentSubtype.equals("json", ignoreCase = true) ||
+                    type.contentSubtype.endsWith("+json", ignoreCase = true)
+            )
+    if (!isJson) return Messages.contentTypeNotJson(printable(header))
+    val charset = type.parameter("charset")?.trim()?.trim('"')
+    if (charset != null &&
+        !charset.equals("utf-8", ignoreCase = true)
+    ) {
+        return Messages.contentTypeNotUtf8(printable(charset))
+    }
+    return null
+}
+
+/** A request-controlled value made safe to echo: control characters removed and the length limited. */
+private fun printable(value: String): String {
+    val clean = value.filter { it >= ' ' && it != '\u007f' }
+    return if (clean.length > MAX_ECHOED_HEADER) clean.take(MAX_ECHOED_HEADER) + "..." else clean
 }
 
 /** An empty body is treated as `{}`; returns `null` if it is not valid JSON. */

@@ -36,6 +36,7 @@ internal object ErrorKind {
     const val VALIDATION = "validation_error"
     const val MALFORMED_JSON = "malformed_json"
     const val PAYLOAD_TOO_LARGE = "payload_too_large"
+    const val UNSUPPORTED_MEDIA_TYPE = "unsupported_media_type"
     const val NOT_FOUND = "not_found"
     const val METHOD_NOT_ALLOWED = "method_not_allowed"
     const val HTTP_ERROR = "http_error"
@@ -64,6 +65,7 @@ internal object ErrorLocation {
 
 private const val BAD_REQUEST = 400
 private const val PAYLOAD_TOO_LARGE = 413
+private const val UNSUPPORTED_MEDIA_TYPE = 415
 private const val NOT_FOUND = 404
 private const val METHOD_NOT_ALLOWED = 405
 private const val UNPROCESSABLE_ENTITY = 422
@@ -133,4 +135,12 @@ internal fun payloadTooLargeError(maxBodyBytes: Long): ErrorResponse =
         status = PAYLOAD_TOO_LARGE,
         error = ErrorKind.PAYLOAD_TOO_LARGE,
         message = Messages.payloadTooLarge(maxBodyBytes),
+    )
+
+/** Builds the 415 response for a body whose `Content-Type` is not JSON encoded in UTF-8. */
+internal fun unsupportedMediaTypeError(message: String): ErrorResponse =
+    ErrorResponse(
+        status = UNSUPPORTED_MEDIA_TYPE,
+        error = ErrorKind.UNSUPPORTED_MEDIA_TYPE,
+        message = message,
     )
