@@ -1,7 +1,13 @@
 package dev.kastapi.errors
 
 import dev.kastapi.HttpError
+import dev.kastapi.routing.RouteDefinition
+import dev.kastapi.routing.allowHeader
+import dev.kastapi.routing.allowedMethods
+import dev.kastapi.routing.isMethodMismatch
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
@@ -16,12 +22,16 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 
 /**
- * Installs KastAPI's error handling (reference §8): 404, `HttpError` and unhandled exceptions.
+ * Installs KastAPI's error handling (reference §8): 404, 405 (with an `Allow` header for KastAPI routes), `HttpError` and
+ * unhandled exceptions.
  *
  * If the application already installed its own `StatusPages`, KastAPI's is not installed, so as not to override its
  * handlers (the "no lock-in" principle); in that case errors follow the application's configuration.
  */
-internal fun Application.installErrorPages(json: Json) {
+internal fun Application.installErrorPages(
+    json: Json,
+    routes: List<RouteDefinition>,
+) {
     if (pluginOrNull(StatusPages) != null) return
 
     install(StatusPages) {
@@ -32,12 +42,30 @@ internal fun Application.installErrorPages(json: Json) {
             call.handleUnexpected(cause, json)
         }
         status(HttpStatusCode.NotFound) { call, _ ->
-            call.respondError(notFoundError(call.request.httpMethod.value, call.request.path()), json)
+            // Ktor answers 404 instead of 405 when a path with parameters exists but not for this method.
+            val registered = allowedMethods(routes, call.request.path())
+            if (isMethodMismatch(registered, call.request.httpMethod)) {
+                call.respondMethodNotAllowed(registered, json)
+            } else {
+                call.respondError(notFoundError(call.request.httpMethod.value, call.request.path()), json)
+            }
         }
         status(HttpStatusCode.MethodNotAllowed) { call, _ ->
-            call.respondError(methodNotAllowedError(call.request.httpMethod.value, call.request.path()), json)
+            call.respondMethodNotAllowed(allowedMethods(routes, call.request.path()), json)
         }
     }
+}
+
+/**
+ * Responds 405. The `Allow` header lists the methods of KastAPI routes for the path; for any other route the methods
+ * are unknown and the header is left out.
+ */
+private suspend fun ApplicationCall.respondMethodNotAllowed(
+    registered: List<HttpMethod>,
+    json: Json,
+) {
+    allowHeader(registered)?.let { response.headers.append(HttpHeaders.Allow, it) }
+    respondError(methodNotAllowedError(request.httpMethod.value, request.path()), json)
 }
 
 /** Responds with [error] as JSON and the status it indicates. */

@@ -48,7 +48,7 @@ public fun Application.installKastApi(
     val metadata = ApiMetadata()
     KastApi(drafts, metadata, prefix = "", inheritedTags = emptyList()).block()
     val routes = planRoutes(drafts, config.validateOnStartup, reservedPaths(config))
-    installErrorPages(config.json)
+    installErrorPages(config.json, routes)
     mountRoutes(routes, config)
     mountDocumentation(routes, metadata, config)
 }
