@@ -26,7 +26,6 @@ Ordered from most to least important.
 | `kastapi-core` does not include logging (SLF4J) | Without an implementation on the classpath, the `500` error log entry is not written | It is documented; the example uses logback |
 | Only the `422` response is documented in OpenAPI | `400`, `404`, `405`, `413` and `500` do not appear | Documented multiple responses (planned for 0.2) |
 | `apiCheck` does not cover the DSL's `inline reified` functions | A change in `get`, `post`... is not detected by the tool | Compiling the example and the tests covers it in part |
-| The `405` does not include the `Allow` header | Less informative for the client | Compute the allowed methods per route |
 | An own `StatusPages` must be installed before `installKastApi` | Installing it afterwards throws `DuplicatePluginException` | It is documented |
 | `sealed`, polymorphic and contextual types are documented as `{}` | Open schema in OpenAPI | Support for `oneOf` and discriminators |
 | Default values, `Set` and `Map` keys do not have full support in the schema | Minor details of the document | Extend the schema generator |

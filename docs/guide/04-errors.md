@@ -24,7 +24,7 @@ All errors have the same format (`application/json`):
 | Body larger than `maxBodyBytes` | 413 | `payload_too_large` |
 | Body that is not JSON in UTF-8 (wrong or missing `Content-Type`, or another `charset`) | 415 | `unsupported_media_type` |
 | The route does not exist | 404 | `not_found` |
-| Method not allowed on an existing route | 405 | `method_not_allowed` |
+| Method not allowed on an existing route | 405 | `method_not_allowed`, with an `Allow` header |
 | `throw HttpError(...)` in a handler | the given one | `http_error` |
 | Unhandled exception | 500 | `internal_error` |
 
@@ -70,7 +70,18 @@ The limit counts bytes and applies with or without `Content-Length`. A non-posit
 
 If your application already installed `StatusPages`, KastAPI does not install its own and respects your handlers. Install it **before** `installKastApi`: if you do it afterwards, Ktor throws `DuplicatePluginException`.
 
-The `405` response does not include the `Allow` header.
+## Methods, `Allow` and `HEAD`
+
+A request with a method that the path does not accept gets a `405` with an `Allow` header listing what is accepted:
+
+```
+DELETE /users            ->  405, Allow: GET, HEAD, POST
+PUT    /users/5          ->  405, Allow: GET, HEAD, DELETE
+```
+
+Every `get` route also answers `HEAD`: same validation, status and headers (including `Content-Length`), and no body. It is useful for health checks and for clients that only need to know whether a resource exists. `OPTIONS` is not answered automatically; it gets a `405` with `Allow`. To handle `OPTIONS`, for example for CORS, install the Ktor plugin you need.
+
+The `Allow` header only covers KastAPI routes. A `405` produced by a route declared with plain Ktor does not carry it.
 
 ## Messages
 
