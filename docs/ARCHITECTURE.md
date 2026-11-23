@@ -131,7 +131,7 @@ flowchart TD
     A[Ktor receives the request] --> B[Mounted route]
     B --> C[Binding: path + query + body to JsonObject]
     C --> D{decodeFromJsonElement serializer I}
-    D -- fails --> E1[400 malformed_json / 413 / 422 required, type, unknown_field]
+    D -- fails --> E1[400 malformed_json / 413 / 415 / 422 required, type, unknown_field]
     D -- ok --> F[Validation by annotations on the JsonElement]
     F -- fails --> E2[422 validation_error with all errors]
     F -- ok --> G[handler suspend KastCall.I -> O]
@@ -155,6 +155,7 @@ flowchart TD
 - Nested objects in path or query are not supported (startup error).
 - A `JsonObject` is built and decoded with `json.decodeFromJsonElement(serializer<I>(), ...)` ([ADR-0002](adr/0002-serialdescriptor-no-reflection.md)).
 - Before decoding, `binding/BodyValidator` walks the `SerialDescriptor` against the body's JSON and collects all errors (`required`, `type`, `unknown_field`), with `field` in dot and index notation.
+- The `Content-Type` is checked first (`binding/ParameterBinder.kt`): JSON or a structured `+json` type, with no `charset` or `charset=utf-8`; otherwise `415 unsupported_media_type`. The text is always decoded as UTF-8. An empty body is accepted whatever its type.
 - A body that is not valid JSON responds `400 malformed_json`; an empty one is treated as `{}`.
 - If a property appears as `{name}` in the route, it is read from the URL and the value the body carries for that name is ignored.
 - The body is read with a limit (`maxBodyBytes`, 1 MiB by default). With a larger `Content-Length` it is rejected without reading; without it, at most `maxBodyBytes + 1` bytes are read. If exceeded, it responds `413 payload_too_large`.
@@ -199,6 +200,7 @@ Single format (`application/json`):
 | Malformed JSON | 400 | `malformed_json` |
 | Missing field, wrong type, unknown field or failed annotation | 422 | `validation_error` |
 | Body larger than `maxBodyBytes` | 413 | `payload_too_large` |
+| Body that is not JSON in UTF-8 (`Content-Type`) | 415 | `unsupported_media_type` |
 | Unknown route | 404 | `not_found` |
 | Method not allowed on an existing route | 405 | `method_not_allowed` |
 | `throw HttpError(status, msg)` | the given one | `http_error` |

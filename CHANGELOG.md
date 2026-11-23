@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+
+- **Behavior change.** Routes that read a body now require JSON in UTF-8: `Content-Type: application/json` or a structured `+json` type, in any case, with no `charset` or `charset=utf-8`. Any other type, a missing header with a non-empty body, a malformed header or another `charset` gets `415 unsupported_media_type` (standard error format, no `details`). The type is checked before the body is read. An empty body is still treated as `{}`, and routes without input still ignore the body. Clients that sent JSON without a `Content-Type` (for example `curl -d`) must now send `Content-Type: application/json`.
+- The request body is always decoded as UTF-8; before, a `charset` such as `iso-8859-1` was honored and garbled UTF-8 text.
+
 ## [0.1.1] - 2026-11-19
 
 ### Added

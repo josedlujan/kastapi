@@ -46,7 +46,8 @@ If the body also contains `id`, **the URL value wins**. In OpenAPI, the `request
 
 ## JSON body
 
-- An empty body is treated as `{}`.
+- The body must be declared as JSON: `Content-Type: application/json` (or a structured type such as `application/problem+json`), with no `charset` or with `charset=utf-8`. Anything else, including a missing header, gets a `415 unsupported_media_type`. Text is always decoded as UTF-8.
+- An empty body is treated as `{}`, whatever its `Content-Type`.
 - Unknown fields are a `422` error (`unknown_field`), unless you configure `Json { ignoreUnknownKeys = true }` in `KastApiConfig.json`.
 - Malformed JSON responds `400` (`malformed_json`).
 - The maximum size is `KastApiConfig.maxBodyBytes` (1 MiB by default). If it is exceeded, the response is `413`.

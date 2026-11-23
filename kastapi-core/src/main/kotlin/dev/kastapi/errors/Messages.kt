@@ -25,6 +25,17 @@ internal object Messages {
     const val MALFORMED_JSON = "The request body is not valid JSON"
     const val INVALID_BODY = "The request body could not be interpreted"
 
+    /** [received] is the (shortened) `Content-Type` header, or `null` if the request has none. */
+    fun contentTypeNotJson(received: String?): String =
+        if (received == null) {
+            "Content-Type must be application/json, but the header is missing"
+        } else {
+            "Content-Type must be application/json, but was $received"
+        }
+
+    fun contentTypeNotUtf8(charset: String): String =
+        "Content-Type must be application/json encoded in UTF-8, but the charset was $charset"
+
     fun payloadTooLarge(maxBodyBytes: Long): String = "The request body exceeds the maximum of $maxBodyBytes bytes"
 
     fun expectedOneOf(values: Collection<String>): String = "must be one of: ${values.joinToString(", ")}"

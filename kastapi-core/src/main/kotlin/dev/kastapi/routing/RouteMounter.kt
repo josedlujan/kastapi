@@ -7,6 +7,7 @@ import dev.kastapi.binding.bind
 import dev.kastapi.errors.malformedJsonError
 import dev.kastapi.errors.payloadTooLargeError
 import dev.kastapi.errors.respondError
+import dev.kastapi.errors.unsupportedMediaTypeError
 import dev.kastapi.errors.validationError
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -37,6 +38,10 @@ internal fun Application.mountRoutes(
 
                         BindingResult.PayloadTooLarge -> {
                             call.respondError(payloadTooLargeError(config.maxBodyBytes), config.json)
+                        }
+
+                        is BindingResult.UnsupportedMediaType -> {
+                            call.respondError(unsupportedMediaTypeError(bound.message), config.json)
                         }
 
                         is BindingResult.Success -> {

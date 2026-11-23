@@ -22,6 +22,7 @@ All errors have the same format (`application/json`):
 | Malformed JSON | 400 | `malformed_json` |
 | Missing field, wrong type, unknown field or a failed annotation | 422 | `validation_error` |
 | Body larger than `maxBodyBytes` | 413 | `payload_too_large` |
+| Body that is not JSON in UTF-8 (wrong or missing `Content-Type`, or another `charset`) | 415 | `unsupported_media_type` |
 | The route does not exist | 404 | `not_found` |
 | Method not allowed on an existing route | 405 | `method_not_allowed` |
 | `throw HttpError(...)` in a handler | the given one | `http_error` |
@@ -46,6 +47,16 @@ KastAPI does not ship a logging implementation. Without one on the classpath, th
 ```kotlin
 runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
 ```
+
+## Content type
+
+Routes that read a body only accept JSON in UTF-8. Send `Content-Type: application/json` (the `charset` is optional and can only be `utf-8`):
+
+```bash
+curl -X POST localhost:8080/users -H 'Content-Type: application/json' -d '{"email": "a@b.co", "age": 20}'
+```
+
+`curl -d` on its own sends `application/x-www-form-urlencoded`, and that gets a `415`. The type is checked before the body is read, so a large body with the wrong type is rejected cheaply.
 
 ## Body size
 
