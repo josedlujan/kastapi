@@ -52,6 +52,8 @@ If the body also contains `id`, **the URL value wins**. In OpenAPI, the `request
 - Malformed JSON responds `400` (`malformed_json`).
 - The maximum size is `KastApiConfig.maxBodyBytes` (1 MiB by default). If it is exceeded, the response is `413`.
 
+`HEAD` requests to a `get` route are bound and validated in the same way and get the same status, without a body.
+
 ## Access to the Ktor request
 
 The handler is an extension on `KastCall`, which exposes `call` (Ktor's `ApplicationCall`) and `header(name)`:

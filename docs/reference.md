@@ -98,6 +98,7 @@ public inline fun <reified I : Any, reified O> KastApi.post(
 - `O = Unit` → response without a body (to use with `204`).
 - `KastCall` is the handler's receiver: it exposes `call: ApplicationCall` (the way out to Ktor) and `fun header(name: String): String?`.
 - `status` defaults: `post` → 201; the rest → 200.
+- Every `get` route also answers `HEAD` with the same binding, validation, status and headers, and no body. `HEAD` is not listed in the OpenAPI document.
 - There is also `group(prefix: String, tags: List<String> = emptyList(), block: KastApi.() -> Unit)` to group routes under a prefix.
 
 ## 4. Input binding
@@ -183,10 +184,11 @@ Single format for errors (`application/json`):
 | Unknown field in the body | 422 | `validation_error` | `unknown_field` |
 | An annotation fails | 422 | `validation_error` | `min`, `max`, `length`, `not_blank`, `email`, `pattern` |
 | Route does not exist | 404 | `not_found` | — |
-| Method not allowed on an existing route | 405 | `method_not_allowed` | — |
+| Method not allowed on an existing route | 405 | `method_not_allowed` | — (with an `Allow` header) |
 | Unhandled exception | 500 | `internal_error` | — (no stack trace in the response) |
 | `throw HttpError(status, message)` from a handler | the given one | `http_error` | — |
 
+- A `405` carries an `Allow` header with the methods that KastAPI routes accept for that path, in a fixed order (`GET, HEAD, POST, PUT, PATCH, DELETE`; `HEAD` whenever there is a `GET`). For routes that the application declares with plain Ktor the header is left out, because KastAPI does not know their methods. A wrong method on a path with parameters (`PUT /users/5` when only `GET /users/{id}` exists) is a `405`, not a `404`.
 - `location`: `path`, `query` or `body`. `field` uses dot and index notation: `items[2].name`.
 - Messages are in English by default in v0.1 (internationalization is left for later; all texts live in a single file).
 - `HttpError` is a public exception: `public class HttpError(public val status: Int, message: String) : RuntimeException(message)`.

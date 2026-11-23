@@ -202,12 +202,14 @@ Single format (`application/json`):
 | Body larger than `maxBodyBytes` | 413 | `payload_too_large` |
 | Body that is not JSON in UTF-8 (`Content-Type`) | 415 | `unsupported_media_type` |
 | Unknown route | 404 | `not_found` |
-| Method not allowed on an existing route | 405 | `method_not_allowed` |
+| Method not allowed on an existing route | 405 | `method_not_allowed` (with `Allow`) |
 | `throw HttpError(status, msg)` | the given one | `http_error` |
 | Unhandled exception | 500 | `internal_error` |
 
 - `location` is `path`, `query` or `body`. `field` uses dots and indexes: `items[2].name`.
 - The 500 never includes the stack trace in the body; it is logged with the application's logger, with the method, the path and the exception. An `HttpError` is not logged as a server error.
+- `routing/RouteMounter.kt` mounts every `GET` route a second time for `HEAD`, with the same handler; the server drops the body.
+- The `Allow` header of a `405` is computed from the registered routes (`routing/Allow.kt`): the methods of every route whose template matches the request path, in a fixed order, with `HEAD` added after `GET`. Ktor answers `404` when a path with parameters exists but not for that method; the `404` handler turns that case into a `405`. Routes that the application declares with plain Ktor are not known, so their `405` has no `Allow`.
 - The 404, the 405, `HttpError` and the 500 are resolved by `StatusPages`, which `installKastApi` installs (`errors/ErrorPages.kt`). The 400, 413 and 422 from binding and validation are answered inside the route itself.
 - If the application already installed its own `StatusPages`, KastAPI does not install its own and respects its handlers. The application's `StatusPages` must be installed **before** `installKastApi`.
 - `kastapi-core` does not ship a logging implementation (SLF4J): the application must provide one, for example Logback, to see the 500 log entry.
