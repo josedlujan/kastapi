@@ -59,9 +59,12 @@ Each route generates an operation with `summary`, `description`, `tags` and an `
 ## Changing or disabling the routes
 
 ```kotlin
-KastApiConfig(docsPath = "/help", openApiPath = "/schema.json")
-KastApiConfig(docsPath = null)      // no Swagger UI, the document is still served
-KastApiConfig(openApiPath = null)   // no document and therefore no Swagger UI
+KastApiConfig {
+    docsPath = "/help"
+    openApiPath = "/schema.json"
+}
+KastApiConfig { docsPath = null }      // no Swagger UI, the document is still served
+KastApiConfig { openApiPath = null }   // no document and therefore no Swagger UI
 ```
 
 A `GET` route of your application that matches `docsPath` or `openApiPath` is a configuration error at startup.

@@ -61,7 +61,7 @@ curl -X POST localhost:8080/users -H 'Content-Type: application/json' -d '{"emai
 ## Body size
 
 ```kotlin
-kastApi(config = KastApiConfig(maxBodyBytes = 64 * 1024)) { /* ... */ }
+kastApi(config = KastApiConfig { maxBodyBytes = 64 * 1024 }) { /* ... */ }
 ```
 
 The limit counts bytes and applies with or without `Content-Length`. A non-positive value throws `IllegalArgumentException`.

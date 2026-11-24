@@ -11,8 +11,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - The request body is always decoded as UTF-8; before, a `charset` such as `iso-8859-1` was honored and garbled UTF-8 text.
 - A `405` now carries an `Allow` header with the methods that KastAPI routes accept for the path (`GET, HEAD, POST, PUT, PATCH, DELETE` order). A wrong method on a path with parameters, which Ktor answered with `404`, is now a `405`.
 
+- **Deprecation.** `KastApiConfig` is created with a builder: `KastApiConfig { docsPath = "/help" }`; `KastApiConfig()` still gives the defaults. The constructor with named arguments is deprecated (warning in 0.2, error in 0.3, removed after that) and keeps its 0.1 JVM signatures. `KastApiConfig` is no longer a data class: `copy` and `componentN` are gone; `equals`, `hashCode` and `toString` stay. Two default configurations are now equal because they share one default `Json`.
+
 ### Added
 
+- A CI step and a project (`compat/binary-0.1`) that compile a consumer against the released 0.1.1 and run it with the jars built from the checkout, to catch binary-incompatible changes. The deprecation policy is in `CONTRIBUTING.md`.
 - The OpenAPI document lists the errors KastAPI can send for each operation: `400`, `413` and `415` when it reads a body, `422` when it has input, and `500` always. They are `$ref`s to shared responses in `components/responses` (`BadRequest`, `PayloadTooLarge`, `UnsupportedMediaType`, `ValidationError`, `InternalServerError`). The `422`, until now written inline in each operation, is one of these references too. Errors raised with `HttpError` are still not documented.
 - Every `get` route also answers `HEAD` with the same binding, validation, status and headers, and no body. `HEAD` is not listed in the OpenAPI document. `OPTIONS` is still not answered automatically.
 
