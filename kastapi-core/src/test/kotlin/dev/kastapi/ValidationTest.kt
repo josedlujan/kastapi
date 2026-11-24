@@ -198,12 +198,12 @@ class ValidationTest {
         testApplication {
             application { installKastApi { post<VLength, VLength>("/len") { it } } }
 
-            val corto = client.postJson("/len", """{"name":"a"}""").errorBody()
-            val largo = client.postJson("/len", """{"name":"abcdef"}""").errorBody()
+            val tooShort = client.postJson("/len", """{"name":"a"}""").errorBody()
+            val tooLong = client.postJson("/len", """{"name":"abcdef"}""").errorBody()
 
-            assertEquals("length", corto.detailText("code"))
-            assertEquals("must have between 2 and 5 characters", corto.detailText("message"))
-            assertEquals("length", largo.detailText("code"))
+            assertEquals("length", tooShort.detailText("code"))
+            assertEquals("must have between 2 and 5 characters", tooShort.detailText("message"))
+            assertEquals("length", tooLong.detailText("code"))
         }
 
     @Test
@@ -221,13 +221,13 @@ class ValidationTest {
         testApplication {
             application { installKastApi { post<VTags, VTags>("/tags") { it } } }
 
-            val valido = client.postJson("/tags", """{"tags":["a","b"]}""")
-            val invalido = client.postJson("/tags", """{"tags":["a","b","c"]}""").errorBody()
+            val valid = client.postJson("/tags", """{"tags":["a","b"]}""")
+            val invalid = client.postJson("/tags", """{"tags":["a","b","c"]}""").errorBody()
 
-            assertEquals(HttpStatusCode.Created, valido.status)
-            assertEquals("tags", invalido.detailText("field"))
-            assertEquals("length", invalido.detailText("code"))
-            assertEquals("must have at most 2 items", invalido.detailText("message"))
+            assertEquals(HttpStatusCode.Created, valid.status)
+            assertEquals("tags", invalid.detailText("field"))
+            assertEquals("length", invalid.detailText("code"))
+            assertEquals("must have at most 2 items", invalid.detailText("message"))
         }
 
     @Test
@@ -243,12 +243,12 @@ class ValidationTest {
         testApplication {
             application { installKastApi { post<VNotBlank, VNotBlank>("/nb") { it } } }
 
-            val vacio = client.postJson("/nb", """{"name":""}""").errorBody()
-            val espacios = client.postJson("/nb", """{"name":"   "}""").errorBody()
+            val empty = client.postJson("/nb", """{"name":""}""").errorBody()
+            val spaces = client.postJson("/nb", """{"name":"   "}""").errorBody()
 
-            assertEquals("not_blank", vacio.detailText("code"))
-            assertEquals("not_blank", espacios.detailText("code"))
-            assertEquals("must not be blank", espacios.detailText("message"))
+            assertEquals("not_blank", empty.detailText("code"))
+            assertEquals("not_blank", spaces.detailText("code"))
+            assertEquals("must not be blank", spaces.detailText("message"))
         }
 
     @Test
@@ -295,14 +295,14 @@ class ValidationTest {
         testApplication {
             application { installKastApi { get<VLimitQuery, VLimitQuery>("/items") { it } } }
 
-            val bajo = client.get("/items?limit=0")
-            val alto = client.get("/items?limit=101").errorBody()
+            val below = client.get("/items?limit=0")
+            val above = client.get("/items?limit=101").errorBody()
 
-            assertEquals(HttpStatusCode.UnprocessableEntity, bajo.status)
-            assertEquals("query", bajo.errorBody().detailText("location"))
-            assertEquals("limit", bajo.errorBody().detailText("field"))
-            assertEquals("min", bajo.errorBody().detailText("code"))
-            assertEquals("max", alto.detailText("code"))
+            assertEquals(HttpStatusCode.UnprocessableEntity, below.status)
+            assertEquals("query", below.errorBody().detailText("location"))
+            assertEquals("limit", below.errorBody().detailText("field"))
+            assertEquals("min", below.errorBody().detailText("code"))
+            assertEquals("max", above.detailText("code"))
             assertEquals(HttpStatusCode.OK, client.get("/items?limit=50").status)
         }
 
@@ -337,12 +337,12 @@ class ValidationTest {
         testApplication {
             application { installKastApi { post<VRatio, VRatio>("/ratio") { it } } }
 
-            val bajo = client.postJson("/ratio", """{"ratio":0.5}""")
-            val igual = client.postJson("/ratio", """{"ratio":1.0}""")
+            val below = client.postJson("/ratio", """{"ratio":0.5}""")
+            val equal = client.postJson("/ratio", """{"ratio":1.0}""")
 
-            assertEquals(HttpStatusCode.UnprocessableEntity, bajo.status)
-            assertEquals("min", bajo.errorBody().detailText("code"))
-            assertEquals(HttpStatusCode.Created, igual.status)
+            assertEquals(HttpStatusCode.UnprocessableEntity, below.status)
+            assertEquals("min", below.errorBody().detailText("code"))
+            assertEquals(HttpStatusCode.Created, equal.status)
         }
 
     @Test
