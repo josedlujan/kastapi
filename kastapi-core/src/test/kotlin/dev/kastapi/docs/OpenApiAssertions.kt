@@ -10,8 +10,10 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 private const val SCHEMA_PREFIX = "#/components/schemas/"
+private const val RESPONSE_PREFIX = "#/components/responses/"
 private val OPERATIONS = setOf("get", "post", "put", "patch", "delete")
 private val PATH_TEMPLATE = Regex("\\{([^}]+)}")
 
@@ -20,6 +22,16 @@ fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
 
 /** JSON object of the [key] property. */
 fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
+
+/** The response object for [status] in [operation], following a `$ref` to `components/responses` if there is one. */
+fun JsonObject.response(
+    operation: JsonObject,
+    status: String,
+): JsonObject {
+    val response = operation.obj("responses").obj(status)
+    val ref = (response["\$ref"] as? JsonPrimitive)?.content ?: return response
+    return obj("components").obj("responses").obj(ref.removePrefix(RESPONSE_PREFIX))
+}
 
 /**
  * Minimal structural check of an OpenAPI 3.1 document (there is no lightweight validator for the JVM):
@@ -40,15 +52,40 @@ fun assertValidOpenApi(document: JsonObject) {
             val operationObject = operation.jsonObject
             operationIds += operationObject.text("operationId")
             assertParameters(path, operationObject)
-            assertResponses(path, operationObject)
+            assertResponses(path, operationObject, document)
         }
     }
     assertEquals(operationIds.size, operationIds.toSet().size, "operationIds must be unique: $operationIds")
 
+    val responses = (document.obj("components")["responses"] as? JsonObject).orEmptyObject()
     for (ref in collectRefs(document)) {
-        assertTrue(ref.startsWith(SCHEMA_PREFIX), "referencia inesperada $ref")
-        assertTrue(ref.removePrefix(SCHEMA_PREFIX) in schemas.keys, "the reference $ref does not exist in components")
+        when {
+            ref.startsWith(SCHEMA_PREFIX) -> {
+                assertTrue(
+                    ref.removePrefix(SCHEMA_PREFIX) in schemas.keys,
+                    "the reference $ref does not exist in components",
+                )
+            }
+
+            ref.startsWith(RESPONSE_PREFIX) -> {
+                assertTrue(
+                    ref.removePrefix(RESPONSE_PREFIX) in responses.keys,
+                    "the reference $ref does not exist in components",
+                )
+            }
+
+            else -> {
+                fail("unexpected reference $ref")
+            }
+        }
     }
+    val used =
+        collectRefs(document.obj("paths"))
+            .filter {
+                it.startsWith(RESPONSE_PREFIX)
+            }.map { it.removePrefix(RESPONSE_PREFIX) }
+            .toSet()
+    assertEquals(used, responses.keys, "components.responses must hold exactly the responses that operations use")
 }
 
 private fun assertParameters(
@@ -72,12 +109,14 @@ private fun assertParameters(
 private fun assertResponses(
     path: String,
     operation: JsonObject,
+    document: JsonObject,
 ) {
     val responses = operation.obj("responses")
     assertTrue(responses.isNotEmpty(), "the operation of $path has no responses")
-    for ((status, response) in responses) {
+    for (status in responses.keys) {
         assertTrue(Regex("\\d{3}").matches(status), "invalid status $status in $path")
-        assertTrue(response.jsonObject.text("description").isNotBlank(), "missing description for $status in $path")
+        val response = document.response(operation, status)
+        assertTrue(response.text("description").isNotBlank(), "missing description for $status in $path")
     }
 }
 
@@ -94,3 +133,5 @@ private fun refsOf(
 ): List<String> = if (key == "\$ref" && value is JsonPrimitive) listOf(value.content) else collectRefs(value)
 
 private fun JsonArray?.orEmpty(): JsonArray = this ?: JsonArray(emptyList())
+
+private fun JsonObject?.orEmptyObject(): JsonObject = this ?: JsonObject(emptyMap())
