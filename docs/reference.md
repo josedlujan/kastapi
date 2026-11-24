@@ -87,6 +87,8 @@ val config = KastApiConfig {
 | `json` | `Json` | `Json { ignoreUnknownKeys = false; explicitNulls = false; encodeDefaults = true }` | Serialization instance |
 | `validateOnStartup` | `Boolean` | `true` | Validates the routes at startup (§6) |
 | `maxBodyBytes` | `Long` | `1_048_576` | Maximum body size in bytes; must be positive. If exceeded, responds 413 (§8) |
+| `maxPatternInputLength` | `Int` | `10_000` | Longest text, in characters, that a `@Pattern` is matched against; a longer one is a `pattern` error. Must be positive |
+| `patternTimeoutMillis` | `Long` | `100` | Longest a single `@Pattern` match may take; if exceeded, matching stops and the value is a `pattern` error. Must be positive |
 
 ## 3. Declaring routes
 

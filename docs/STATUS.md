@@ -21,7 +21,7 @@ Ordered from most to least important.
 | Limitation | Effect | What would be needed |
 | --- | --- | --- |
 | Swagger UI is tied to version 5.34.1 from the CDN | It was verified in Chrome (the interface loads and shows the example's operations), but if `swagger-ui-dist` is updated the SRI hashes must be recomputed | An automated browser test is not planned |
-| `@Pattern` does not protect against catastrophic backtracking | A badly written regex can block a thread on a hostile input (some patterns need seconds for a few dozen characters, even on JDK 21) | A length cap and a time limit when evaluating the pattern; a startup warning for suspicious patterns |
+| `@Pattern` time limit is checked while the regex reads the text | A match is stopped after `patternTimeoutMillis`, but one stuck between two reads is not interrupted. Backtracking patterns still cost up to that time per value | A startup warning for suspicious patterns |
 | The `/docs` interface depends on a CDN | Without an internet connection it is not shown; `/openapi.json` is still served | Serve the resources from the application itself (changes the dependency policy) |
 | `kastapi-core` does not include logging (SLF4J) | Without an implementation on the classpath, the `500` error log entry is not written | It is documented; the example uses logback |
 | Errors raised with `HttpError` are not documented in OpenAPI | A `404` or `409` that a handler sends does not appear in the document (the errors KastAPI itself sends do) | A way to declare them on the route, such as `errors = listOf(404)` (new public API) |
