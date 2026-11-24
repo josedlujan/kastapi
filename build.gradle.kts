@@ -16,7 +16,7 @@ apiValidation {
 // Configuration common to all modules (`:examples` is only a container folder, not a module).
 configure(subprojects.filter { it.path != ":examples" }) {
     group = "dev.kastapi"
-    version = "0.1.1"
+    version = "0.2.0"
 
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

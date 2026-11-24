@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: version 0.1.1.
+Last updated: version 0.2.0.
 
 ## Why 0.x and not 1.0
 

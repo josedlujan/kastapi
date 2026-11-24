@@ -2,7 +2,7 @@
 
 **Your handler's signature is your contract.** Validation, clear errors and OpenAPI documentation for Kotlin APIs, without writing anything extra. Built on [Ktor](https://ktor.io).
 
-> Status: v0.1.1, experimental. The API may change before 1.0.
+> Status: v0.2.0, experimental. The API may change before 1.0.
 
 > **A note on language.** KastAPI was designed and first written in Spanish, and then translated to English. Most of it has been translated, but some parts may still be in Spanish or read awkwardly. If you find something, please [open an issue](https://github.com/josedlujan/kastapi/issues) or send a pull request. Translation fixes are very welcome and a good way to make a first contribution. [Versión en español](README.es.md).
 
@@ -43,10 +43,10 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.kastapi:kastapi-core:0.1.1")
+    implementation("dev.kastapi:kastapi-core:0.2.0")
     // Optional: see the server logs (KastAPI does not ship an SLF4J implementation).
     runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
-    testImplementation("dev.kastapi:kastapi-test:0.1.1")
+    testImplementation("dev.kastapi:kastapi-test:0.2.0")
     testImplementation(kotlin("test"))
 }
 

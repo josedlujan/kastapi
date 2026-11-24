@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-24
+
 ### Changed
 
 - **Behavior change.** Routes that read a body now require JSON in UTF-8: `Content-Type: application/json` or a structured `+json` type, in any case, with no `charset` or `charset=utf-8`. Any other type, a missing header with a non-empty body, a malformed header or another `charset` gets `415 unsupported_media_type` (standard error format, no `details`). The type is checked before the body is read. An empty body is still treated as `{}`, and routes without input still ignore the body. Clients that sent JSON without a `Content-Type` (for example `curl -d`) must now send `Content-Type: application/json`.
@@ -98,6 +100,7 @@ First public release (experimental): the API may change before 1.0.
 - Swagger UI is loaded from a CDN: without an internet connection the `/docs` interface is not shown (the `/openapi.json` document is still served).
 - The project was first written in Spanish and then translated to English. Some text may still be untranslated or read awkwardly; reports and fixes are welcome.
 
-[Unreleased]: https://github.com/josedlujan/kastapi/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/josedlujan/kastapi/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/josedlujan/kastapi/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/josedlujan/kastapi/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/josedlujan/kastapi/releases/tag/v0.1.0
