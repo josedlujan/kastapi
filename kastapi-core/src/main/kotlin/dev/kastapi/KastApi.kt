@@ -6,6 +6,7 @@ import dev.kastapi.errors.installErrorPages
 import dev.kastapi.routing.mountRoutes
 import dev.kastapi.startup.RouteDraft
 import dev.kastapi.startup.planRoutes
+import dev.kastapi.validation.PatternLimits
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
@@ -47,7 +48,13 @@ public fun Application.installKastApi(
     val drafts = mutableListOf<RouteDraft>()
     val metadata = ApiMetadata()
     KastApi(drafts, metadata, prefix = "", inheritedTags = emptyList()).block()
-    val routes = planRoutes(drafts, config.validateOnStartup, reservedPaths(config))
+    val routes =
+        planRoutes(
+            drafts,
+            config.validateOnStartup,
+            reservedPaths(config),
+            PatternLimits(config.maxPatternInputLength, config.patternTimeoutMillis),
+        )
     installErrorPages(config.json, routes)
     mountRoutes(routes, config)
     mountDocumentation(routes, metadata, config)

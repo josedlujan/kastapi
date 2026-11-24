@@ -27,9 +27,10 @@ internal class RuleSet private constructor(
         fun build(
             root: SerialDescriptor,
             problems: MutableList<Problem>,
+            limits: PatternLimits,
         ): RuleSet {
             val result = mutableMapOf<String, List<List<Rule>>>()
-            visit(root, result, problems)
+            visit(root, result, problems, limits)
             return RuleSet(result)
         }
 
@@ -37,15 +38,16 @@ internal class RuleSet private constructor(
             descriptor: SerialDescriptor,
             result: MutableMap<String, List<List<Rule>>>,
             problems: MutableList<Problem>,
+            limits: PatternLimits,
         ) {
             if (descriptor.isInline) {
-                visit(descriptor.getElementDescriptor(0), result, problems)
+                visit(descriptor.getElementDescriptor(0), result, problems, limits)
                 return
             }
             when (descriptor.kind) {
-                StructureKind.CLASS -> visitClass(descriptor, result, problems)
-                StructureKind.LIST -> visit(descriptor.getElementDescriptor(0), result, problems)
-                StructureKind.MAP -> visit(descriptor.getElementDescriptor(1), result, problems)
+                StructureKind.CLASS -> visitClass(descriptor, result, problems, limits)
+                StructureKind.LIST -> visit(descriptor.getElementDescriptor(0), result, problems, limits)
+                StructureKind.MAP -> visit(descriptor.getElementDescriptor(1), result, problems, limits)
                 else -> Unit
             }
         }
@@ -54,6 +56,7 @@ internal class RuleSet private constructor(
             descriptor: SerialDescriptor,
             result: MutableMap<String, List<List<Rule>>>,
             problems: MutableList<Problem>,
+            limits: PatternLimits,
         ) {
             // Avoids loops with recursive types.
             if (descriptor.serialName in result) return
@@ -63,9 +66,9 @@ internal class RuleSet private constructor(
                 indices.map { index ->
                     val property = "${descriptor.serialName}.${descriptor.getElementName(index)}"
                     val element = descriptor.getElementDescriptor(index)
-                    rulesFor(descriptor.getElementAnnotations(index), property, element, problems)
+                    rulesFor(descriptor.getElementAnnotations(index), property, element, problems, limits)
                 }
-            indices.forEach { visit(descriptor.getElementDescriptor(it), result, problems) }
+            indices.forEach { visit(descriptor.getElementDescriptor(it), result, problems, limits) }
         }
     }
 }

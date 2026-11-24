@@ -178,7 +178,7 @@ flowchart TD
 
 When a route is registered, `validation/RuleSet` walks the input's `SerialDescriptor` (including nested classes, lists and maps) and turns each property's annotations into rules (`validation/Rule`), compiling the regexes only once. On each request the rules are applied to body, path and query, and the error's `location` is the property's origin. Only values that passed structural validation are evaluated.
 
-`@Min` and `@Max` compare integers exactly and decimals against the value converted to `Double`. `@Email` is evaluated in a single pass, without a regex, to avoid quadratic cost on hostile inputs. `@Pattern` uses the regex the developer writes: a pattern with catastrophic backtracking remains their responsibility.
+`@Min` and `@Max` compare integers exactly and decimals against the value converted to `Double`. `@Email` is evaluated in a single pass, without a regex, to avoid quadratic cost on hostile inputs. `@Pattern` uses the regex the developer writes, with two limits: a text longer than `maxPatternInputLength` is a `pattern` error without being matched, and the match reads the text through a view that stops it once `patternTimeoutMillis` has passed (the clock is checked every 1024 reads). Both give the same `pattern` error; the timeout also logs a warning with the property name.
 
 ### 5.3 Response and errors
 

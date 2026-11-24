@@ -51,7 +51,21 @@ The possible `code` values are `required`, `type`, `unknown_field`, `min`, `max`
 
 ## Be careful with `@Pattern`
 
-KastAPI does not protect against regular expressions with catastrophic backtracking. Modern JDKs optimize many classic cases, but not all: with a pattern such as `(.*a){20}`, a 28-character input can keep a thread busy for several seconds, and `^(a{1,9}){1,9}$` needs about two seconds for 40 characters (measured on JDK 21). A hostile client can send such inputs on purpose. Avoid nested or repeated groups with open-ended quantifiers, and always limit the length of the text with `@Length` before the pattern is evaluated.
+A regular expression with catastrophic backtracking can keep a thread busy for a long time. Modern JDKs optimize many classic cases, but not all: with a pattern such as `(.*a){20}`, a 28-character input takes several seconds, and `^(a{1,9}){1,9}$` needs about two seconds for 40 characters (measured on JDK 21). A hostile client can send such inputs on purpose.
+
+KastAPI limits the damage with two settings in `KastApiConfig`:
+
+```kotlin
+KastApiConfig {
+    maxPatternInputLength = 10_000   // longest text a @Pattern is matched against (default)
+    patternTimeoutMillis = 100       // longest a single match may take (default)
+}
+```
+
+- A text longer than `maxPatternInputLength` is not matched: it is a `pattern` error.
+- A match that takes longer than `patternTimeoutMillis` is stopped and the value is a `pattern` error. The server logs a warning with the property name (never the value).
+
+The limits are a safety net, not a reason to write expensive patterns: the clock is checked while the regex reads the text, so a match that is stuck between two reads is not interrupted. Avoid nested or repeated groups with open-ended quantifiers, and limit the text with `@Length`. Raise `maxPatternInputLength` only for fields that really need it.
 
 ## Configuration errors
 

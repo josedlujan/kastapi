@@ -54,7 +54,9 @@ public annotation class Email
 /**
  * The `String` must match the regular expression [regex] entirely.
  *
- * The expression is compiled only once, when the route is registered.
+ * The expression is compiled only once, when the route is registered. To protect the server from expressions that
+ * backtrack a lot, a text longer than `KastApiConfig.maxPatternInputLength` is not matched and a match that takes
+ * longer than `KastApiConfig.patternTimeoutMillis` is stopped; both are a `pattern` error.
  */
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY)
