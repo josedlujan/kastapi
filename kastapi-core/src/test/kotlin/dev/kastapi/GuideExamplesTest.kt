@@ -147,7 +147,12 @@ class GuideExamplesTest {
     fun `guide 05 - info, docsPath and openApiPath are configurable`() =
         testApplication {
             application {
-                installKastApi(KastApiConfig(docsPath = "/help", openApiPath = "/schema.json")) {
+                installKastApi(
+                    KastApiConfig {
+                        docsPath = "/help"
+                        openApiPath = "/schema.json"
+                    },
+                ) {
                     info(title = "My API", version = "2.0.0", description = "Demo")
                     get<NoInput, GdUser>("/me", summary = "Me", tags = listOf("users")) { GdUser(1, "me") }
                 }

@@ -12,16 +12,9 @@ public final class dev/kastapi/KastApi {
 }
 
 public final class dev/kastapi/KastApiConfig {
-	public fun <init> ()V
+	public synthetic fun <init> ()V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/Json;ZJ)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/Json;ZJILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lkotlinx/serialization/json/Json;
-	public final fun component4 ()Z
-	public final fun component5 ()J
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/Json;ZJ)Ldev/kastapi/KastApiConfig;
-	public static synthetic fun copy$default (Ldev/kastapi/KastApiConfig;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/Json;ZJILjava/lang/Object;)Ldev/kastapi/KastApiConfig;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDocsPath ()Ljava/lang/String;
 	public final fun getJson ()Lkotlinx/serialization/json/Json;
@@ -30,6 +23,24 @@ public final class dev/kastapi/KastApiConfig {
 	public final fun getValidateOnStartup ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/kastapi/KastApiConfig$Builder {
+	public final fun getDocsPath ()Ljava/lang/String;
+	public final fun getJson ()Lkotlinx/serialization/json/Json;
+	public final fun getMaxBodyBytes ()J
+	public final fun getOpenApiPath ()Ljava/lang/String;
+	public final fun getValidateOnStartup ()Z
+	public final fun setDocsPath (Ljava/lang/String;)V
+	public final fun setJson (Lkotlinx/serialization/json/Json;)V
+	public final fun setMaxBodyBytes (J)V
+	public final fun setOpenApiPath (Ljava/lang/String;)V
+	public final fun setValidateOnStartup (Z)V
+}
+
+public final class dev/kastapi/KastApiConfigKt {
+	public static final fun KastApiConfig ()Ldev/kastapi/KastApiConfig;
+	public static final fun KastApiConfig (Lkotlin/jvm/functions/Function1;)Ldev/kastapi/KastApiConfig;
 }
 
 public final class dev/kastapi/KastApiConfigurationException : java/lang/RuntimeException {

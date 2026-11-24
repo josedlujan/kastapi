@@ -32,7 +32,7 @@ class BodyLimitTest {
     ) = testApplication {
         application {
             installKastApi(
-                KastApiConfig(maxBodyBytes = max),
+                KastApiConfig { maxBodyBytes = max },
             ) { post<BlNote, BlNote>("/n", status = 200) { it } }
         }
         createClient { }.test()
@@ -105,15 +105,15 @@ class BodyLimitTest {
     fun `a route without a body is not affected by the limit`() =
         testApplication {
             application {
-                installKastApi(KastApiConfig(maxBodyBytes = 1)) { get<NoInput, BlNote>("/g") { BlNote("ok") } }
+                installKastApi(KastApiConfig { maxBodyBytes = 1 }) { get<NoInput, BlNote>("/g") { BlNote("ok") } }
             }
             assertEquals(HttpStatusCode.OK, createClient { }.get("/g").status)
         }
 
     @Test
     fun `a non-positive limit is a configuration error`() {
-        assertFailsWith<IllegalArgumentException> { KastApiConfig(maxBodyBytes = 0) }
-        assertFailsWith<IllegalArgumentException> { KastApiConfig(maxBodyBytes = -5) }
-        assertTrue(runCatching { KastApiConfig(maxBodyBytes = 1) }.isSuccess)
+        assertFailsWith<IllegalArgumentException> { KastApiConfig { maxBodyBytes = 0 } }
+        assertFailsWith<IllegalArgumentException> { KastApiConfig { maxBodyBytes = -5 } }
+        assertTrue(runCatching { KastApiConfig { maxBodyBytes = 1 } }.isSuccess)
     }
 }

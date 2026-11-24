@@ -251,7 +251,7 @@ class StartupValidationTest {
 
     @Test
     fun `with validateOnStartup set to false route consistency is not checked`() {
-        val config = KastApiConfig(validateOnStartup = false)
+        val config = KastApiConfig { validateOnStartup = false }
 
         assertStartupSucceeds(config) {
             get<NoInput, Health>("/a") { Health("uno") }
@@ -263,7 +263,7 @@ class StartupValidationTest {
 
     @Test
     fun `with validateOnStartup set to false an unsupported type still fails`() {
-        val config = KastApiConfig(validateOnStartup = false)
+        val config = KastApiConfig { validateOnStartup = false }
 
         val error = assertStartupFails(config) { get<WithNested, Health>("/x") { Health("x") } }
 
