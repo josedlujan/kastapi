@@ -33,12 +33,24 @@ KastAPI was designed and first written in Spanish, and then translated to Englis
 - Update `CHANGELOG.md` under `Unreleased`.
 - If you change the public API, run `./gradlew apiDump` and explain the change.
 
+## Deprecation policy
+
+Before 1.0 we still change the API, but we do it in steps so that upgrading is never a surprise:
+
+- A replacement ships first. The old form is marked `@Deprecated` at `WARNING` level in that same release, with a `ReplaceWith` when possible, and keeps working with the same JVM signature.
+- In the next minor release the level goes to `ERROR`.
+- The release after that removes it.
+- Every deprecation and removal is listed in the `CHANGELOG`.
+
+`compat/binary-0.1` guards the first step: a consumer compiled against 0.1.1 from Maven Central has to keep linking and passing with the jars built from the current checkout. Do not delete or change a signature it uses before the removal schedule says so.
+
 ## Useful commands
 
 ```bash
 ./gradlew build                  # compile, tests and checks
 ./gradlew ktlintFormat           # fix the style
 ./gradlew apiCheck               # public API compatibility
+./gradlew assemble && ./gradlew -p compat/binary-0.1 test -PkastapiVersion=<version>   # 0.1 binary compatibility
 ./gradlew publishToMavenLocal    # install the modules to try them in another project
 ./gradlew :examples:hello:run    # example at http://localhost:8080
 ```

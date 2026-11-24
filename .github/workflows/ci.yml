@@ -33,3 +33,7 @@ jobs:
           VERSION=$(sed -n 's/^ *version = "\(.*\)"/\1/p' build.gradle.kts | head -1)
           ./gradlew publishToMavenLocal
           ./gradlew -p compat/kotlin-2.3 test -PkastapiVersion="$VERSION"
+      - name: Binary compatibility with 0.1
+        run: |
+          VERSION=$(sed -n 's/^ *version = "\(.*\)"/\1/p' build.gradle.kts | head -1)
+          ./gradlew -p compat/binary-0.1 test -PkastapiVersion="$VERSION"
