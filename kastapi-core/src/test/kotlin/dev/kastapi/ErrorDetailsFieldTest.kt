@@ -41,7 +41,12 @@ class ErrorDetailsFieldTest {
         test: suspend io.ktor.client.HttpClient.() -> Unit,
     ) = testApplication {
         application {
-            installKastApi(KastApiConfig(json = json, maxBodyBytes = 50)) {
+            installKastApi(
+                KastApiConfig {
+                    this.json = json
+                    maxBodyBytes = 50
+                },
+            ) {
                 post<EdPayload, EdPayload>("/p") { it }
                 get<NoInput, EdPayload>("/boom") { error("boom") }
                 get<NoInput, EdPayload>("/teapot") { throw HttpError(409, "conflict") }

@@ -70,7 +70,11 @@ class DocsRoutesTest {
     @Test
     fun `configured paths replace the default ones and the HTML points to the configured schema`() =
         testApplication {
-            val config = KastApiConfig(docsPath = "/api/docs", openApiPath = "/api/schema.json")
+            val config =
+                KastApiConfig {
+                    docsPath = "/api/docs"
+                    openApiPath = "/api/schema.json"
+                }
             application { installKastApi(config) { exampleApi() } }
 
             val html = client.get("/api/docs").bodyAsText()
@@ -84,7 +88,7 @@ class DocsRoutesTest {
     @Test
     fun `docsPath set to null disables Swagger UI and keeps the schema`() =
         testApplication {
-            application { installKastApi(KastApiConfig(docsPath = null)) { exampleApi() } }
+            application { installKastApi(KastApiConfig { docsPath = null }) { exampleApi() } }
 
             val docs = client.get("/docs")
 
@@ -96,7 +100,7 @@ class DocsRoutesTest {
     @Test
     fun `openApiPath set to null disables the schema and the documentation too`() =
         testApplication {
-            application { installKastApi(KastApiConfig(openApiPath = null)) { exampleApi() } }
+            application { installKastApi(KastApiConfig { openApiPath = null }) { exampleApi() } }
 
             assertEquals(HttpStatusCode.NotFound, client.get("/openapi.json").status)
             assertEquals(HttpStatusCode.NotFound, client.get("/docs").status)
@@ -121,7 +125,7 @@ class DocsRoutesTest {
     @Test
     fun `a user route can use the documentation path if it is disabled or with another method`() =
         testApplication {
-            val config = KastApiConfig(docsPath = null)
+            val config = KastApiConfig { docsPath = null }
             application {
                 installKastApi(config) {
                     get<NoInput, Health>("/docs") { Health("mia") }

@@ -12,7 +12,12 @@ fun Application.module() {
         get("/ping") { call.respondText("pong") }
     }
 
-    installKastApi(KastApiConfig(docsPath = "/api/docs", openApiPath = "/api/openapi.json")) {
+    val config =
+        KastApiConfig {
+            docsPath = "/api/docs"
+            openApiPath = "/api/openapi.json"
+        }
+    installKastApi(config) {
         get<NoInput, Health>("/health") { Health("ok") }
     }
 }

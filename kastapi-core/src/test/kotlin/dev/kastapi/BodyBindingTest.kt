@@ -354,14 +354,14 @@ class BodyBindingTest {
         testApplication {
             application {
                 val config =
-                    KastApiConfig(
+                    KastApiConfig {
                         json =
                             Json {
                                 ignoreUnknownKeys = true
                                 explicitNulls = false
                                 encodeDefaults = true
-                            },
-                    )
+                            }
+                    }
                 installKastApi(config) { post<CreateUser, CreateUser>("/users") { it } }
             }
 

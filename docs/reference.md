@@ -68,7 +68,17 @@ public fun Application.installKastApi(config: KastApiConfig = KastApiConfig(), b
 
 - `kastApi(...)` calls `installKastApi`, so both forms behave the same. In tests, use `installKastApi` inside `testApplication` or `kastTest`.
 
-`KastApiConfig` (public data class, everything has defaults):
+`KastApiConfig` (public class, everything has defaults). Create it with a builder; the properties you do not set keep their default:
+
+```kotlin
+val config = KastApiConfig {
+    docsPath = "/help"
+    maxBodyBytes = 64 * 1024
+}
+```
+
+`KastApiConfig()` gives every default. The constructor with named arguments from 0.1 still works but is deprecated (see CONTRIBUTING for the removal schedule). `KastApiConfig` is not a data class anymore: it has `equals`, `hashCode` and `toString`, but no `copy` or `componentN`.
+
 
 | Property | Type | Default | Effect |
 | --- | --- | --- | --- |

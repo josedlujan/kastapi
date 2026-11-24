@@ -50,7 +50,7 @@ class OpenApiErrorResponsesTest {
     }
 
     private fun run(
-        config: KastApiConfig = KastApiConfig(maxBodyBytes = 64),
+        config: KastApiConfig = KastApiConfig { maxBodyBytes = 64 },
         routes: KastApi.() -> Unit = { sampleRoutes() },
         test: suspend HttpClient.(JsonObject) -> Unit,
     ) = testApplication {

@@ -36,7 +36,7 @@ class ContentTypeTest {
         test: suspend HttpClient.() -> Unit,
     ) = testApplication {
         application {
-            installKastApi(KastApiConfig(maxBodyBytes = maxBodyBytes)) {
+            installKastApi(KastApiConfig { this.maxBodyBytes = maxBodyBytes }) {
                 post<CtPayload, CtPayload>("/p") { it }
                 post<NoInput, CtPayload>("/no-input") { CtPayload("no body read") }
                 get<NoInput, CtPayload>("/g") { CtPayload("get") }

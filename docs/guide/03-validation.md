@@ -57,7 +57,7 @@ KastAPI does not protect against regular expressions with catastrophic backtrack
 
 An annotation on an incompatible type (for example `@Email` on an `Int`) or an invalid regex is **not ignored**: the application fails at startup with `KastApiConfigurationException`, which lists every problem found, each with its route. Also detected: `{param}` parameters without a property, duplicate routes and unsupported types in path or query.
 
-With `KastApiConfig(validateOnStartup = false)` the consistency checks are skipped; problems that prevent building the route are still reported.
+With `KastApiConfig { validateOnStartup = false }` the consistency checks are skipped; problems that prevent building the route are still reported.
 
 ## Next step
 
