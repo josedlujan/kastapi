@@ -118,6 +118,12 @@ internal object Messages {
         path: String,
     ): String = "Unhandled exception in $method $path"
 
+    /** Server-side log line when a `@Pattern` match is stopped by the time limit. */
+    fun patternTimeout(
+        property: String,
+        millis: Long,
+    ): String = "the @Pattern annotation on '$property' took longer than $millis ms and the value was rejected"
+
     fun invalidPattern(
         property: String,
         regex: String,

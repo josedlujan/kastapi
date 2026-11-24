@@ -6,6 +6,7 @@ import dev.kastapi.binding.RoutePlan
 import dev.kastapi.binding.routeTemplate
 import dev.kastapi.errors.Messages
 import dev.kastapi.routing.RouteDefinition
+import dev.kastapi.validation.PatternLimits
 import io.ktor.http.HttpMethod
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -65,8 +66,9 @@ internal fun planRoutes(
     drafts: List<RouteDraft>,
     validate: Boolean,
     reservedPaths: List<String>,
+    patternLimits: PatternLimits,
 ): List<RouteDefinition> {
-    val results = drafts.map { RoutePlan.build(it.method, it.path, it.inputSerializer) }
+    val results = drafts.map { RoutePlan.build(it.method, it.path, it.inputSerializer, patternLimits) }
     val problems = mutableListOf<String>()
 
     drafts.zip(results).forEach { (draft, result) ->

@@ -3,6 +3,7 @@ package dev.kastapi.binding
 import dev.kastapi.NoInput
 import dev.kastapi.errors.Messages
 import dev.kastapi.startup.Problem
+import dev.kastapi.validation.PatternLimits
 import dev.kastapi.validation.RuleSet
 import io.ktor.http.HttpMethod
 import kotlinx.serialization.KSerializer
@@ -90,6 +91,7 @@ internal class RoutePlan(
             method: HttpMethod,
             path: String,
             serializer: KSerializer<*>,
+            patternLimits: PatternLimits,
         ): PlanResult {
             val descriptor = serializer.descriptor
             val problems = mutableListOf<Problem>()
@@ -119,7 +121,7 @@ internal class RoutePlan(
                     noInput = false,
                     hasBody = hasBody,
                     bodyNullables = if (hasBody) nullablesWithoutDefault(descriptor, pathNames) else emptyList(),
-                    rules = RuleSet.build(descriptor, problems),
+                    rules = RuleSet.build(descriptor, problems, patternLimits),
                 )
             return PlanResult(plan, problems)
         }

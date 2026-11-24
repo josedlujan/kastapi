@@ -19,7 +19,9 @@ public final class dev/kastapi/KastApiConfig {
 	public final fun getDocsPath ()Ljava/lang/String;
 	public final fun getJson ()Lkotlinx/serialization/json/Json;
 	public final fun getMaxBodyBytes ()J
+	public final fun getMaxPatternInputLength ()I
 	public final fun getOpenApiPath ()Ljava/lang/String;
+	public final fun getPatternTimeoutMillis ()J
 	public final fun getValidateOnStartup ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -29,12 +31,16 @@ public final class dev/kastapi/KastApiConfig$Builder {
 	public final fun getDocsPath ()Ljava/lang/String;
 	public final fun getJson ()Lkotlinx/serialization/json/Json;
 	public final fun getMaxBodyBytes ()J
+	public final fun getMaxPatternInputLength ()I
 	public final fun getOpenApiPath ()Ljava/lang/String;
+	public final fun getPatternTimeoutMillis ()J
 	public final fun getValidateOnStartup ()Z
 	public final fun setDocsPath (Ljava/lang/String;)V
 	public final fun setJson (Lkotlinx/serialization/json/Json;)V
 	public final fun setMaxBodyBytes (J)V
+	public final fun setMaxPatternInputLength (I)V
 	public final fun setOpenApiPath (Ljava/lang/String;)V
+	public final fun setPatternTimeoutMillis (J)V
 	public final fun setValidateOnStartup (Z)V
 }
 

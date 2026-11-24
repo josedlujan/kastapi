@@ -3,6 +3,7 @@ package dev.kastapi.validation
 import dev.kastapi.errors.ErrorCode
 import dev.kastapi.errors.Messages
 import dev.kastapi.startup.Problem
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
@@ -89,13 +90,64 @@ internal object EmailRule : Rule {
         c == ' ' || c == '\t' || c == '\n' || c == '\u000B' || c == '\u000C' || c == '\r'
 }
 
+/**
+ * Limits that keep `@Pattern` from being a way to burn CPU: a text longer than [maxLength] is not matched, and a
+ * match that takes longer than [timeoutMillis] is stopped. Both cases are a `pattern` violation.
+ */
+internal class PatternLimits(
+    val maxLength: Int,
+    val timeoutMillis: Long,
+)
+
 internal class PatternRule(
     private val regex: Regex,
+    private val limits: PatternLimits,
+    private val property: String,
 ) : Rule {
     override fun check(value: JsonElement): Violation? {
         val text = value.stringOrNull() ?: return null
-        return if (regex.matches(text)) null else Violation(ErrorCode.PATTERN, Messages.PATTERN)
+        if (text.length > limits.maxLength) return violation()
+        val deadline = System.nanoTime() + limits.timeoutMillis * NANOS_PER_MILLI
+        return try {
+            if (regex.matches(DeadlineSequence(text, deadline))) null else violation()
+        } catch (_: MatchTimeout) {
+            // Never log the value: it comes from the client.
+            logger.warn(Messages.patternTimeout(property, limits.timeoutMillis))
+            violation()
+        }
     }
+
+    private fun violation() = Violation(ErrorCode.PATTERN, Messages.PATTERN)
+}
+
+private val logger = KtorSimpleLogger("dev.kastapi.validation.Pattern")
+
+private const val NANOS_PER_MILLI = 1_000_000L
+
+/** Reads are counted so the clock is checked once every [CHECK_EVERY] characters, not on each one. */
+private const val CHECK_EVERY = 1024
+
+private class MatchTimeout : RuntimeException(null, null, false, false)
+
+/** The matcher reads the text through this view, which gives up once the deadline has passed. */
+private class DeadlineSequence(
+    private val text: CharSequence,
+    private val deadline: Long,
+    private var reads: Int = 0,
+) : CharSequence {
+    override val length: Int get() = text.length
+
+    override fun get(index: Int): Char {
+        if (++reads % CHECK_EVERY == 0 && System.nanoTime() - deadline > 0) throw MatchTimeout()
+        return text[index]
+    }
+
+    override fun subSequence(
+        startIndex: Int,
+        endIndex: Int,
+    ): CharSequence = text.subSequence(startIndex, endIndex)
+
+    override fun toString(): String = text.toString()
 }
 
 /** Types each annotation can be applied to (reference §5). */
@@ -139,6 +191,7 @@ internal fun rulesFor(
     property: String,
     element: SerialDescriptor,
     problems: MutableList<Problem>,
+    limits: PatternLimits,
 ): List<Rule> {
     val kind = underlyingKind(element)
     val rules = mutableListOf<Rule>()
@@ -163,7 +216,7 @@ internal fun rulesFor(
             is Length -> add("Length", Applies.TEXT_OR_LIST) { LengthRule(annotation.min, annotation.max) }
             is NotBlank -> add("NotBlank", Applies.TEXT) { NotBlankRule }
             is Email -> add("Email", Applies.TEXT) { EmailRule }
-            is Pattern -> add("Pattern", Applies.TEXT) { patternRule(annotation.regex, property, problems) }
+            is Pattern -> add("Pattern", Applies.TEXT) { patternRule(annotation.regex, property, problems, limits) }
             else -> Unit
         }
     }
@@ -181,9 +234,10 @@ private fun patternRule(
     regex: String,
     property: String,
     problems: MutableList<Problem>,
+    limits: PatternLimits,
 ): Rule? =
     try {
-        PatternRule(Regex(regex))
+        PatternRule(Regex(regex), limits, property)
     } catch (_: PatternSyntaxException) {
         problems += Problem(Messages.invalidPattern(property, regex), fatal = true)
         null

@@ -19,6 +19,10 @@ import kotlinx.serialization.json.Json
  * @property json serialization instance used for inputs and outputs.
  * @property validateOnStartup if `true`, validates the routes at startup.
  * @property maxBodyBytes maximum size, in bytes, of a request body; if exceeded the response is `413`. Must be positive.
+ * @property maxPatternInputLength longest text, in characters, that a `@Pattern` is matched against; a longer text is a
+ * `pattern` error without being matched. Must be positive.
+ * @property patternTimeoutMillis time a single `@Pattern` match may take; if it takes longer, matching stops and the
+ * value is a `pattern` error. This protects the server from regular expressions that backtrack a lot. Must be positive.
  */
 public class KastApiConfig internal constructor(
     builder: Builder,
@@ -28,9 +32,13 @@ public class KastApiConfig internal constructor(
     public val json: Json = builder.json
     public val validateOnStartup: Boolean = builder.validateOnStartup
     public val maxBodyBytes: Long = builder.maxBodyBytes
+    public val maxPatternInputLength: Int = builder.maxPatternInputLength
+    public val patternTimeoutMillis: Long = builder.patternTimeoutMillis
 
     init {
         require(maxBodyBytes > 0) { "maxBodyBytes must be positive, but was $maxBodyBytes" }
+        require(maxPatternInputLength > 0) { "maxPatternInputLength must be positive, but was $maxPatternInputLength" }
+        require(patternTimeoutMillis > 0) { "patternTimeoutMillis must be positive, but was $patternTimeoutMillis" }
     }
 
     /**
@@ -78,6 +86,18 @@ public class KastApiConfig internal constructor(
 
         /** Maximum size, in bytes, of a request body. Must be positive. Default 1 MiB. */
         public var maxBodyBytes: Long = DEFAULT_MAX_BODY_BYTES
+
+        /**
+         * Longest text, in characters, that a `@Pattern` is matched against. A longer text is a `pattern` error.
+         * Must be positive. Default 10 000.
+         */
+        public var maxPatternInputLength: Int = DEFAULT_MAX_PATTERN_INPUT_LENGTH
+
+        /**
+         * Time, in milliseconds, a single `@Pattern` match may take before it is stopped and the value is a
+         * `pattern` error. Must be positive. Default 100.
+         */
+        public var patternTimeoutMillis: Long = DEFAULT_PATTERN_TIMEOUT_MILLIS
     }
 
     override fun equals(other: Any?): Boolean =
@@ -88,7 +108,9 @@ public class KastApiConfig internal constructor(
                     openApiPath == other.openApiPath &&
                     json == other.json &&
                     validateOnStartup == other.validateOnStartup &&
-                    maxBodyBytes == other.maxBodyBytes
+                    maxBodyBytes == other.maxBodyBytes &&
+                    maxPatternInputLength == other.maxPatternInputLength &&
+                    patternTimeoutMillis == other.patternTimeoutMillis
             )
 
     override fun hashCode(): Int {
@@ -97,12 +119,15 @@ public class KastApiConfig internal constructor(
         result = 31 * result + json.hashCode()
         result = 31 * result + validateOnStartup.hashCode()
         result = 31 * result + maxBodyBytes.hashCode()
+        result = 31 * result + maxPatternInputLength.hashCode()
+        result = 31 * result + patternTimeoutMillis.hashCode()
         return result
     }
 
     override fun toString(): String =
         "KastApiConfig(docsPath=$docsPath, openApiPath=$openApiPath, json=$json, " +
-            "validateOnStartup=$validateOnStartup, maxBodyBytes=$maxBodyBytes)"
+            "validateOnStartup=$validateOnStartup, maxBodyBytes=$maxBodyBytes, " +
+            "maxPatternInputLength=$maxPatternInputLength, patternTimeoutMillis=$patternTimeoutMillis)"
 }
 
 /** Creates a configuration with every default. */
@@ -115,6 +140,8 @@ public fun KastApiConfig(block: KastApiConfig.Builder.() -> Unit): KastApiConfig
 private const val DEFAULT_DOCS_PATH = "/docs"
 private const val DEFAULT_OPENAPI_PATH = "/openapi.json"
 private const val DEFAULT_MAX_BODY_BYTES = 1_048_576L
+private const val DEFAULT_MAX_PATTERN_INPUT_LENGTH = 10_000
+private const val DEFAULT_PATTERN_TIMEOUT_MILLIS = 100L
 
 // One shared instance: `Json` compares by identity, so this keeps two default configurations equal.
 private val DEFAULT_JSON: Json =
