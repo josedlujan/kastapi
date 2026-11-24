@@ -152,7 +152,7 @@ With `validateOnStartup = true`, installing throws `KastApiConfigurationExceptio
 - Path and query parameters as `parameters`, with `required` according to §4.5.
 - Body as a `requestBody` `application/json` with a `$ref` to `components/schemas`.
 - Success response with the declared `status` and its schema; `Unit` = no content.
-- Every operation with input also documents the `422` response with the error schema (§8).
+- Besides the success response, every operation documents the errors KastAPI itself can send: `400`, `413` and `415` when it reads a body, `422` when it has input, and `500` always. They are `$ref`s to shared responses in `components/responses` (`BadRequest`, `PayloadTooLarge`, `UnsupportedMediaType`, `ValidationError`, `InternalServerError`), all with the error schema (§8); only the ones in use are listed. Errors that a handler raises with `HttpError` are not known to KastAPI and are not listed, and neither are `404` and `405`, which no operation produces by itself.
 - Schemas from `SerialDescriptor`: primitive types, nullable (`type: [X, "null"]`), lists (`array`), maps `Map<String, T>` (`additionalProperties`), enums (`enum`), classes (`object` with `properties` and `required`). Component name = simple `serialName` (no package); on a name collision the full name is used.
 - Validation annotations are reflected: `@Min`→`minimum`, `@Max`→`maximum`, `@Length`→`minLength/maxLength` or `minItems/maxItems`, `@Pattern`→`pattern`, `@Email`→`format: email`, `@NotBlank`→`minLength: 1`.
 - The document is generated **once** at startup and cached.

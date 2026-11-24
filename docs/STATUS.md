@@ -24,7 +24,7 @@ Ordered from most to least important.
 | `@Pattern` does not protect against catastrophic backtracking | A badly written regex can block a thread on a hostile input (some patterns need seconds for a few dozen characters, even on JDK 21) | A length cap and a time limit when evaluating the pattern; a startup warning for suspicious patterns |
 | The `/docs` interface depends on a CDN | Without an internet connection it is not shown; `/openapi.json` is still served | Serve the resources from the application itself (changes the dependency policy) |
 | `kastapi-core` does not include logging (SLF4J) | Without an implementation on the classpath, the `500` error log entry is not written | It is documented; the example uses logback |
-| Only the `422` response is documented in OpenAPI | `400`, `404`, `405`, `413` and `500` do not appear | Documented multiple responses (planned for 0.2) |
+| Errors raised with `HttpError` are not documented in OpenAPI | A `404` or `409` that a handler sends does not appear in the document (the errors KastAPI itself sends do) | A way to declare them on the route, such as `errors = listOf(404)` (new public API) |
 | `apiCheck` does not cover the DSL's `inline reified` functions | A change in `get`, `post`... is not detected by the tool | Compiling the example and the tests covers it in part |
 | An own `StatusPages` must be installed before `installKastApi` | Installing it afterwards throws `DuplicatePluginException` | It is documented |
 | `sealed`, polymorphic and contextual types are documented as `{}` | Open schema in OpenAPI | Support for `oneOf` and discriminators |
@@ -45,7 +45,7 @@ Ordered from most to least important.
 
 ### For 0.2
 
-Entry condition in the roadmap: 0.1 published and first users. Planned content: injectable dependencies, typed headers and cookies, documented multiple responses and internationalization of the messages.
+Entry condition in the roadmap: 0.1 published and first users. Planned content: injectable dependencies, typed headers and cookies, declaring the errors a route raises with `HttpError`, and internationalization of the messages.
 
 ### For 1.0
 

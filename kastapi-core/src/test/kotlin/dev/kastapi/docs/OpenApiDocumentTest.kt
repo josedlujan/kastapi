@@ -74,7 +74,7 @@ class OpenApiDocumentTest {
 
             val resource = OpenApiDocumentTest::class.java.getResource("/openapi/spec-example.json")
             if (resource == null) fail("Missing snapshot openapi/spec-example.json. Got:\n$actual")
-            assertEquals(json.parseToJsonElement(resource.readText()), actual, "Obtenido:\n$actual")
+            assertEquals(json.parseToJsonElement(resource.readText()), actual, "Got:\n$actual")
         }
 
     @Test
@@ -95,7 +95,7 @@ class OpenApiDocumentTest {
             val operations =
                 listOf("/users" to "post", "/users" to "get", "/users/{id}" to "get", "/users/{id}" to "delete")
             for ((path, method) in operations) {
-                val response = document.operation(path, method).obj("responses").obj("422")
+                val response = document.response(document.operation(path, method), "422")
                 val schema = response.obj("content").obj("application/json").obj("schema")
                 assertEquals("#/components/schemas/ErrorResponse", schema.text("\$ref"), "$method $path")
             }
@@ -108,7 +108,7 @@ class OpenApiDocumentTest {
 
             val operation = openApiDocument().operation("/health", "get")
 
-            assertEquals(setOf("200"), operation.obj("responses").keys)
+            assertEquals(setOf("200", "500"), operation.obj("responses").keys)
             assertFalse(operation.containsKey("parameters"))
             assertFalse(operation.containsKey("requestBody"))
         }

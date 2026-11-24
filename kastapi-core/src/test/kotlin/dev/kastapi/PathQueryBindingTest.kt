@@ -310,7 +310,7 @@ class PathQueryBindingTest {
         testApplication {
             application { installKastApi { get<ListQuery, ListQuery>("/users") { it } } }
 
-            val response = client.get("/users?limit=5&otro=1")
+            val response = client.get("/users?limit=5&other=1")
 
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals("""{"limit":5}""", response.bodyAsText())

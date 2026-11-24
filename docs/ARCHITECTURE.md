@@ -246,7 +246,7 @@ flowchart LR
 - `OpenApiGenerator.generate` builds the document as a `JsonObject` (`openapi: 3.1.0`, `info`, `paths`, `components.schemas`). It is generated **once** at startup and served from memory.
 - An operation carries `tags`, `summary`, `description`, `operationId` (`get_users_id`; the root is `get_root` and a duplicate gets `_2`), `parameters`, `requestBody` and `responses`. Parameters do not admit `null`: an absent value already equals `null`.
 - If the input mixes path and body properties, the `requestBody` points to a derived component `<Name>Body` without the path properties. The body is `required` only if it has some property without a default value and not nullable.
-- The success response uses the declared status and the standard phrase as `description`; a `Unit` output has no `content`. Every operation with input adds the `422` response with `ErrorResponse` (and `ErrorDetail` as a component).
+- The success response uses the declared status and the standard phrase as `description`; a `Unit` output has no `content`. Every operation also lists the errors KastAPI can send for it (`400`, `413` and `415` when it reads a body, `422` when it has input, `500` always) as `$ref`s to shared responses in `components/responses`, which only holds the ones in use. If the declared success status matches one of them, the success response wins.
 - `docsPath` serves the HTML from `swaggerUiHtml`: `swagger-ui-dist` 5.34.1 from jsDelivr, with a pinned version and SRI hashes, and with the schema path escaped for the `<script>`. It is not a Gradle dependency.
 - `openApiPath = null` disables the schema and `/docs` too; `docsPath = null` disables only the interface. The documentation routes do not appear in the document.
 
