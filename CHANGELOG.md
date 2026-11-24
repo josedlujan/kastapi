@@ -13,6 +13,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- The OpenAPI document lists the errors KastAPI can send for each operation: `400`, `413` and `415` when it reads a body, `422` when it has input, and `500` always. They are `$ref`s to shared responses in `components/responses` (`BadRequest`, `PayloadTooLarge`, `UnsupportedMediaType`, `ValidationError`, `InternalServerError`). The `422`, until now written inline in each operation, is one of these references too. Errors raised with `HttpError` are still not documented.
 - Every `get` route also answers `HEAD` with the same binding, validation, status and headers, and no body. `HEAD` is not listed in the OpenAPI document. `OPTIONS` is still not answered automatically.
 
 ## [0.1.1] - 2026-11-19

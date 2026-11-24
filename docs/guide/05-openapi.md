@@ -38,13 +38,21 @@ Each route generates an operation with `summary`, `description`, `tags` and an `
 - Path and query parameters, with `required` according to the type.
 - A JSON `requestBody` with a `$ref` to `components/schemas`.
 - The success response with the declared `status`. With `Unit` there is no content.
-- The `422` response on every operation with input, with the standard error schema.
+- The errors KastAPI itself can send, with the standard error schema:
+
+  | Operation | Documented errors |
+  | --- | --- |
+  | Reads a body (`post`, `put`, `patch` with input) | `400`, `413`, `415`, `422`, `500` |
+  | Has input but no body (`get`, `delete` with path or query) | `422`, `500` |
+  | No input (`NoInput`) | `500` |
+
+  They are references to shared responses in `components/responses`, so each one is written once.
 - Validation annotations: `@Min` → `minimum`, `@Max` → `maximum`, `@Length` → `minLength`/`maxLength` (or `minItems`/`maxItems`), `@Pattern` → `pattern`, `@Email` → `format: email`, `@NotBlank` → `minLength: 1`.
 - Nullable types, lists, maps, enums and nested classes.
 
 ## Limitations in 0.1.x
 
-- Only the `422` is documented. The `400`, `404`, `405`, `413` and `500` are not.
+- Errors that your handler raises with `HttpError` (for example a `404` for a missing resource) are not documented: KastAPI cannot know them. `404` and `405` for unknown paths and methods are not documented either.
 - `sealed`, polymorphic and contextual types are documented as an open schema (`{}`).
 - Default values do not appear in the schema.
 
