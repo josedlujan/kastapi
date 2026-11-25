@@ -269,7 +269,7 @@ KastAPI is a layer on top of Ktor ([ADR-0001](adr/0001-build-on-ktor.md)): it us
 | --- | --- | --- | --- |
 | [0001](adr/0001-build-on-ktor.md) | Build on Ktor | Do not reinvent the server, engines, TLS or testing | Depends on the evolution of Ktor's API |
 | [0002](adr/0002-serialdescriptor-no-reflection.md) | `SerialDescriptor` instead of `kotlin-reflect` | No reflection: fast startup and compatible with R8 and GraalVM | Models must be `@Serializable`; no default values in OpenAPI |
-| [0003](adr/0003-reified-dsl-before-ksp.md) | DSL with `reified` types in 0.1, KSP in 0.3 | No code generation; fast iteration | One `data class` per endpoint with input |
+| [0003](adr/0003-reified-dsl-before-ksp.md) | DSL with `reified` types in 0.1, KSP later (see the roadmap) | No code generation; fast iteration | One `data class` per endpoint with input |
 | [0004](adr/0004-annotations-module.md) | `kastapi-annotations` module | Module graph without cycles | One extra small module |
 
 ---

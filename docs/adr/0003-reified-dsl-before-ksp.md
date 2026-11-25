@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-11-10
+- Update: the [roadmap](../ROADMAP.md) now places KSP in v0.4, after the features of v0.3. The decision does not change.
 
 ## Context
 

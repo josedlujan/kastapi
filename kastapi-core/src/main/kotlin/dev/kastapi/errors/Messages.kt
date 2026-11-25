@@ -3,7 +3,7 @@ package dev.kastapi.errors
 /**
  * All KastAPI error texts (in English in v0.1) live here.
  *
- * Keeping them in one place makes later internationalization easier (see the roadmap, v0.2).
+ * Keeping them in one place makes later internationalization easier (see the roadmap, v0.3).
  */
 internal object Messages {
     // Validation messages for API clients.

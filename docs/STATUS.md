@@ -10,9 +10,9 @@ The number follows [Semantic Versioning](https://semver.org/): a `0.x` version m
 - There are known limitations (see below).
 - Features planned in the [roadmap](ROADMAP.md) are missing: dependency injection, authentication, generation with KSP and a multiplatform client.
 
-## What 0.1.x includes
+## What is included
 
-Described in the [reference](reference.md): a typed DSL on top of Ktor, reading path, query and body from a `data class`, validation with annotations, errors in a single format, route checks at startup, OpenAPI 3.1, Swagger UI and the `kastapi-test` module. The detail of each change is in the [CHANGELOG](../CHANGELOG.md).
+Described in the [reference](reference.md). 0.1 brought a typed DSL on top of Ktor, reading path, query and body from a `data class`, validation with annotations, errors in a single format, route checks at startup, OpenAPI 3.1, Swagger UI and the `kastapi-test` module. 0.2 hardened it: `415` for bodies that are not JSON, `Allow` on `405` and automatic `HEAD`, the errors KastAPI sends documented in OpenAPI, a builder for `KastApiConfig`, and length and time limits for `@Pattern`. The detail of each change is in the [CHANGELOG](../CHANGELOG.md).
 
 ## Known limitations
 
@@ -29,23 +29,22 @@ Ordered from most to least important.
 | An own `StatusPages` must be installed before `installKastApi` | Installing it afterwards throws `DuplicatePluginException` | It is documented |
 | `sealed`, polymorphic and contextual types are documented as `{}` | Open schema in OpenAPI | Support for `oneOf` and discriminators |
 | Default values, `Set` and `Map` keys do not have full support in the schema | Minor details of the document | Extend the schema generator |
-| Error messages are in English only | No internationalization | Planned for 0.2 |
+| Error messages are in English only | No internationalization | Planned for 0.3 |
 | JSON nesting is limited by kotlinx.serialization (400 levels in 1.12), not by KastAPI | Deeper bodies get `400 malformed_json`, never a server error (covered by tests). The limit depends on the kotlinx.serialization version the application uses | A configurable limit of its own, and a more specific error |
-| Requires Kotlin 2.3 or newer | A project on Kotlin 2.2 cannot compile against 0.1.x: the kotlinx.serialization and Kotlin standard library versions it uses are built with Kotlin 2.4 (checked with kotlinx.serialization 1.12; a CI job keeps checking Kotlin 2.3) | Support older Kotlin by depending on older kotlinx.serialization and Ktor, with a test matrix (only if there is demand) |
+| Requires Kotlin 2.3 or newer | A project on Kotlin 2.2 cannot compile against 0.x: the kotlinx.serialization and Kotlin standard library versions it uses are built with Kotlin 2.4 (checked with kotlinx.serialization 1.12; a CI job keeps checking Kotlin 2.3) | Support older Kotlin by depending on older kotlinx.serialization and Ktor, with a test matrix (only if there is demand) |
 | Classes shared between modules are public with `@InternalKastApi` | They are public in the bytecode, although they are not part of the stable API (`apiCheck` excludes them) | Review before 1.0 |
 | The project was first written in Spanish and then translated to English | Some text may still be untranslated or read awkwardly | Translation reports and fixes are welcome (there is an issue template for it) |
 
 ## What is missing
 
-### To close the 0.1.0 release
+### Released
 
-- [x] Code, tests, public documentation and guide.
-- [x] Manual Swagger UI test in a browser (Chrome).
-- [x] Tag `v0.1.0`.
+- 0.1.0: the MVP, published on Maven Central.
+- 0.2.0: hardening, see above.
 
-### For 0.2
+### For 0.3
 
-Entry condition in the roadmap: 0.1 published and first users. Planned content: injectable dependencies, typed headers and cookies, declaring the errors a route raises with `HttpError`, and internationalization of the messages.
+Condition in the [roadmap](ROADMAP.md): first users and feedback. Planned content: injectable dependencies, typed headers and cookies, declaring the errors a route raises with `HttpError`, and internationalization of the messages. The `KastApiConfig` constructor with named arguments, deprecated in 0.2, becomes an error in 0.3 and is removed after that (see the deprecation policy in [CONTRIBUTING](../CONTRIBUTING.md)).
 
 ### For 1.0
 

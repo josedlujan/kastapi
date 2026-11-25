@@ -16,4 +16,4 @@ For v0.1 all model introspection uses `SerialDescriptor`: property names, option
 - Zero `kotlin-reflect` at runtime.
 - Models must be `@Serializable` (acceptable and expected in Kotlin).
 - Descriptors do not expose default values: optionality is known, but the default value is not documented in OpenAPI in v0.1.
-- It lays the foundation for moving the work to KSP in phase 3.
+- It lays the foundation for moving the work to KSP, a later phase of the [roadmap](../ROADMAP.md).
