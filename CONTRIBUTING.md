@@ -44,6 +44,20 @@ Before 1.0 we still change the API, but we do it in steps so that upgrading is n
 
 `compat/binary-0.1` guards the first step: a consumer compiled against 0.1.1 from Maven Central has to keep linking and passing with the jars built from the current checkout. Do not delete or change a signature it uses before the removal schedule says so.
 
+## Dependency verification
+
+`gradle/verification-metadata.xml` holds the SHA-256 of every dependency and plugin that the build downloads. Gradle checks them on every build, so an artifact that changes under the same version fails the build instead of ending up in a release.
+
+When you change a dependency or plugin version, the build fails with `Dependency verification failed` until the new hashes are in the file. Dependabot does not update it, so its pull requests need this step: check out the branch, run
+
+```bash
+./gradlew --write-verification-metadata sha256 clean build apiCheck dokkaGeneratePublicationHtml publishToMavenLocal --rerun-tasks --no-build-cache
+```
+
+and commit the file. Review the diff: it should only add entries for the versions you changed. If the file collects entries that nothing uses, delete it and generate it again with an empty Gradle home (`GRADLE_USER_HOME=$(mktemp -d)`), so that nothing is skipped because it is already cached.
+
+The projects under `compat/` are separate builds and are not covered.
+
 ## Useful commands
 
 ```bash
