@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.maven.publish) apply false
+    alias(libs.plugins.dokka) apply false
     alias(libs.plugins.binary.compatibility.validator)
 }
 
@@ -61,13 +62,35 @@ configure(subprojects.filter { it.path.startsWith(":kastapi-") }) {
     }
 }
 
+// Dokka: `kastapi-openapi` is public only because it is a separate module from `kastapi-core`; everything in it is
+// @InternalKastApi and not part of the API, so it is left out of the generated documentation.
+configure(subprojects.filter { it.path == ":kastapi-openapi" }) {
+    apply(plugin = "org.jetbrains.dokka")
+    extensions.configure<org.jetbrains.dokka.gradle.DokkaExtension> {
+        dokkaSourceSets.configureEach {
+            perPackageOption {
+                matchingRegex.set("dev\\.kastapi\\.openapi.*")
+                suppress.set(true)
+            }
+        }
+    }
+}
+
 // Publishing to Maven Central (Central Portal) with the vanniktech plugin, which also builds the sources and
 // javadoc JARs that Central requires. `./gradlew publishToMavenLocal` still works for local testing.
 // Artifacts are signed only when a signing key is configured (see CONTRIBUTING.md), so normal builds and CI
 // do not need any secret.
 configure(subprojects.filter { it.path.startsWith(":kastapi-") }) {
     apply(plugin = "com.vanniktech.maven.publish")
+    apply(plugin = "org.jetbrains.dokka")
     extensions.configure<com.vanniktech.maven.publish.MavenPublishBaseExtension> {
+        // The -javadoc JAR holds the HTML that Dokka generates from the KDoc.
+        configure(
+            com.vanniktech.maven.publish.KotlinJvm(
+                javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+                sourcesJar = com.vanniktech.maven.publish.SourcesJar.Sources(),
+            ),
+        )
         publishToMavenCentral()
         if (project.hasProperty("signingInMemoryKey") || project.hasProperty("signing.keyId")) {
             signAllPublications()

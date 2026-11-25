@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+
+- The `-javadoc` JARs on Maven Central now contain the HTML that Dokka generates from the KDoc, instead of being empty. `kastapi-openapi` has no documentation on purpose: all of it is `@InternalKastApi`. CI runs `dokkaGeneratePublicationHtml`.
+
 ## [0.2.0] - 2026-11-24
 
 ### Changed
