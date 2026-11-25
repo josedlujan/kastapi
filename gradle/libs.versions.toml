@@ -7,6 +7,7 @@ ktlint-plugin = "14.2.0"
 ktlint-engine = "1.8.0"
 logback = "1.6.7"
 maven-publish-plugin = "0.37.0"
+dokka = "2.3.0"
 
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -28,3 +29,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-plugin" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish-plugin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

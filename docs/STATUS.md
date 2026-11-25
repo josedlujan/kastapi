@@ -48,7 +48,7 @@ Condition in the [roadmap](ROADMAP.md): first users and feedback. Planned conten
 
 ### For 1.0
 
-Authentication integrated with OpenAPI, freezing the API, real API documentation (the published javadoc JARs are empty today) and a documentation site. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
+Authentication integrated with OpenAPI, freezing the API, a documentation site. The `-javadoc` JARs hold the Dokka HTML generated from the KDoc starting with the release after 0.2.0. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
 
 ## How decisions are made
 

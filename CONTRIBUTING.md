@@ -50,6 +50,7 @@ Before 1.0 we still change the API, but we do it in steps so that upgrading is n
 ./gradlew build                  # compile, tests and checks
 ./gradlew ktlintFormat           # fix the style
 ./gradlew apiCheck               # public API compatibility
+./gradlew dokkaGeneratePublicationHtml   # API documentation (HTML in each module's build/dokka/html)
 ./gradlew assemble && ./gradlew -p compat/binary-0.1 test -PkastapiVersion=<version>   # 0.1 binary compatibility
 ./gradlew publishToMavenLocal    # install the modules to try them in another project
 ./gradlew :examples:hello:run    # example at http://localhost:8080
