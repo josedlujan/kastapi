@@ -5,7 +5,7 @@ kotlinx-serialization = "1.13.0"
 binary-compatibility-validator = "0.18.2"
 ktlint-plugin = "14.2.0"
 ktlint-engine = "1.8.0"
-logback = "1.6.7"
+logback = "1.6.8"
 maven-publish-plugin = "0.37.0"
 dokka = "2.3.0"
 
