@@ -35,7 +35,7 @@ Rules:
 Add the test module:
 
 ```kotlin
-testImplementation("dev.kastapi:kastapi-test:0.2.0")
+testImplementation("dev.kastapi:kastapi-test:0.2.1")
 testImplementation(kotlin("test"))
 ```
 

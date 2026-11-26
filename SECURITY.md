@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-KastAPI is at version 0.2.0 and is experimental. Only the latest published version receives security fixes.
+KastAPI is at version 0.2.1 and is experimental. Only the latest published version receives security fixes.
 
 ## How to report a vulnerability
 

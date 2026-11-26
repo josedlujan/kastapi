@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: version 0.2.0.
+Last updated: version 0.2.1.
 
 ## Why 0.x and not 1.0
 
@@ -41,6 +41,7 @@ Ordered from most to least important.
 
 - 0.1.0: the MVP, published on Maven Central.
 - 0.2.0: hardening, see above.
+- 0.2.1: the API documentation in the `-javadoc` JARs and checksum verification of the dependencies. No API change.
 
 ### For 0.3
 
@@ -48,7 +49,7 @@ Condition in the [roadmap](ROADMAP.md): first users and feedback. Planned conten
 
 ### For 1.0
 
-Authentication integrated with OpenAPI, freezing the API, a documentation site. The `-javadoc` JARs hold the Dokka HTML generated from the KDoc starting with the release after 0.2.0. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
+Authentication integrated with OpenAPI, freezing the API, a documentation site. The `-javadoc` JARs hold the Dokka HTML generated from the KDoc since 0.2.1. Condition: adoption feedback. Before freezing the API, the visibility of `InternalKastApi` and the open decisions in the table above should be resolved.
 
 ## How decisions are made
 
