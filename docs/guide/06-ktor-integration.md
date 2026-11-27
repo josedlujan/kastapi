@@ -65,6 +65,10 @@ class HealthTest {
 - The second one is the test. Its receiver exposes `client` and `bodyAs<T>()`.
 - To test with another configuration, install your real application with `testApplication { application { module() } }`.
 
-## What 0.1.x does not include
+## What 0.x does not include
 
 Dependency injection, authentication, typed headers and cookies, forms and files, WebSockets, client generation and API versioning. They are in the [roadmap](../ROADMAP.md).
+
+## Next step
+
+[Logging and request tracing](07-logging.md): what KastAPI logs, and how to log every request and follow it with an id.

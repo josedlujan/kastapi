@@ -45,7 +45,7 @@ repositories {
 dependencies {
     implementation("dev.kastapi:kastapi-core:0.2.1")
     // Optional: see the server logs (KastAPI does not ship an SLF4J implementation).
-    runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
+    runtimeOnly("ch.qos.logback:logback-classic:1.6.8")
     testImplementation("dev.kastapi:kastapi-test:0.2.1")
     testImplementation(kotlin("test"))
 }
@@ -144,6 +144,7 @@ The full guide is in [`docs/guide`](docs/guide):
 4. [Errors](docs/guide/04-errors.md)
 5. [OpenAPI and Swagger UI](docs/guide/05-openapi.md)
 6. [Integrating with Ktor and testing](docs/guide/06-ktor-integration.md)
+7. [Logging and request tracing](docs/guide/07-logging.md)
 
 The project status, known limitations and what is missing for 1.0 are in [`docs/STATUS.md`](docs/STATUS.md). The API reference is in [`docs/reference.md`](docs/reference.md) and the architecture in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
