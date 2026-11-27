@@ -42,10 +42,10 @@ get<UserPath, User>("/users/{id}") { path ->
 
 An unhandled exception responds `500` with a generic message: the body does **not** include the exception or the stack trace. The exception is logged on the server, together with the method and the path.
 
-KastAPI does not ship a logging implementation. Without one on the classpath, the log entry is not written anywhere. Add one, for example:
+KastAPI does not ship a logging implementation. Without one on the classpath, the log entry is not written anywhere. Add one, for example (the [logging guide](07-logging.md) shows what else KastAPI logs and how to log every request):
 
 ```kotlin
-runtimeOnly("ch.qos.logback:logback-classic:1.6.7")
+runtimeOnly("ch.qos.logback:logback-classic:1.6.8")
 ```
 
 ## Content type

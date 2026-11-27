@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+
+- A guide on logging and request tracing (`docs/guide/07-logging.md`): what KastAPI logs and with which logger, how to silence it, and how to log every request and follow it with an id using Ktor's `CallLogging` and `CallId` plugins.
+
 ## [0.2.1] - 2026-11-26
 ### Changed
 
