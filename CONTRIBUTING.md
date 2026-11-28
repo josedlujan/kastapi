@@ -90,8 +90,12 @@ signingInMemoryKeyPassword=<key passphrase>
 Artifacts are only signed when a signing key is configured, so normal builds and CI need no secrets.
 
 1. Update `CHANGELOG.md`, set the version in `build.gradle.kts` and merge the PR.
-2. Tag the release (`git tag -a vX.Y.Z`) on the merged commit and push the tag.
+2. Tag the release (`git tag -a vX.Y.Z`) on the merged commit and push the tag. The `Release` workflow then checks
+   that the tag matches the version in `build.gradle.kts`, that `CHANGELOG.md` has a `## [X.Y.Z]` section and that
+   the commit is on `main`; it runs the CI checks and creates a **draft** GitHub Release with the notes from the
+   `CHANGELOG`. It uses no secrets and does not publish to Maven Central.
 3. From that tag, run `./gradlew publishToMavenCentral`. This uploads the signed artifacts as a deployment.
 4. Review the deployment in the [Central Portal](https://central.sonatype.com/publishing/deployments) and press
    **Publish**. A published version is immutable: it cannot be deleted or changed.
-5. Create the GitHub Release from the same tag.
+5. Once the artifacts are visible on Maven Central, open the draft GitHub Release that the workflow created, read it
+   and publish it.

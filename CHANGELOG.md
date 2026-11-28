@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- A `Release` workflow that runs when a `v*` tag is pushed. It checks that the tag matches the version and the `CHANGELOG`, that the commit is on `main`, runs the CI checks and creates a draft GitHub Release. It uses no secrets and does not publish to Maven Central.
 - A guide on logging and request tracing (`docs/guide/07-logging.md`): what KastAPI logs and with which logger, how to silence it, and how to log every request and follow it with an id using Ktor's `CallLogging` and `CallId` plugins.
 
 ## [0.2.1] - 2026-11-26

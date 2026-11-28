@@ -1,0 +1,76 @@
+name: Release
+# Runs when a version tag is pushed. It checks that the tag is consistent, runs the same checks as CI and creates a
+# DRAFT GitHub Release with the notes from the CHANGELOG. It does not publish to Maven Central and uses no secrets:
+# the maintainer uploads the artifacts from their machine and presses Publish in the Central Portal (see CONTRIBUTING.md).
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: The tag matches the version and the CHANGELOG
+        id: tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#v}"
+          BUILD_VERSION=$(sed -n 's/^ *version = "\(.*\)"/\1/p' build.gradle.kts | head -1)
+          if [ "$VERSION" != "$BUILD_VERSION" ]; then
+            echo "::error::The tag is $TAG but build.gradle.kts says version $BUILD_VERSION"
+            exit 1
+          fi
+          if ! grep -q -F "## [$VERSION]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section '## [$VERSION]'"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: The tagged commit is on main
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::The tagged commit is not on main. Tag the commit that the pull request merged."
+            exit 1
+          fi
+  ci:
+    needs: checks
+    uses: ./.github/workflows/ci.yml
+  release:
+    needs: [checks, ci]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # The only job that can write to the repository.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.checks.outputs.version }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "A release for $TAG already exists; nothing to do."
+            exit 0
+          fi
+          awk -v header="## [$VERSION]" 'index($0, "## [") == 1 { found = (index($0, header) == 1); next } found' CHANGELOG.md \
+            | sed '/^$/N;/^\n$/D' > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::The CHANGELOG section for $VERSION is empty"
+            exit 1
+          fi
+          {
+            echo
+            echo "Install from Maven Central: \`dev.kastapi:kastapi-core:$VERSION\` (and \`kastapi-test:$VERSION\` for tests). See the [installation section](https://github.com/${GITHUB_REPOSITORY}#installation)."
+          } >> notes.md
+          FLAGS=(--draft --verify-tag --title "KastAPI $VERSION" --notes-file notes.md)
+          case "$VERSION" in *-*) FLAGS+=(--prerelease) ;; esac
+          gh release create "$TAG" "${FLAGS[@]}"
