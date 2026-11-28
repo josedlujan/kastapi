@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # The release workflow runs the same checks before it creates a release.
+  workflow_call:
 
 # The workflow only needs to read the repository. Jobs that need more must ask for it explicitly.
 permissions:
